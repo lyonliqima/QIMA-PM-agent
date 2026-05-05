@@ -1,6 +1,6 @@
 ---
-name: business-aware-design-critique
-description: Upgrade design critique from surface-level UI inspection to full-link verification covering business rules, R&D implementation, and team historical practices. Pulls Confluence PRDs, scans front/back-end code, and references Jira history so every comment cites doc / code / ticket evidence. Outputs an HTML report with severity-grouped findings and clickable evidence links. Use when the user asks for a "business-aware critique", "evidence-based design review", or supplies a Figma URL plus Confluence/repo context.
+name: design-critique
+description: Upgrade design critique from surface-level UI inspection to full-link verification covering business rules, R&D implementation, and team historical practices. Pulls Confluence PRDs, scans front/back-end code, and references Jira history so every comment cites doc / code / ticket evidence. Outputs an HTML report with severity-grouped findings and clickable evidence links. Use when the user asks for a "business-aware critique", "evidence-based design review", "design critique", or supplies a Figma URL plus Confluence/repo context.
 version: 0.1.0
 user-invocable: true
 argument-hint: "<figma-url> [confluence-page-id] [repo-path]"

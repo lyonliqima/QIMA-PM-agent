@@ -8,12 +8,13 @@ End-to-end PRD drafting, codebase understanding, and design workflow toolkit for
 - **Skill** `codebase-understanding` — produces a structured repo / team / architecture brief for a feature. Standalone, or invoked as Phase 1.X of `write-prd` when the PRD subject is technically novel or cross-system.
 - **Skill** `ticket-breakdown` — breaks a Confluence PRD into a Jira Epic and FE / BE / API tickets, requires user approval before Jira writes, links tickets to the Epic, and writes the created ticket links back to the PRD.
 - **Design skills** — `impeccable`, `critique`, `audit`, `polish`, `layout`, `typeset`, `adapt`, `animate`, `harden`, `optimize`, `clarify`, `colorize`, `bolder`, `quieter`, `distill`, `delight`, `overdrive`, and `shape` for frontend design work.
-- **Skill** `business-aware-design-critique` — evidence-based QIMA design review that connects Figma, Confluence business rules, code implementation, and Jira history into an HTML report.
+- **Skill** `design-critique` — evidence-based QIMA design review that connects Figma, Confluence business rules, code implementation, and Jira history into an HTML report.
 - **Agent** `prd-review-expert` — senior PMO/CPO-level reviewer. Auto-invoked after the initial draft; can also be called standalone on any PRD (local file or Confluence URL).
 - **Slash command** `/write-prd` — entry point for the PRD workflow.
   - **Deprecated alias** `/qima-prd-skills` is kept through 0.9.x for muscle memory; will be removed in 1.0.
 - **Slash command** `/codebase-understanding` — entry point for the architecture brief.
 - **Slash command** `/ticket-breakdown` — entry point for Jira Epic/ticket creation from a PRD.
+- **Slash command** `/design-critique` — entry point for evidence-based QIMA design review.
 
 ## Install (local)
 
@@ -36,7 +37,7 @@ Or from the Claude Code UI: **Plugins → Install from local path** → select t
 - For a standalone code-base brief: `/codebase-understanding [feature name]`.
 - To create Jira implementation tickets from a PRD: `/ticket-breakdown <confluence-prd-url> <jira-project-key> [design-url]`.
 - For design work, ask naturally (for example, "critique this design", "make this page responsive", "polish this component", "add purposeful animation") or invoke a design skill by name when available.
-- For evidence-based QIMA design review: `business-aware-design-critique <figma-url> [confluence-page-id] [repo-path]`.
+- For evidence-based QIMA design review: `/design-critique <figma-url> [confluence-page-id] [repo-path]`.
 - Once a draft exists, ask "review this PRD" or pass a Confluence URL to invoke `prd-review-expert` directly.
 
 ## Requirements
