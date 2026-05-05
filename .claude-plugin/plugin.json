@@ -1,9 +1,9 @@
 {
   "name": "qima-pm-skills",
-  "version": "0.8.0",
-  "description": "QIMA PM Skills — long interview, short output. Bundles `write-prd` (end-to-end PRD orchestrator), `codebase-understanding` (architecture / repo / team brief), and the `prd-review-expert` agent. The PRD flow asks 6–15 background questions + up to 7 depth rounds + 5 clarification rounds before drafting, writes a ≤ 250-line PM-readable Confluence PRD with per-page Figma deep-links in §6 Design (frame search SCOPED to user-provided section node-id; rendered via Figma for Confluence plugin as live embeds), and auto-reviews via prd-review-expert.",
+  "version": "0.9.0",
+  "description": "QIMA PM Skills — long interview, short output. Bundles `write-prd` (end-to-end PRD orchestrator), `codebase-understanding` (architecture / repo / team brief), `prd-review-expert`, and a design toolkit for critique, responsive adaptation, polish, typography, layout, animation, hardening, and business-aware design review.",
   "author": {
     "name": "Lyon"
   },
-  "keywords": ["qima", "pm", "prd", "product-management", "confluence", "codebase", "architecture", "figma"]
+  "keywords": ["qima", "pm", "prd", "product-management", "confluence", "codebase", "architecture", "figma", "design", "ux"]
 }
