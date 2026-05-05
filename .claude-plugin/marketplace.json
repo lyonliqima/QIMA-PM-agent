@@ -1,0 +1,26 @@
+{
+  "name": "qima-pm-agent",
+  "description": "Claude Code plugin marketplace for QIMA Product Manager workflows.",
+  "version": "0.8.0",
+  "metadata": {
+    "description": "Claude Code plugin marketplace for QIMA Product Manager workflows."
+  },
+  "owner": {
+    "name": "Lyon"
+  },
+  "plugins": [
+    {
+      "name": "qima-pm-skills",
+      "source": "./",
+      "description": "End-to-end PRD drafting, codebase understanding, and PM review toolkit for QIMA Product Managers.",
+      "version": "0.8.0",
+      "repository": "https://github.com/lyonliqima/QIMA-PM-agent",
+      "author": {
+        "name": "Lyon"
+      },
+      "category": "product-management",
+      "tags": ["qima", "pm", "prd", "product-management", "confluence", "codebase", "architecture", "figma"],
+      "keywords": ["qima", "pm", "prd", "product-management", "confluence", "codebase", "architecture", "figma"]
+    }
+  ]
+}
