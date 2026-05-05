@@ -1,10 +1,10 @@
 {
   "name": "qima-pm-skills",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "QIMA PM Skills — long interview, short output. Bundles `write-prd` (end-to-end PRD orchestrator), `codebase-understanding` (architecture / repo / team brief), `prd-review-expert`, `ticket-breakdown` for Jira Epic/ticket creation with PRD back-links, and a design toolkit for critique, responsive adaptation, polish, typography, layout, animation, hardening, and business-aware design review.",
   "author": {
     "name": "Lyon"
   },
   "keywords": ["qima", "pm", "prd", "product-management", "confluence", "jira", "tickets", "codebase", "architecture", "figma", "design", "ux"],
-  "skills": ["./skills/", "./skills/UI/"]
+  "skills": "./skills/"
 }
