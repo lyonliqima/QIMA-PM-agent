@@ -1,6 +1,6 @@
 ---
 name: write-prd
-description: Orchestrate end-to-end PRD drafting for QIMA PMs. Aggregates context from local files (PPT/PDF/transcripts), Outlook, Teams, SharePoint/OneDrive, Confluence history, Figma, Notion, and QSP code repos; runs short business-background mining + multi-turn depth interview with the user; enforces a PM-readable, non-technical voice with a strict length cap; then writes a complete PRD draft to a specified Confluence page. Use when a PM says "write a PRD", "draft a PRD", "起草 PRD", "写需求文档", "走 prd skills", or invokes /write-prd. Do NOT use for reviewing existing PRDs (use prd-review-expert) or breaking PRDs into tickets (use prd-to-dev-ticket-breakdown).
+description: Orchestrate end-to-end PRD drafting for QIMA PMs. Aggregates context from local files (PPT/PDF/transcripts), Outlook, Teams, SharePoint/OneDrive, Confluence history, Figma, Notion, and QSP code repos; runs short business-background mining + multi-turn depth interview with the user; enforces a PM-readable, non-technical voice with a strict length cap; then writes a complete PRD draft to a specified Confluence page. Use when a PM says "write a PRD", "draft a PRD", "起草 PRD", "写需求文档", "走 prd skills", or invokes /write-prd. Do NOT use for reviewing existing PRDs (use prd-review-expert) or breaking PRDs into tickets (use ticket-breakdown).
 version: 0.3.0
 user-invocable: true
 argument-hint: "[feature name or brief description]"
@@ -26,7 +26,7 @@ If unsure whether to ask, ASK. Verbose interview is recoverable; PRD with fabric
 
 **PM voice, not engineer voice.** PRDs are read by PMs, designers, business leads, and customer reps — not engineers. Technical detail belongs in the Tech Design page (linked from §1 meta-table), not in the PRD body. See `references/voice-and-register.md` — it is **enforced before publish**.
 
-**Short by default.** Target the body to **≤ 250 lines / ≤ 6 pages of Confluence**. If the PM wants engineering-grade depth, run `prd-to-dev-ticket-breakdown` afterwards — do not bloat the PRD itself.
+**Short by default.** Target the body to **≤ 250 lines / ≤ 6 pages of Confluence**. If the PM wants engineering-grade depth, run `ticket-breakdown` afterwards — do not bloat the PRD itself.
 
 ---
 
@@ -159,7 +159,7 @@ Default = SKIP. Run only when:
 - PM explicitly asks: *"make this dev-ready"* / *"deep version"* / *"include the data contract"*, OR
 - There is no separate Tech Design page and dev is pulling from PRD directly.
 
-Otherwise, leave per-FR detail to `prd-to-dev-ticket-breakdown` (the dedicated handoff skill).
+Otherwise, leave per-FR detail to `ticket-breakdown` (the dedicated handoff skill).
 
 ### Phase 4.7 · Review-loop（REQUIRED）
 
@@ -198,7 +198,7 @@ Inline: AskUserQuestion · PRD body writing · Confluence write.
 
 1. **Confluence write** — confirm Space + parent; default Draft.
 2. **Figma upload via Chrome MCP** — verify Chrome MCP available + authenticated to `qima.atlassian.net` before uploading.
-3. **Jira creation** — NOT this skill's job (use `prd-to-dev-ticket-breakdown`).
+3. **Jira creation** — NOT this skill's job (use `ticket-breakdown`).
 
 NEVER:
 - Write to a published Confluence page without explicit confirmation
@@ -242,14 +242,14 @@ NEVER:
 - `qima-prd-writing-guide` — Phase 4 prose
 - `prd-review-expert` — Phase 4.7 review (auto-invoked)
 - `codebase-understanding` — opt-in technical-context brief (architecture / repo / team map). Run as separate command when PRD needs it; brief is linked from §1 相关资料, never pasted in body
-- `prd-to-dev-ticket-breakdown` — AFTER PRD approval, produces engineering-grade ticket detail
+- `ticket-breakdown` — AFTER PRD approval, produces engineering-grade ticket detail
 - `test-case-generation` — AFTER PRD approval, produces test cases
 
 ---
 
 ## Non-goals
 
-- This skill does NOT produce engineering-grade specs (use `prd-to-dev-ticket-breakdown`)
+- This skill does NOT produce engineering-grade specs (use `ticket-breakdown`)
 - This skill does NOT review existing PRDs
 - This skill does NOT generate Jira tickets or test cases
 - This skill does NOT make product decisions — it surfaces information and asks the user

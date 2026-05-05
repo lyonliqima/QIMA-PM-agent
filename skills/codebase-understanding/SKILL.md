@@ -190,4 +190,4 @@ In all cases: never fabricate.
 - This skill does NOT modify code or commit
 - This skill does NOT generate Jira tickets
 - This skill does NOT replace the main PRD skill — it complements
-- This skill does NOT produce per-FR field-mapping tables (that's `prd-to-dev-ticket-breakdown`)
+- This skill does NOT produce per-FR field-mapping tables (that's `ticket-breakdown`)

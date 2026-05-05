@@ -8,7 +8,7 @@
 > - PM explicitly asks: *"make this dev-ready"* / *"deep version"* / *"include the data contract"*, OR
 > - There is no separate Tech Design page and dev is pulling from PRD directly.
 >
-> **Otherwise**: leave this for `prd-to-dev-ticket-breakdown` (the dedicated handoff skill). PRDs are for product alignment; ticket breakdowns are for dev handoff. Don't conflate them.
+> **Otherwise**: leave this for `ticket-breakdown` (the dedicated handoff skill). PRDs are for product alignment; ticket breakdowns are for dev handoff. Don't conflate them.
 >
 > If running: max 3 rounds per FR. Remaining gaps after round 3 → Section 11 Open Questions (do not fabricate). Detail below applies only when this phase is opted-in.
 

@@ -73,7 +73,7 @@ PRD 正文（不含 Appendix）：
 
 > 详见 [Tech Design — Smart Report] Confluence 4559699969
 
-如果 PM 要求 dev-ready handoff，运行 `prd-to-dev-ticket-breakdown` skill —— 那是专门做这事的，不要把 PRD 撑大。
+如果 PM 要求 dev-ready handoff，运行 `ticket-breakdown` skill —— 那是专门做这事的，不要把 PRD 撑大。
 
 ---
 
