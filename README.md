@@ -6,6 +6,7 @@ End-to-end PRD drafting, codebase understanding, and design workflow toolkit for
 
 - **Skill** `write-prd` — orchestrates context gathering, depth interview, Confluence-ready PRD writing, and the auto-review loop. Bundles `references/`, `scripts/`, and `templates/`.
 - **Skill** `codebase-understanding` — produces a structured repo / team / architecture brief for a feature. Standalone, or invoked as Phase 1.X of `write-prd` when the PRD subject is technically novel or cross-system.
+- **Skill** `prd-to-dev-ticket-breakdown` — breaks a Confluence PRD into a Jira Epic and FE / BE / API tickets, requires user approval before Jira writes, links tickets to the Epic, and writes the created ticket links back to the PRD.
 - **Design skills** — `impeccable`, `critique`, `audit`, `polish`, `layout`, `typeset`, `adapt`, `animate`, `harden`, `optimize`, `clarify`, `colorize`, `bolder`, `quieter`, `distill`, `delight`, `overdrive`, and `shape` for frontend design work.
 - **Skill** `business-aware-design-critique` — evidence-based QIMA design review that connects Figma, Confluence business rules, code implementation, and Jira history into an HTML report.
 - **Agent** `prd-review-expert` — senior PMO/CPO-level reviewer. Auto-invoked after the initial draft; can also be called standalone on any PRD (local file or Confluence URL).
@@ -32,6 +33,7 @@ Or from the Claude Code UI: **Plugins → Install from local path** → select t
 
 - Type `/write-prd` and describe the feature, or just say "write a PRD for X" / "起草 PRD" — the skill auto-triggers on natural-language phrasing too.
 - For a standalone code-base brief: `/codebase-understanding [feature name]`.
+- To create Jira implementation tickets from a PRD: `prd-to-dev-ticket-breakdown <confluence-prd-url> <jira-project-key> [design-url]`.
 - For design work, ask naturally (for example, "critique this design", "make this page responsive", "polish this component", "add purposeful animation") or invoke a design skill by name when available.
 - For evidence-based QIMA design review: `business-aware-design-critique <figma-url> [confluence-page-id] [repo-path]`.
 - Once a draft exists, ask "review this PRD" or pass a Confluence URL to invoke `prd-review-expert` directly.
@@ -57,4 +59,4 @@ To upgrade locally: `/plugin uninstall qima-prd-skills && /plugin install ~/Desk
 
 ## Version
 
-0.9.0
+0.10.0
