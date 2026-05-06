@@ -1,78 +1,82 @@
-# Keyword expansion — QIMA naming patterns
+# Keyword Expansion — QIMA Naming Patterns
 
-A feature in QIMA typically has **4-6 different names** scattered across sources. Searching only the canonical product name recovers roughly half the relevant context. This reference documents QIMA's recurring naming patterns and how to expand a seed term into a complete keyword map.
+A QIMA feature typically has 4-6 different names across PRDs, Jira, code, Teams, and Confluence. Searching only the canonical product name misses relevant context. This reference explains how to expand a seed term into a practical keyword map.
 
 ---
 
-## Why expansion is mandatory
+## Why Expansion Is Mandatory
 
 Observed naming drift across QIMA sources:
 
-| Layer | Typical name form | Example (Package Charge) |
+| Layer | Typical name form | Example |
 |---|---|---|
 | PRD / product doc | Full product name, Title Case | "Package Charge Management" |
 | Marketing / external | Shortened marketing name | "Package Fee" |
 | Jira epic | Title with abbreviation suffix | "Package Charge Mgmt (PCM)" |
 | Jira labels | lowercase-hyphen | `package-charge`, `billing` |
 | Code repo name | kebab-case with version/module | `charge-service-cloud`, `billing-v2` |
-| Chinese discussion | Direct translation or colloquial | "包装计费", "打包费用" |
+| Local-language discussion | Direct translation or colloquial wording | localized names used by the team |
 | Engineering shorthand | Acronym | "PCM", "Charge v2" |
-| Stakeholder references | Informal | "那个计费的东西", "老王的项目" |
+| Stakeholder references | Informal | "the billing project", "the old package-fee work" |
 
-Searching only "Package Charge Management" misses all 7 other layers.
+Searching only "Package Charge Management" misses the other layers.
 
 ---
 
-## Expansion procedure
+## Expansion Procedure
 
-### Step 1 — Classify the seed
+### Step 1 — Classify the Seed
 
-Identify which of these the seed term belongs to:
+Identify which category the seed belongs to:
 
-- **Product name** (e.g., "Package Charge Management") → need to expand DOWN to code names
-- **Code / module name** (e.g., "billing-service") → need to expand UP to product name
-- **Acronym** (e.g., "PCM") → need BOTH directions
-- **Chinese term** (e.g., "计费") → need to find English equivalents
+- **Product name**: expand down to code names.
+- **Code / module name**: expand up to product names.
+- **Acronym**: expand in both directions.
+- **Localized term**: find English equivalents and internal project names.
 
-### Step 2 — Apply QIMA naming rules
+### Step 2 — Apply QIMA Naming Rules
 
-**Rule 1 · English ↔ Chinese pairing**
-Always generate both. If the seed is English, add the likely Chinese term(s); if Chinese, add English. Common QIMA domain pairs:
+**Rule 1 · English and localized pairing**
 
-| Domain | English | Chinese |
-|---|---|---|
-| Inspection | inspection, audit, check | 验货, 审核 |
-| Report | report, lab report, test report | 报告, 检测报告 |
-| Sample | sample, specimen | 样品 |
-| Lab | laboratory, QIMAlabs | 实验室 |
-| Package / Charge | package, parcel, charge, fee, billing | 包装, 计费, 费用 |
-| Inspector | inspector, auditor | 验货员, 审核员 |
-| Order | order, booking | 订单, 预约 |
-| Factory | factory, supplier | 工厂, 供应商 |
+Always generate both English and localized variants when available. Common QIMA domain concepts:
+
+| Domain | English keyword set |
+|---|---|
+| Inspection | inspection, audit, check |
+| Report | report, lab report, test report |
+| Sample | sample, specimen |
+| Lab | laboratory, QIMAlabs |
+| Package / Charge | package, parcel, charge, fee, billing |
+| Inspector | inspector, auditor |
+| Order | order, booking |
+| Factory | factory, supplier |
 
 **Rule 2 · Version and module suffixes**
-QIMA codebases commonly use `-v1` / `-v2` / `-cloud` / `-service` / `-web` suffixes. If the seed refers to an existing system, add variants:
+
+QIMA codebases commonly use `-v1`, `-v2`, `-cloud`, `-service`, and `-web` suffixes. If the seed refers to an existing system, add variants:
 
 - `<name>-service-cloud` — backend service
 - `<name>-web-cloud` or `<name>-web` — frontend
 - `<name>-v2` / `<name>-next` — rewrite project
 - `<name>-external-service-cloud` — external-facing API
 
-Example: seed "sample" expands to `sample-service-cloud`, `Sample-WEB`, `sample-v2`.
+Example: seed "sample" expands to `sample-service-cloud`, `sample-web`, and `sample-v2`.
 
 **Rule 3 · Team ownership as keyword**
-The owning team name is a strong retrieval signal in Teams chats and Confluence. Use the team-to-project map (see `find-right-team/teams.md`) in reverse:
+
+The owning team name is a strong retrieval signal in Teams chats and Confluence. Use the team-to-project map in reverse:
 
 | Team | Typical domains |
 |---|---|
 | Apollo | audit, inspection, IRP, IPTB, PSI, factory |
 | Titan | auth, e-signature, lab, sample, program, report, user |
-| Loong | (check team mapping) |
+| Loong | check the team mapping |
 
-If seed is "lab report", Titan is the likely owner → add "Titan" and "Titan team" as retrieval keywords for Teams / Confluence.
+If the seed is "lab report", Titan is a likely owner, so add "Titan" and "Titan team" to retrieval keywords.
 
 **Rule 4 · Acronym expansion**
-QIMA acronyms in circulation — check these first:
+
+Common QIMA acronyms:
 
 | Acronym | Full form |
 |---|---|
@@ -82,54 +86,54 @@ QIMA acronyms in circulation — check these first:
 | GI | General Instruction |
 | JTBD | Jobs to be Done |
 
-If the seed is an acronym not in this table, ASK the user — and when they tell you, **append the new entry to this table and save the file**. This table is a living dictionary; every new acronym learned in a conversation should be persisted here for future runs.
+If the seed is an acronym not in this table, ask the user and append the new entry to this file.
 
 **Rule 5 · Stakeholder names as keywords**
+
 Pull likely stakeholder names from:
-- Jira epic assignees / reporters (via `searchJiraIssuesUsingJql`)
-- Confluence page contributors (via `searchConfluenceUsingCql`)
+
+- Jira epic assignees / reporters
+- Confluence page contributors
 - Team leads from the team-project map
 
-Stakeholder names appearing in Teams/Outlook are strong signals the context is relevant.
+Stakeholder names in Teams or Outlook often signal relevant context.
 
-### Step 3 — Lightweight verification pass
+### Step 3 — Lightweight Verification Pass
 
-Before committing to the keyword map, run these cheap queries in parallel:
+Before committing to the keyword map, run cheap queries in parallel:
 
-```
+```text
 # Jira — pull epic titles/labels
-searchJiraIssuesUsingJql: text ~ "<seed>" OR labels = "<seed-kebab>"
+text ~ "<seed>" OR labels = "<seed-kebab>"
 
 # Confluence — pull page titles and labels
-searchConfluenceUsingCql: text ~ "<seed>" AND type = page
+text ~ "<seed>" AND type = page
 ```
 
-Harvest additional variants from the results' titles, labels, and linked code repos. Add them to the map.
+Harvest additional variants from result titles, labels, and linked code repos.
 
-### Step 4 — Ask the user (one card)
+### Step 4 — Ask the User Once
 
-Use `AskUserQuestion` with a single card:
+Use one `AskUserQuestion` card:
 
-> **"What other names might this feature have?"**
+> What other names might this feature have?
 >
-> I'll search all of these. Add any internal code names, past project names, team abbreviations, or Chinese terms.
+> I will search all of these. Add internal code names, past project names, team abbreviations, localized names, or abbreviations.
 >
 > Current list: `[canonical] + [N auto-expanded variants]`
 
-Cap at one round — do not loop.
+Cap at one round.
 
 ---
 
-## Output format — keyword-map.md
-
-Save to the working directory as `keyword-map.md`:
+## Output Format — `keyword-map.md`
 
 ```markdown
 # Keyword map for <feature>
 
 canonical:    Package Charge Management
 en-variants:  package fee, parcel charge, shipping billing, package charge
-zh-variants:  计费, 包装费, 包装计费, 打包费用
+local-variants: <localized terms supplied by sources or user>
 code-names:   PCM, charge-v2, billing-module
 code-repos:   charge-service-cloud, billing-v2-web
 jira-labels:  billing, package-charge, pcm
@@ -137,47 +141,40 @@ teams:        Apollo (owner), Titan (integration touchpoint)
 stakeholders: <names from Jira + Confluence queries>
 
 # Sources of these variants
-- Jira epic QIMAL-1234 title
-- Confluence page "Package Charge Capability – PRD"
+- Jira epic title
+- Confluence page title
 - User clarification
 ```
 
-Phase 1 scanners MUST join these variants with `OR` in their queries, not search canonical only.
+Phase 1 scanners must join these variants with `OR`, not search the canonical name only.
 
 ---
 
-## Stop conditions
+## Stop Conditions
 
-Expansion is DONE when any of:
+Expansion is done when any of these are true:
 
-- Map has ≥ 3 English variants, ≥ 2 Chinese variants, ≥ 1 code name
-- User confirms "that's all the names"
-- Verification pass surfaces no new variants in two consecutive queries
-- Time budget for this phase exceeded 5 minutes of tool calls
+- Map has at least 3 English variants, at least 1 localized variant, and at least 1 code name.
+- User confirms the list is complete.
+- Verification pass surfaces no new variants in two consecutive queries.
+- Time budget for this phase exceeds 5 minutes of tool calls.
 
-Do NOT loop forever pursuing completeness. Missing one variant is recoverable in Checkpoint A; burning the user's time is not.
-
----
-
-## Anti-patterns
-
-- ❌ Searching only the canonical product name in Phase 1
-- ❌ Auto-translating Chinese to English via dictionary without checking QIMA's actual usage
-- ❌ Asking the user to list ALL variants before any auto-expansion (lazy)
-- ❌ Treating the keyword map as immutable — if Phase 1 surfaces a new name, append it
-- ❌ Ignoring team names as retrieval keys — team names are high-signal in chat / Confluence
+Do not loop forever pursuing completeness.
 
 ---
 
-## Maintenance — living dictionary
+## Anti-Patterns
 
-This reference MUST grow over time. Whenever a user supplies a new QIMA-specific name, acronym, code repo suffix, team, or English↔Chinese term pair during a PRD run, **append it to the appropriate table in this file before ending the turn**. Do not keep the knowledge only in conversation memory — persist it here so the next run benefits.
+- Searching only the canonical product name in Phase 1.
+- Auto-translating localized terms without checking QIMA's actual usage.
+- Asking the user to list all variants before any auto-expansion.
+- Treating the keyword map as immutable when Phase 1 surfaces a new name.
+- Ignoring team names as retrieval keys.
 
-Triggers to append:
+---
 
-- User expands an acronym you didn't know → append to **Rule 4** table
-- User provides a Chinese term for an English concept (or vice versa) → append to **Rule 1** table
-- User names a team and its domain → append to **Rule 3** table
-- User reveals a repo naming convention (e.g., "we always suffix mobile apps with `-app`") → append to **Rule 2** list
+## Maintenance — Living Dictionary
 
-Commit message convention (if version-controlled): `docs(keyword-expansion): add <term> from <context>`.
+This reference should grow over time. Whenever a user supplies a new QIMA-specific name, acronym, repo suffix, team, or English/localized term pair during a PRD run, append it to the appropriate table before ending the turn.
+
+Commit message convention, if version-controlled: `docs(keyword-expansion): add <term> from <context>`.

@@ -1,6 +1,6 @@
 ---
 name: write-prd
-description: Orchestrate end-to-end PRD drafting for QIMA PMs. Aggregates context from local files (PPT/PDF/transcripts), Outlook, Teams, SharePoint/OneDrive, Confluence history, Figma, Notion, and QSP code repos; runs short business-background mining + multi-turn depth interview with the user; enforces a PM-readable, non-technical voice with a strict length cap; then writes a complete PRD draft to a specified Confluence page. Use when a PM says "write a PRD", "draft a PRD", "起草 PRD", "写需求文档", "走 prd skills", or invokes /write-prd. Do NOT use for reviewing existing PRDs (use prd-review-expert) or breaking PRDs into tickets (use ticket-breakdown).
+description: Orchestrate end-to-end PRD drafting for QIMA PMs. Aggregates context from local files (PPT/PDF/transcripts), Outlook, Teams, SharePoint/OneDrive, Confluence history, Figma, Notion, and QSP code repos; runs short business-background mining + multi-turn depth interview with the user; enforces a PM-readable, non-technical voice with a strict length cap; then writes a complete PRD draft to a specified Confluence page. Use when a PM says "write a PRD", "draft a PRD", "create a requirements document", "run the PRD skill", or invokes /write-prd. Do NOT use for reviewing existing PRDs (use prd-critique) or breaking PRDs into tickets (use ticket-breakdown).
 version: 0.3.0
 user-invocable: true
 argument-hint: "[feature name or brief description]"
@@ -61,7 +61,7 @@ Output: `context-manifest.md` listing every input source — Figma section URL r
 
 ### Phase 0.5 · Keyword expansion
 
-QIMA features have **inconsistent naming**. Build a small keyword map (≥ 2 English variants, ≥ 1 Chinese variant, code names if known) before scanning. See `references/keyword-expansion.md`.
+QIMA features have **inconsistent naming**. Build a small keyword map (at least 2 English variants, at least 1 localized or legacy variant, code names if known) before scanning. See `references/keyword-expansion.md`.
 
 Stop condition: ≥ 3 variant names found OR user confirms "these are all the names". Don't loop.
 
@@ -82,7 +82,7 @@ Dispatch all scanners in a single message (parallel Subagents). Every scanner us
 
 Each Subagent returns a **structured brief (≤ 250 words)** with: key findings, direct quotes, source links.
 
-**Code base understanding is now a separate opt-in skill** — when the PRD subject is technically novel or cross-system (touches multiple platforms / new service), invoke `/codebase-understanding [feature]` either *before* drafting (for the PM to read) or as part of Phase 1 (and link the resulting brief from PRD §1 相关资料 row). The brief is NOT pasted into the PRD body — voice rules forbid that. Default = SKIP unless PM asks.
+**Code base understanding is now a separate opt-in skill** — when the PRD subject is technically novel or cross-system (touches multiple platforms / new service), invoke `/codebase-understanding [feature]` either *before* drafting (for the PM to read) or as part of Phase 1 (and link the resulting brief from the related-materials row in PRD Section 1). The brief is NOT pasted into the PRD body — voice rules forbid that. Default = SKIP unless PM asks.
 
 ### Phase 1.5 · Business-background mining
 
@@ -109,7 +109,7 @@ Use `AskUserQuestion`. Prioritize, but cover ALL relevant items — under-asking
 5. **Stakeholder identities** — every name mentioned without a §3 row entry should be confirmed (who is this, what role, do they belong in §3?)
 6. **Numbers without sources** — any quantitative claim (≥ 60%, ≥ 40%, 32 MD, 6,621 sessions) needs a source citation; if missing, ask
 
-Per card: ≤ 3 questions, single topic per card. Multi-card rounds are normal. Cap at **5 rounds**. Unresolved at round 5 → "⚠️ Open question" in §11 and move on.
+Per card: no more than 3 questions, single topic per card. Multi-card rounds are normal. Cap at **5 rounds**. Unresolved at round 5 -> "Open question" in Section 11 and move on.
 
 If a question feels minor but you're truly uncertain, ASK ANYWAY — the cost of asking is small; the cost of fabricating a detail in the PRD is large.
 
@@ -123,11 +123,11 @@ Round structure per `references/depth-interview.md`:
 - Round 0 — scope sanity (always run)
 - Then run rounds in priority order (Background → FR schema → OOS provenance → Risk probability → Release gates → Edge cases → OQ blockers → others)
 
-**Stop conditions**: All triggered sections cleared, OR **round 7 hit (cap)**, OR user says "stop asking, draft what you have" (in which case log what's missing as ⚠️ TBD markers).
+**Stop conditions**: All triggered sections cleared, OR **round 7 hit (cap)**, OR user says "stop asking, draft what you have" (in which case log what's missing as TBD markers).
 
 ### Phase 3 · Outline generation
 
-Produce the PRD outline only — section headings + one-line intent. Surface to user as a structured list. Mark sections as Strong / from-source / "⚠️ open question".
+Produce the PRD outline only — section headings + one-line intent. Surface to user as a structured list. Mark sections as Strong / from-source / "open question".
 
 ### ◆ Checkpoint B · Outline approval
 
@@ -142,16 +142,16 @@ User confirms outline or redirects.
    - a `> **Figma frame**: [name](URL?node-id=<frame>)` line — text-link form
    - **a bare Figma URL on its own line directly underneath** — Confluence's **Figma for Confluence** plugin (assumed installed in QIMA Confluence) auto-detects bare URLs and renders them as inline live frame embeds. Bare-URL-on-own-line is the simplest reliable trigger for the plugin macro.
 
-   **Frame-search scope**: search **ONLY inside the user-provided Figma section** (recorded in §1 相关资料 + Phase 0 intake). NEVER search the whole file globally — Figma files have many unrelated pages (marketing dashboards, AI workspaces, etc.) and global search picks the wrong frame. If the user hasn't supplied a section node-id, ASK before drafting §6.
+   **Frame-search scope**: search **ONLY inside the user-provided Figma section** (recorded in Section 1 related materials + Phase 0 intake). NEVER search the whole file globally — Figma files have many unrelated pages (marketing dashboards, AI workspaces, etc.) and global search picks the wrong frame. If the user hasn't supplied a section node-id, ASK before drafting Section 6.
 
-   If a node-id can't be resolved within the user-provided section, write `⚠️ TBD — ask design lead` and add to §11 OQ; do NOT fall back to file root.
+   If a node-id can't be resolved within the user-provided section, write `TBD — ask design lead` and add to Section 11 Open Questions; do NOT fall back to file root.
 
    Optional: also include an `<!-- IMG:filename.png -->` marker for static-PNG fallback (Path B manual drop-in) — only if the team explicitly wants offline-readable screenshots in addition to live embeds. Default = skip the IMG marker; live Figma embed is enough.
 
    See `references/figma-handling.md` for the section-scoping algorithm and the Figma for Confluence rendering rule.
 5. **Each section ends with** a short Source pointer (e.g. *"Source: Tech Design Confluence 4559699969"*) — not a full citation array.
 
-### Phase 4.5 · Depth-pass loop（OPTIONAL — only on explicit PM request）
+### Phase 4.5 · Depth-pass loop (OPTIONAL — only on explicit PM request)
 
 The 6-dimension per-FR depth gate (`references/depth-gate-checklist.md`) drives engineering-grade detail: state machines, field-mapping tables, API contracts, edge case matrices. **This produces a 500+ line "spec" — useful for solo dev handoff, but bloats the PRD.**
 
@@ -161,9 +161,9 @@ Default = SKIP. Run only when:
 
 Otherwise, leave per-FR detail to `ticket-breakdown` (the dedicated handoff skill).
 
-### Phase 4.7 · Review-loop（REQUIRED）
+### Phase 4.7 · Review-loop (REQUIRED)
 
-After body draft, invoke `prd-review-expert` subagent. Loop until no High items or 3rd round. Apply fixes between rounds.
+After body draft, invoke the `prd-critique` skill. Loop until no High items or 3rd round. Apply fixes between rounds.
 
 The reviewer's first pass also enforces `voice-and-register.md` — any technical-jargon survivor counts as a finding.
 
@@ -240,8 +240,8 @@ NEVER:
 ## Related skills
 
 - `qima-prd-writing-guide` — Phase 4 prose
-- `prd-review-expert` — Phase 4.7 review (auto-invoked)
-- `codebase-understanding` — opt-in technical-context brief (architecture / repo / team map). Run as separate command when PRD needs it; brief is linked from §1 相关资料, never pasted in body
+- `prd-critique` — Phase 4.7 review (auto-invoked)
+- `codebase-understanding` — opt-in technical-context brief (architecture / repo / team map). Run as separate command when PRD needs it; brief is linked from the related-materials row in Section 1, never pasted in body
 - `ticket-breakdown` — AFTER PRD approval, produces engineering-grade ticket detail
 - `test-case-generation` — AFTER PRD approval, produces test cases
 

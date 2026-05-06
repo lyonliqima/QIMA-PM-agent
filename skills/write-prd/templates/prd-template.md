@@ -1,84 +1,80 @@
-# PRD Template — QIMA Standard (Draft version)
+# PRD Template — QIMA Standard (Draft Version)
 
-Extracted from `qima-prd-writing-guide` and adapted for the write-prd skill. **Length budget: ≤ 250 lines body / ≤ 6 Confluence pages.** Anything technical goes in Appendix or stays in the Tech Design page.
-
----
-
-## How to use this template
-
-**Placeholders** — replace these tokens verbatim:
-
-- `{{FIELD}}` — single-value placeholder (fill or delete the line)
-- `{{LIST:item-kind}}` — repeat the row/bullet once per item
-- `⚠️ Open question — <text>` — unresolved item surfaced in Checkpoint A but not blocking draft
-- `<!-- IMG:filename.png -->` — Figma image marker; replaced in Phase 4 (see figma-handling.md)
-
-**Voice rules (from `voice-and-register.md`, hard gate)**:
-
-- PM voice. No repo names, no service names, no API paths, no field names, no commit / branch / PR, no "killswitch" / "ETag" / "CDN" / "snake_case event".
-- ≤ 3 Jira ticket references in the whole document, all in §1 or Appendix.
-- Stakeholders: team + lead, NOT repo list.
-- If technical detail is required, link to Tech Design or move to Appendix · For engineering reference.
-
-**Formatting** — this template renders as Confluence Cloud content:
-
-- Use Markdown headings (`#`, `##`, `###`)
-- Use markdown tables (pipes), NOT HTML tables (Confluence renders both, but markdown is shorter)
-- Paragraphs ≤ 3 lines each
-- Inline links: `[label](url)` — NOT bare URLs
-- No decorative emojis beyond ⚠️ for Open questions
-- No border-left callouts, no gradient headings
-
-**Empty-section policy** — if a section truly has no content, write:
-
-> *Not applicable for this release — reason: {{REASON}}.*
-
-Don't delete the heading; reviewers rely on section order being stable.
+Extracted from `qima-prd-writing-guide` and adapted for the `write-prd` skill. Length budget: no more than 250 body lines or 6 Confluence pages. Technical implementation detail belongs in Appendix or Tech Design.
 
 ---
 
-## Template body starts below
+## How to Use This Template
+
+Replace these placeholders:
+
+- `{{FIELD}}` — single-value placeholder.
+- `{{LIST:item-kind}}` — repeat this row or bullet once per item.
+- `Open question — <text>` — unresolved item surfaced in Checkpoint A.
+- `<!-- IMG:filename.png -->` — optional Figma image marker for Phase 4.
+
+Voice rules:
+
+- PM voice. No repo names, service names, API paths, field names, commits, branches, PRs, or implementation jargon.
+- At most 3 Jira ticket references in the whole document, all in Section 1 or Appendix.
+- Stakeholders should be team + lead, not repo lists.
+- If technical detail is required, link to Tech Design or move it to Appendix.
+
+Formatting:
+
+- Use Markdown headings and pipe tables.
+- Keep paragraphs to 3 lines or fewer.
+- Use inline links: `[label](url)`.
+- Do not use HTML tables, inline CSS, decorative callouts, or gradient headings.
+
+If a section truly has no content, keep the heading and write:
+
+> Not applicable for this release — reason: {{REASON}}.
+
+---
+
+## Template Body
 
 ```markdown
-# 1. Overview（Mandatory）
+# 1. Overview (Mandatory)
 
-| 字段 | 内容 |
+| Field | Content |
 | --- | --- |
-| **Document Owner** | {{PM_NAME}}（{{TITLE}}） |
+| **Document Owner** | {{PM_NAME}} ({{TITLE}}) |
 | **Date** | {{YYYY-MM-DD}} |
-| **Version** | v0.1（Draft — {{what's pending}}） |
+| **Version** | v0.1 (Draft — {{what is pending}}) |
 | **Target System** | {{myQIMA / QIMAlabs / QSP / etc.}} |
-| **Phase** | {{e.g. Phase 1 — Inspection 在线报告重构}} |
-| **相关资料** | {{≤ 6 links: Tech Design / Figma / 主要 UX research / Prototype / Epic}} |
+| **Phase** | {{e.g. Phase 1 — Online inspection report rebuild}} |
+| **Related Materials** | {{up to 6 links: Tech Design / Figma / main UX research / Prototype / Epic}} |
 
-One paragraph (3–5 sentences): **what** is being built, **for whom**, **why now**. A reader who only reads this paragraph should understand the essence.
+One paragraph (3-5 sentences): what is being built, for whom, and why now.
 
 ---
 
-# 2. Background & Objective（Mandatory）
+# 2. Background & Objective (Mandatory)
 
 ## 2.1 Business Problem / Opportunity
 
-3 bold-lead-in paragraphs (≤ 3 lines each), each citing 1 source:
+Three bold-lead-in paragraphs, each citing one source:
 
-1. **{{Pain 1 short label}}**：{{evidence + 1-line implication}}
-2. **{{Pain 2 short label}}**：{{evidence + 1-line implication}}
-3. **{{Pain 3 short label}}**：{{evidence + 1-line implication}}
+1. **{{Pain 1 short label}}**: {{evidence + 1-line implication}}
+2. **{{Pain 2 short label}}**: {{evidence + 1-line implication}}
+3. **{{Pain 3 short label}}**: {{evidence + 1-line implication}}
 
 ## 2.2 Primary Objective
 
-- **North Star（Lagging）**：{{e.g. 客户 NPS 提升}}
-- **Leading proxy（30 天内）**：3–4 数字目标，每条 1 行
+- **North Star (Lagging)**: {{e.g. improve customer NPS}}
+- **Leading proxy (within 30 days)**: 3-4 numeric targets, one line each
 
 ## 2.3 Why Now
 
-3–4 bullets — design ready / data signals / dependency timing / competitive.
+3-4 bullets covering design readiness, data signals, dependency timing, or competitive context.
 
 ---
 
-# 3. Stakeholders（Mandatory）
+# 3. Stakeholders (Mandatory)
 
-| 角色 | 姓名 | 职责 |
+| Role | Name | Responsibility |
 | --- | --- | --- |
 | Product Owner | {{PM}} | {{1 line}} |
 | Engineering Lead | {{Eng Lead}} | {{1 line}} |
@@ -86,235 +82,223 @@ One paragraph (3–5 sentences): **what** is being built, **for whom**, **why no
 | QA Lead | {{QA}} | {{1 line}} |
 | Sponsor / Stakeholder | {{Name}} | {{1 line}} |
 
-**Rule**: ≤ 8 rows. NOT a list of repos / services per person. Name + role + 1 sentence responsibility.
+Rule: no more than 8 rows. Do not list repos or services per person.
 
 ---
 
-# 4. User Stories / Use Cases（Mandatory）
+# 4. User Stories / Use Cases (Mandatory)
 
 ## 4.1 Target Users & Personas
 
-| Persona | 描述（1 line） | 在流程中的动作（1 line） |
+| Persona | Description (1 line) | Action in flow (1 line) |
 | --- | --- | --- |
 
-≤ 5 personas.
+No more than 5 personas.
 
 ## 4.2 User Stories
 
-≤ 7 stories. Format:
+No more than 7 stories. Format:
 
-> **US-N**：As a **{role}**, I want to {action}, so that {value}.
+> **US-N**: As a **{role}**, I want to {action}, so that {value}.
 
 ---
 
-# 5. Requirements（Mandatory）
+# 5. Requirements (Mandatory)
 
-**优先级说明**：
+**Priority definitions**:
 
-- **P0** = MVP 必做，v1 上线前提
-- **P1** = 快速跟进，v1 后一个 sprint 内补
-- **P2** = 架构预留 / 未来
+- **P0** = required for MVP and v1 launch.
+- **P1** = fast follow, usually within one sprint after v1.
+- **P2** = architecture reserve or future scope.
 
 ## 5.1 Functional Requirements and Priority
 
-≤ 12 rows total. If you have more, you're writing a dev spec — go back and group.
+No more than 12 rows total.
 
-| ID | 功能 | 优先级 | 说明 / 备注 |
+| ID | Function | Priority | Description / Notes |
 | --- | --- | --- | --- |
-| **FR-1** | {{1-line功能名}} | P0 | {{≤ 2 sentences. 描述客户看到什么 / 能做什么。NOT 描述 API 或字段}} |
+| **FR-1** | {{1-line function name}} | P0 | {{no more than 2 sentences describing what users see or can do; do not describe APIs or fields}} |
 
-If FRs naturally group into 2–3 modules, use sub-headings `### 5.1.1 Module A — {name}` etc., but keep the table within each module ≤ 6 rows.
+If FRs naturally group into 2-3 modules, use sub-headings such as `### 5.1.1 Module A — {name}` and keep each module table to 6 rows or fewer.
 
-## 5.2 Out of Scope（v1 明确不做）
+## 5.2 Out of Scope
 
-| Item | 理由（1 line） |
+| Item | Reason |
 | --- | --- |
 
-≤ 8 rows. Each row = 1 deferred / excluded item + reason.
+No more than 8 rows. Each row is one deferred or excluded item plus the reason.
 
 ---
 
 # 6. Design
 
-> 所有 §6 frame 链接均锁定在 Figma section [{{section-name}}]({{section-URL}}) 内（在 Phase 0 intake 时由 PM 提供；frame 搜索范围限定于此 section，不全局搜索）。
+> All Section 6 frame links must be scoped to the Figma section [{{section-name}}]({{section-URL}}) provided during Phase 0 intake. Search frames only inside this section, never globally.
 
 ## 6.1 Page 1 — {{name}}
 
-≤ 3 sentences description.
+No more than 3 sentences.
 
 > **Figma frame**: [{{page-1-name}}]({{full Figma URL with ?node-id=<frame-id>}})
 
-{{full Figma URL on its own line — Figma for Confluence plugin auto-detects and renders as inline live embed}}
+{{full Figma URL on its own line for the Figma for Confluence plugin}}
 
-**Rule** — Each `## 6.x Page N` MUST carry **two anchors**:
-
-1. A `> **Figma frame**:` line with the **deep-link** (text form) — fallback if the Figma plugin macro fails to render
-2. **The same URL on its own line directly underneath** — this is what the Figma for Confluence plugin pattern-matches to render the inline live frame embed
-
-The frame node-id must come from inside the user-provided Figma **section** (recorded above). Never link to the file root; never use a node from a different section. If a node-id can't be resolved within the section, write `> **Figma frame**: ⚠️ TBD — not in section; ask design lead` and add to §11.1 OQ.
+Rule: each Section 6.x page must include the text deep link and the same bare URL on its own line. If the node ID cannot be resolved inside the provided section, write `> **Figma frame**: TBD — not in section; ask design lead` and add it to Section 11.1.
 
 ## 6.2 Page 2 — {{name}}
 
-> **Figma frame**: [{{page-2-name}}]({{Figma URL with ?node-id=...}})
-
-{{Figma URL on its own line}}
-
-(repeat per page; ≤ 4 pages total)
+Repeat per page. Keep to 4 pages or fewer.
 
 ## 6.3 Key Interaction Specs
 
-| 元素 | 交互 | 行为 |
+| Element | Interaction | Behavior |
 | --- | --- | --- |
 
-≤ 10 rows.
+No more than 10 rows.
 
 ## 6.4 Edge Cases
 
-≤ 8 bold-lead-in items, each ≤ 1 sentence.
+No more than 8 bold-lead-in items, each one sentence or fewer.
 
-1. **{{label}}**：{{behavior}}
+1. **{{label}}**: {{behavior}}
 
 ---
 
-# 7. Acceptance Criteria（Optional — keep if PM wants explicit pass/fail）
+# 7. Acceptance Criteria (Optional — keep if PM wants explicit pass/fail)
 
-≤ 1 AC per FR. Format:
+No more than 1 AC per FR. Format:
 
-> **AC-N（FR-X：{{label}}）**
+> **AC-N (FR-X: {{label}})**
 > - Given {{precondition}}
 > - When {{action}}
 > - Then {{observable result}}
 
 ---
 
-# 8. Analytics & Tracking（Mandatory）
+# 8. Analytics & Tracking (Mandatory)
 
 ## 8.1 Events to Track
 
-| 事件 | 触发时机 | 关键字段（业务字段名，NOT snake_case payload） |
+| Event | Trigger | Key business fields |
 | --- | --- | --- |
 
-≤ 12 rows.
+No more than 12 rows.
 
 ## 8.2 Success Metrics
 
-**Leading（30 天内）**：
+**Leading (within 30 days)**:
 
-- **{{metric}}**：{{target with number, e.g. ≥ 60%}}
-- ≤ 4 items
+- **{{metric}}**: {{target with number, e.g. >= 60%}}
+- No more than 4 items
 
-**Lagging（3 个月）**：
+**Lagging (within 3 months)**:
 
-- **{{metric}}**：{{target}}
-- ≤ 3 items
+- **{{metric}}**: {{target}}
+- No more than 3 items
 
 ## 8.3 Measurement Method
 
-≤ 4 sentences: 数据从哪来 / 仪表盘谁建 / 复盘节奏。
+No more than 4 sentences: data source, dashboard owner, and review cadence.
 
 ---
 
-# 9. Dependencies & Risks（Optional — 视项目复杂度保留）
+# 9. Dependencies & Risks (Optional — keep when project complexity requires it)
 
 ## 9.1 Dependencies
 
-| Dep | 说明（1 line） | Owner |
+| Dependency | Description (1 line) | Owner |
 | --- | --- | --- |
 
-≤ 8 rows. Use **bucket names** (Frontend / Backend / Mail / Legal / BI / Platform), NOT repo lists.
+No more than 8 rows. Use bucket names such as Frontend, Backend, Mail, Legal, BI, or Platform; do not list repos.
 
 ## 9.2 Risks & Mitigations
 
-| 风险 | 影响 | 概率 | Mitigation |
+| Risk | Impact | Probability | Mitigation |
 | --- | --- | --- | --- |
 
-≤ 6 rows. 概率 = 高 / 中 / 低（single hanzi, NOT High / Medium / Low）.
+No more than 6 rows. Probability uses High / Medium / Low.
 
 ---
 
-# 10. Rollout & Release Plan（Mandatory）
+# 10. Rollout & Release Plan (Mandatory)
 
-## 10.1 Phasing（建议）
+## 10.1 Phasing
 
 **Phase A — {{name}}**
 
-- Target：{{whom}}
-- Scope：{{FR list, by ID}}
-- 估时：{{honest estimate or 待 dev 评估}}
+- Target: {{whom}}
+- Scope: {{FR list, by ID}}
+- Estimate: {{honest estimate or "pending dev estimate"}}
 
-(repeat for Phase B, C; usually 2–3 phases max)
+Repeat for Phase B and C when needed.
 
 ## 10.2 Beta / Pilot Plan
 
-≤ 5 numbered steps from internal dogfood → GA.
+No more than 5 numbered steps from internal dogfood to GA.
 
 ## 10.3 Release Gates
 
-3 gates with **named signers**:
+3 gates with named signers:
 
-1. **Tech Gate**（{{Eng Lead}} + {{QA Lead}}）：{{exit criterion with number}}
-2. **Business Gate**（{{Sponsor}}）：{{exit criterion}}
-3. **Data Gate**（{{PM}} + {{BI}}）：{{exit criterion}}
+1. **Tech Gate** ({{Eng Lead}} + {{QA Lead}}): {{exit criterion with number}}
+2. **Business Gate** ({{Sponsor}}): {{exit criterion}}
+3. **Data Gate** ({{PM}} + {{BI}}): {{exit criterion}}
 
 ---
 
-# 11. Open Questions & Next Steps（Optional — 通常保留）
+# 11. Open Questions & Next Steps (Optional — usually keep)
 
 ## 11.1 Open Questions
 
-| # | 问题 | 谁答 | 阻塞 v1？ |
+| # | Question | Owner to answer | Blocks v1? |
 | --- | --- | --- | --- |
-| Q1 | {{question}} | {{name}} | {{否，但影响 …}} or **是 —— {{reason}}** |
+| Q1 | {{question}} | {{name}} | {{No, but affects ...}} or **Yes — {{reason}}** |
 
-≤ 6 rows. 阻塞列只允许两种语法（见 format-conventions §7）。
+No more than 6 rows. The blocker column only allows the two shapes above.
 
 ## 11.2 Next Steps
 
 | Step | Owner | When |
 | --- | --- | --- |
 
-≤ 6 rows.
+No more than 6 rows.
 
 ---
 
-## Appendix A — Source-of-truth links （可选）
+## Appendix A — Source-of-Truth Links (Optional)
 
-≤ 10 rows. 1 row per source. NOT a per-claim citation map.
+No more than 10 rows. One row per source; not a per-claim citation map.
 
 | Type | Source | Link |
 | --- | --- | --- |
 
 ---
 
-## Appendix B — Decision log（可选）
+## Appendix B — Decision Log (Optional)
 
-≤ 6 rows. 主要的"考虑过 A 选了 B"的决策。
+No more than 6 rows. Capture the main decisions where Option A was considered and Option B was chosen.
 
-| 决策 | 选项 A | 选项 B | Chosen | Reasoning | Reopen trigger |
+| Decision | Option A | Option B | Chosen | Reasoning | Reopen trigger |
 | --- | --- | --- | --- | --- | --- |
 
 ---
 
-## Appendix C — For engineering reference（可选 — 仅当 PM 主动放进去时）
+## Appendix C — For Engineering Reference (Optional — only if PM explicitly wants it)
 
-> **Default = 不写这一节。** 如果 PRD 里出现了路由 / 字段 / 服务名等技术细节，但 PM 又不想砍掉，把它们放在这里，正文保持业务语言。
-> 大多数情况：直接 `详见 [Tech Design]({{link}})`，不要在 PRD 里复制 tech 细节。
+Default: do not write this section. If the PRD contains route, field, service-name, or implementation details that the PM wants to preserve, move them here and keep the main body in business language.
+
+In most cases, write: `See [Tech Design]({{link}})` instead of copying technical detail into the PRD.
 
 ---
 
-_文档结束。{{1 句话 next action by 文档 owner}}_
-
+_Document complete. {{1-sentence next action by document owner}}_
 ```
 
 ---
 
-## Notes for the agent (not part of the PRD body)
+## Notes for the Agent
 
-When filling the template:
-
-1. **Hard length cap** — ≤ 250 lines body. If you exceed, cut Section 5 / 6 / 7 first; technical detail belongs in Tech Design.
-2. **Voice gate** — before publish, scan against `voice-and-register.md`. Strip / move banned items.
-3. **Never invent citations** — unsupported claims → `⚠️ Open question` in §11.1.
-4. **IMG markers** match filenames in `~/Desktop/<feature>-figma/` exactly.
-5. **No inline CSS, no border-left, no gradients** — Confluence applies its own styling.
-6. **Default = drop §7 and Appendix C** — PMs rarely need both. Keep §7 only if the PM explicitly asks for explicit Given/When/Then.
+1. Hard length cap: no more than 250 body lines. If exceeded, cut Sections 5, 6, and 7 first.
+2. Voice gate: before publishing, scan against `voice-and-register.md`.
+3. Never invent citations. Unsupported claims become Open Questions in Section 11.1.
+4. IMG markers must match filenames exactly if used.
+5. Default: drop Section 7 and Appendix C unless the PM explicitly wants them.

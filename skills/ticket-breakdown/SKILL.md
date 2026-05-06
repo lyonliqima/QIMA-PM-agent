@@ -111,10 +111,10 @@ After presenting the creation plan, stop and ask the user to confirm. Do not cal
 
 Accepted confirmations include:
 
-- "确认创建"
 - "approved, create them"
-- "可以，开始创建"
 - "proceed with Jira creation"
+- "confirmed, start creating the Jira issues"
+- "yes, create the Epic and tickets"
 
 Not accepted:
 

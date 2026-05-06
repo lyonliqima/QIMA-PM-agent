@@ -1,103 +1,103 @@
-# Voice & Register — PRD 正文语言规范（HARD GATE）
+# Voice & Register — PRD Body Rules (Hard Gate)
 
-PRD 的读者是 PM / Design / 业务 lead / 客户代表 —— **不是工程师**。技术实现属于 Tech Design 文档，PRD 只指向它。
+The PRD audience is PMs, designers, business leads, and customer representatives, not engineers. Technical implementation belongs in the Tech Design document; the PRD should link to it instead of repeating it.
 
-> **本规则是 hard gate**：Phase 4 起草后、Phase 4.7 review 前，按这份清单扫一遍正文；任何残留物移到 *Appendix · For engineering reference* 或直接删除。Phase 4.7 reviewer 会再扫一次。
-
----
-
-## 0. 长度与篇幅上限
-
-PRD 正文（不含 Appendix）：
-
-- **目标 ≤ 250 行 markdown / ≤ 6 页 Confluence**
-- **§5.1 FR 表**：≤ 12 行；超过 12 条说明你在写 dev spec，回到 PM 抽象层
-- **§6 Edge Cases**：≤ 8 条；剩余的列入 Appendix
-- **§11.1 Open Questions**：≤ 6 条；每条 ≤ 1 句
-
-如果超出上限，先剪 §5、§6、§7（AC）—— 多数膨胀来自这三节复制 Tech Design 内容。
+> This file is a hard gate: after Phase 4 drafting and before Phase 4.7 review, scan the body against this checklist. Move any remaining technical implementation detail to *Appendix · For engineering reference* or remove it. The `prd-critique` skill checks this again.
 
 ---
 
-## 1. 禁止出现在正文的内容
+## 0. Length and Scope Limits
 
-| 禁止 | 例子 | 改写方式 |
+PRD body, excluding appendices:
+
+- Target: no more than 250 markdown lines or 6 Confluence pages.
+- Section 5.1 FR table: no more than 12 rows. More than 12 usually means the document is becoming a dev spec.
+- Section 6 Edge Cases: no more than 8 items. Put overflow in Appendix only if truly needed.
+- Section 11.1 Open Questions: no more than 6 rows. Each item should be one sentence.
+
+If the PRD exceeds the limit, cut Sections 5, 6, and 7 first. Most bloat comes from copying Tech Design detail into those sections.
+
+---
+
+## 1. Content Banned from the PRD Body
+
+| Banned content | Example | Rewrite as |
 | --- | --- | --- |
-| **微服务链路 / repo 名** | `psi-web-cloud → final-report-service-cloud → aca-new` | "验货数据从现场采集 → 组装报告 → 在线呈现" |
-| **Jira 工单号堆叠** | "SP-32258 / SP-32257 / SP-32296 / SP-32308 / SP-33093 / SP-33240..." | 全文最多 **3 个** Jira 引用，且只在 §1 meta-table 与 Appendix 里出现 |
-| **代码 / 组件 / 函数名** | `V2Header`, `ReportPageV5`, `inspection-report.service` | "顶部决策栏"，"报告主页面" |
-| **API / 字段路径** | `keyIndicator.aqlLevel = "reference"`, `productReferenceWorkmanShipResult[]` | "Workmanship 结果按 product / reference 两种维度展示" |
-| **运维 / 实现术语** | route component swap, killswitch, ETag, CDN, immutable cache, monorepo, microservice, snake_case event | "切版方式"、"灰度回退开关"、"缓存策略" |
-| **DB / Schema 描述** | "新增 `client_rating_feedback` 字段" | "新增评分反馈" |
-| **commit / branch / PR** | `commit a3f29b on develop` | 完全不出现在 PRD |
+| Microservice chains / repo names | `psi-web-cloud -> final-report-service-cloud -> aca-new` | "Inspection data moves from field capture to report assembly to online presentation." |
+| Jira ticket stacks | "SP-32258 / SP-32257 / SP-32296 / SP-32308..." | At most 3 Jira references in the whole PRD, only in Section 1 meta-table or Appendix. |
+| Code / component / function names | `V2Header`, `ReportPageV5`, `inspection-report.service` | "Top decision area", "report main page" |
+| API / field paths | `keyIndicator.aqlLevel = "reference"` | "Workmanship results can be shown by product or by reference." |
+| Operational implementation terms | route component swap, killswitch, ETag, CDN, immutable cache, snake_case event | Business-language behavior, rollout, or fallback description |
+| DB / schema details | "Add `client_rating_feedback` field" | "Add rating feedback." |
+| Commit / branch / PR references | `commit a3f29b on develop` | Remove from PRD body. |
 
 ---
 
-## 2. Stakeholders 表
+## 2. Stakeholders
 
-只列**团队名 + 负责人**。**不要**把 repo / service 名列在 Responsibility 列里。
+List only team name, lead, and responsibility. Do not list repo or service names in the Responsibility column.
 
 | Role | Name | Responsibility |
 | --- | --- | --- |
-| Backend Lead | Hydie Chan（Titan TL） | 报告服务与网关 |
-| Frontend Lead | Eric Wang | 前端实现与协调 |
+| Backend Lead | Hydie Chan (Titan TL) | Report service and gateway coordination |
+| Frontend Lead | Eric Wang | Frontend implementation coordination |
 
-不允许这种写法：~~"Eric Wang — `aca-new` + `report-service-cloud` + `gateway-service-cloud`"~~。
-
----
-
-## 3. Dependencies 写法
-
-分桶概述，**不点名 repo**：
-
-- Frontend（报告呈现组件）
-- Backend（结论聚合接口、AI Summary 字段）
-- Platform（租户级开关、运营配置）
-- Mail（邮件模板，Phase 2）
-- Legal（AI 免责文案签字）
-- BI（埋点契约 + dashboard）
-
-具体 service 名 / 端点 / 函数路径 → Tech Design。
+Do not write: "Eric Wang — `aca-new` + `report-service-cloud` + `gateway-service-cloud`".
 
 ---
 
-## 4. §1 相关资料 行（meta-table）
+## 3. Dependencies
 
-最多 **6 个链接**，每个 1 行：Tech Design / Figma / 主要 UX Audit / 主要 memo / Prototype / Epic（如果引用）。**不要** 把 8–12 条资料全列出来 —— Source ledger 在最后单独列。
+Describe dependency buckets without naming repos:
 
----
+- Frontend: report presentation components
+- Backend: conclusion aggregation and AI Summary fields
+- Platform: tenant-level switch and operational configuration
+- Mail: email templates, Phase 2
+- Legal: AI disclaimer approval
+- BI: tracking contract and dashboard
 
-## 5. 如必须保留技术细节
-
-放 **Appendix · For engineering reference**，与正文分离，或直接指向 Tech Design：
-
-> 详见 [Tech Design — Smart Report] Confluence 4559699969
-
-如果 PM 要求 dev-ready handoff，运行 `ticket-breakdown` skill —— 那是专门做这事的，不要把 PRD 撑大。
-
----
-
-## 6. 允许的例外
-
-- **§6 Design** 可引用 Figma 节点 ID（设计师之间需要对齐）。**实际上每个 §6.x Page N 必须带 Figma deep-link**（含 `?node-id=…`）—— 让 reviewer 一键跳到对应 frame；只链到 file 根目录是 finding，要修。详见 `figma-handling.md` Step 2。
-- **§9.1 Dependencies** 可列 "Backend / Frontend / Mail" 等大模块名
-- **§1 meta-table 相关资料** 可点名 1 个 Tech Design 链接
-- **§11.1 Open Questions** 可引用 1 个 Jira ticket（如 *"权限模型决定见 SP-32254"*）—— 仅限作为追踪锚点
-- **专有产品名**（myQIMA / QIMAone / QIMAlabs / Smart Report / PSI / AQL / POM / CAP）保留
+Specific service names, endpoints, function paths, and field contracts belong in Tech Design.
 
 ---
 
-## 7. 审稿快查清单
+## 4. Section 1 Related Materials Row
 
-正文搜一下，命中即改：
+Use at most 6 links, one line each: Tech Design, Figma, main UX audit, main memo, prototype, or Epic. Do not list 8-12 source links here; the Source ledger is appended separately.
 
-- [ ] `cloud` —— 几乎肯定是 service 名
-- [ ] `service` —— 同上
+---
+
+## 5. If Technical Detail Must Be Preserved
+
+Put it in **Appendix · For engineering reference**, separated from the body, or link directly to Tech Design:
+
+> See [Tech Design — Smart Report] Confluence 4559699969.
+
+If the PM wants dev-ready handoff, run the `ticket-breakdown` skill. Do not inflate the PRD body.
+
+---
+
+## 6. Allowed Exceptions
+
+- Section 6 Design may reference Figma node IDs. Each Section 6.x page must include a Figma deep link containing `?node-id=...`; linking only to the file root is a review finding.
+- Section 9.1 Dependencies may name broad buckets such as Backend, Frontend, Mail, Legal, BI, and Platform.
+- Section 1 related materials may name one Tech Design link.
+- Section 11.1 Open Questions may reference one Jira ticket if it is the tracking anchor for a decision.
+- Established product names may remain: myQIMA, QIMAone, QIMAlabs, Smart Report, PSI, AQL, POM, CAP.
+
+---
+
+## 7. Review Quick Check
+
+Search the PRD body and fix matches:
+
+- [ ] `cloud` — often indicates a service name.
+- [ ] `service` — often indicates a service name.
 - [ ] `route` / `endpoint` / `payload` / `schema` / `JSON`
 - [ ] `repo` / `commit` / `branch` / `PR` / `Lambda`
-- [ ] `SP-` 出现 ≥ 4 次（按规则压到 ≤ 3）
-- [ ] 反引号 `code identifiers` 出现 ≥ 6 次（按规则压到 ≤ 3 —— 仅产品名 / 关键 enum）
-- [ ] "snake_case" / "camelCase" / "kebab-case" 任一
-- [ ] "killswitch" / "feature flag" / "ETag" / "CDN" / "lazy load"
+- [ ] `SP-` appears 4 or more times.
+- [ ] Backticked code identifiers appear 6 or more times.
+- [ ] `snake_case` / `camelCase` / `kebab-case`
+- [ ] `killswitch` / `feature flag` / `ETag` / `CDN` / `lazy load`
 
-清单里命中的，全删或挪 Appendix。
+Remove matching implementation detail from the body or move it to Appendix.

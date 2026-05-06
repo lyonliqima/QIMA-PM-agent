@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QIMA PM Agent Skills Guide</title>
+    <style>
+      :root {
+        --ink: #172033;
+        --muted: #667085;
+        --paper: #f7f3ea;
+        --card: #fffdf7;
+        --line: #e6ddcc;
+        --blue: #315fd9;
+        --green: #1f8a6b;
+        --amber: #b46a19;
+        --rose: #b9475c;
+        --violet: #7253c4;
+        --shadow: 0 24px 80px rgba(46, 33, 12, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 8% 0%, rgba(255, 213, 137, 0.72), transparent 30rem),
+          radial-gradient(circle at 92% 10%, rgba(168, 187, 255, 0.58), transparent 32rem),
+          linear-gradient(180deg, #fbf8f0, var(--paper));
+        font-family: Aptos, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+
+      code,
+      pre {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      .page {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 44px 0 72px;
+      }
+
+      .hero,
+      .skill-card,
+      .flow-card {
+        border: 1px solid var(--line);
+        background: rgba(255, 253, 247, 0.9);
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+        gap: clamp(28px, 5vw, 72px);
+        align-items: end;
+        padding: clamp(30px, 6vw, 72px);
+        border-radius: 34px;
+      }
+
+      .eyebrow {
+        margin: 0 0 20px;
+        color: var(--amber);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: -0.035em;
+      }
+
+      h1 {
+        max-width: 12ch;
+        font-size: clamp(44px, 7vw, 92px);
+      }
+
+      h2 {
+        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      h3 {
+        font-size: 23px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .hero-copy,
+      .section-head p,
+      .summary,
+      .flow-card p,
+      li {
+        color: var(--muted);
+      }
+
+      .hero-copy {
+        max-width: 64ch;
+        margin-top: 24px;
+        font-size: 18px;
+      }
+
+      .install-card {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: #f3efe5;
+      }
+
+      pre {
+        overflow-x: auto;
+        margin: 14px 0 0;
+        padding: 16px;
+        border-radius: 16px;
+        color: #f8fafc;
+        background: #182033;
+        line-height: 1.5;
+      }
+
+      .section {
+        margin-top: clamp(42px, 7vw, 84px);
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: minmax(240px, 0.65fr) minmax(0, 1fr);
+        gap: 28px;
+        align-items: end;
+        margin-bottom: 22px;
+      }
+
+      .map,
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(140px, 1fr));
+        gap: 12px;
+      }
+
+      .map-item,
+      .block {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: var(--card);
+      }
+
+      .map-item span,
+      .tag {
+        display: inline-flex;
+        margin-bottom: 14px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .blue {
+        color: var(--blue);
+        background: #e8edff;
+      }
+
+      .green {
+        color: var(--green);
+        background: #e7f4ef;
+      }
+
+      .amber {
+        color: var(--amber);
+        background: #fff0d9;
+      }
+
+      .rose {
+        color: var(--rose);
+        background: #ffe8ed;
+      }
+
+      .violet {
+        color: var(--violet);
+        background: #eee9ff;
+      }
+
+      .skill-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .skill-card {
+        display: grid;
+        gap: 18px;
+        padding: 24px;
+        border-radius: 24px;
+      }
+
+      .body-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      ul,
+      ol {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      li + li {
+        margin-top: 6px;
+      }
+
+      .prompt {
+        padding: 12px 14px;
+        border-radius: 14px;
+        color: #26324f;
+        background: #eef2ff;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 14px;
+      }
+
+      .examples {
+        display: grid;
+        gap: 10px;
+      }
+
+      .flow-card {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .flow-card strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .section-head,
+        .skill-grid,
+        .body-grid,
+        .map,
+        .flow {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">QIMA PM Agent v1.0.2</p>
+          <h1>How to Use the Six Skills</h1>
+          <p class="hero-copy">
+            This guide explains the six user-facing skills in QIMA PM Agent: when to use each skill, how to ask, what the workflow does, and what output to expect.
+          </p>
+        </div>
+        <aside class="install-card">
+          <h3>Install or Update</h3>
+          <p>Install from the GitHub marketplace, then use the slash commands inside Claude Code.</p>
+          <pre>/plugin marketplace add lyonliqima/QIMA-PM-agent
+/plugin marketplace update qima-pm-agent
+/plugin install qima-pm-skills@qima-pm-agent</pre>
+        </aside>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Skill Map</h2>
+          <p>
+            The skills cover the PM workflow from discovery to handoff: understand the codebase, draft the PRD, critique the PRD, critique the design, improve UI quality, and create Jira implementation tickets.
+          </p>
+        </div>
+        <div class="map">
+          <div class="map-item"><span class="blue">PRD</span><strong>write-prd</strong><p>Drafts a Confluence-ready PRD from scattered context.</p></div>
+          <div class="map-item"><span class="green">Codebase</span><strong>codebase-understanding</strong><p>Maps repos, services, APIs, teams, and documents.</p></div>
+          <div class="map-item"><span class="rose">Review</span><strong>prd-critique</strong><p>Reviews PRD quality against QIMA PMO/CPO gates.</p></div>
+          <div class="map-item"><span class="violet">UI</span><strong>ui</strong><p>Shapes, builds, critiques, audits, and polishes UI work.</p></div>
+          <div class="map-item"><span class="rose">Design</span><strong>design-critique</strong><p>Connects Figma, PRD, code, and Jira evidence.</p></div>
+          <div class="map-item"><span class="amber">Jira</span><strong>ticket-breakdown</strong><p>Creates an Epic and implementation tickets after approval.</p></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>The Six Skills</h2>
+          <p>Each skill can be invoked with its slash command or by asking naturally when the intent is clear.</p>
+        </div>
+        <div class="skill-grid">
+          <article class="skill-card" id="write-prd">
+            <div><span class="tag blue">PRD Drafting</span><h3>write-prd</h3><p class="summary">Use this when you need to create a complete PRD from an idea, source materials, Figma designs, meetings, or Confluence context.</p></div>
+            <pre>/write-prd Supplier Confirmation</pre>
+            <div class="body-grid">
+              <div class="block"><strong>Workflow</strong><ol><li>Gather context.</li><li>Run depth questions.</li><li>Create outline and draft.</li><li>Run PRD critique loop.</li><li>Write to Confluence.</li></ol></div>
+              <div class="block"><strong>Outputs</strong><ul><li>Confluence PRD draft</li><li>Source ledger</li><li>Open questions</li><li>Review-loop fixes</li></ul></div>
+            </div>
+            <div class="examples"><div class="prompt">Draft a PRD for Audit Renew.</div><div class="prompt">Use this Figma section and background docs to write a PRD.</div></div>
+          </article>
+
+          <article class="skill-card" id="codebase-understanding">
+            <div><span class="tag green">Technical Discovery</span><h3>codebase-understanding</h3><p class="summary">Use this when you need a PM-readable map of where a feature lives across repos, services, APIs, documents, and owning teams.</p></div>
+            <pre>/codebase-understanding Interactive Report</pre>
+            <div class="body-grid">
+              <div class="block"><strong>Workflow</strong><ol><li>Expand feature keywords.</li><li>Search docs, Jira, repos, and service catalogs.</li><li>Synthesize a structured brief.</li><li>Mark unknowns as not found.</li></ol></div>
+              <div class="block"><strong>Outputs</strong><ul><li>Markdown brief</li><li>Repo / service / API / team table</li><li>Related links</li><li>Top gaps</li></ul></div>
+            </div>
+            <div class="examples"><div class="prompt">Which repos and teams are involved in Package Charge Management?</div><div class="prompt">Create a codebase brief for Audit Renew.</div></div>
+          </article>
+
+          <article class="skill-card" id="prd-critique">
+            <div><span class="tag rose">PRD Review</span><h3>prd-critique</h3><p class="summary">Use this to review an existing PRD for readiness, QIMA template conformance, voice/register quality, hallucinated details, and best-PRD pattern coverage.</p></div>
+            <pre>/prd-critique &lt;prd-file-or-confluence-url&gt;</pre>
+            <div class="body-grid">
+              <div class="block"><strong>Workflow</strong><ol><li>Read the entire PRD.</li><li>Check QIMA hard rules first.</li><li>Review generic PM quality dimensions.</li><li>Group findings by severity.</li></ol></div>
+              <div class="block"><strong>Outputs</strong><ul><li>High / Medium / Low findings</li><li>Missing sections</li><li>Voice and format checks</li><li>Ready-for-review verdict</li></ul></div>
+            </div>
+            <div class="examples"><div class="prompt">/prd-critique https://qima.atlassian.net/wiki/...</div><div class="prompt">Review this PRD and tell me if it is ready for PM review.</div></div>
+          </article>
+
+          <article class="skill-card" id="ui">
+            <div><span class="tag violet">UI Work</span><h3>ui</h3><p class="summary">Use this as the single entry point for UI planning, building, critique, audit, polish, responsive adaptation, typography, motion, performance, and copy improvements.</p></div>
+            <pre>/ui polish this component</pre>
+            <div class="body-grid">
+              <div class="block"><strong>Workflow</strong><ol><li>Route the intent to a mode.</li><li>Confirm constraints when needed.</li><li>Apply the mode playbook.</li><li>Edit code or return findings.</li></ol></div>
+              <div class="block"><strong>Common modes</strong><ul><li>shape / craft</li><li>critique / audit</li><li>polish / layout / typeset</li><li>adapt / harden / optimize</li></ul></div>
+            </div>
+            <div class="examples"><div class="prompt">/ui make this page responsive on mobile</div><div class="prompt">/ui harden empty and error states</div></div>
+          </article>
+
+          <article class="skill-card" id="design-critique">
+            <div><span class="tag rose">Evidence-Based Design Review</span><h3>design-critique</h3><p class="summary">Use this when a design needs QIMA business validation, not just visual feedback. It links Figma, PRD rules, code evidence, and Jira history.</p></div>
+            <pre>/design-critique &lt;figma-url&gt; &lt;confluence-page-id&gt; &lt;repo-path&gt;</pre>
+            <div class="body-grid">
+              <div class="block"><strong>Workflow</strong><ol><li>Read Figma context.</li><li>Match PRD, code, and Jira history.</li><li>Extract evidence.</li><li>Write an HTML report.</li></ol></div>
+              <div class="block"><strong>Outputs</strong><ul><li>HTML critique report</li><li>Evidence links</li><li>Severity-grouped findings</li><li>Recommendations</li></ul></div>
+            </div>
+            <div class="examples"><div class="prompt">Run an evidence-based review for this Figma and PRD.</div><div class="prompt">Check whether this design conflicts with past Jira decisions.</div></div>
+          </article>
+
+          <article class="skill-card" id="ticket-breakdown">
+            <div><span class="tag amber">Jira Handoff</span><h3>ticket-breakdown</h3><p class="summary">Use this after the PRD is confirmed and ready for development planning. It creates a Jira Epic and child tickets only after explicit user approval.</p></div>
+            <pre>/ticket-breakdown &lt;prd-url&gt; SP &lt;design-url&gt;</pre>
+            <div class="body-grid">
+              <div class="block"><strong>Workflow</strong><ol><li>Read the PRD.</li><li>Draft Epic and ticket plan.</li><li>Wait for confirmation.</li><li>Create Jira issues and links.</li><li>Write links back to the PRD.</li></ol></div>
+              <div class="block"><strong>Outputs</strong><ul><li>Jira Epic</li><li>FE / BE / API tickets</li><li>Ticket links</li><li>Development Tickets section in PRD</li></ul></div>
+            </div>
+            <div class="examples"><div class="prompt">Break this PRD into Jira tickets, project key SP.</div><div class="prompt">Dry run the ticket plan first; do not create Jira yet.</div></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Recommended Workflow</h2>
+          <p>A typical feature can move through these skills from discovery to development handoff.</p>
+        </div>
+        <div class="flow">
+          <div class="flow-card"><strong>1. Scope the system</strong><p><code>/codebase-understanding</code> maps repos, services, teams, and documents.</p></div>
+          <div class="flow-card"><strong>2. Draft the PRD</strong><p><code>/write-prd</code> gathers context and writes the PRD.</p></div>
+          <div class="flow-card"><strong>3. Review the PRD</strong><p><code>/prd-critique</code> checks quality and readiness.</p></div>
+          <div class="flow-card"><strong>4. Shape the UI</strong><p><code>/ui</code> handles interface planning, implementation, or polish.</p></div>
+          <div class="flow-card"><strong>5. Review the design</strong><p><code>/design-critique</code> validates design against evidence.</p></div>
+          <div class="flow-card"><strong>6. Create tickets</strong><p><code>/ticket-breakdown</code> creates Jira work after approval.</p></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

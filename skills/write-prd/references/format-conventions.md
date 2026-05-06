@@ -1,83 +1,77 @@
-# Format conventions — strict spec
+# Format Conventions — Strict Spec
 
-**Canonical example**: Confluence 4609409051 — *Sample weighing and labeling function* (Suki Yuan, 2026-04-21).
-Every formatting decision in this skill defers to that PRD. When in doubt, open it and copy the shape exactly.
+Canonical example: Confluence 4609409051, *Sample weighing and labeling function*. Every formatting decision in this skill defers to that PRD's structure, translated here into English-only rules.
 
-This file is **authoritative** for Phase 4 drafting and Phase 4.7 review. The review-expert MUST flag any deviation as a finding.
+This file is authoritative for Phase 4 drafting and Phase 4.7 review. `prd-critique` must flag deviations as findings.
 
-> **Length & voice override** — these conventions are about **shape** (which tables, which column names, which punctuation). For **length and tone**, `voice-and-register.md` is the binding rule:
-> - PRD body ≤ 250 lines / ≤ 6 Confluence pages
-> - PM voice (no repo names, no service names, no field paths, no API jargon)
-> - ≤ 3 Jira ticket references in the whole document
-> - Per-table row caps: §5.1 FR ≤ 12 rows; §6.4 Edge Cases ≤ 8 items; §11.1 OQ ≤ 6 rows; §9.1 Deps ≤ 8 rows; §9.2 Risks ≤ 6 rows
-> If shape and length conflict, length wins — cut content, don't add tables.
+> Length and voice override: these conventions define document shape. For length and tone, `voice-and-register.md` is binding.
 
 ---
 
-## 1 · Section grammar
+## 1. Section Grammar
 
-### 1.1 Heading level
+### 1.1 Heading Level
 
 | Markdown | Used for | Tag |
 |---|---|---|
-| `#` | Top-level sections §1–§11 + `Appendix A`, `Appendix B` | Mandatory / Optional in fullwidth parens |
-| `##` | Same as `#` when the doc is published as a sub-page; choose one and stay consistent | — |
-| `###` | First-level subsection (e.g. `2.1`, `5.1`, `9.2`) | no tag |
-| `####` | Second-level subsection / module split (e.g. `5.1.1 Module A — 前置准备系统`) | no tag |
+| `#` | Top-level sections 1-11 and appendices | Mandatory / Optional |
+| `##` | Same as `#` when published as a sub-page; choose one style and stay consistent | none |
+| `###` | First-level subsection, such as `2.1`, `5.1`, `9.2` | none |
+| `####` | Second-level subsection or module split, such as `5.1.1 Module A — Preparation` | none |
 
-### 1.2 Heading text format
+### 1.2 Heading Text Format
 
-```
-# 1. Overview（Mandatory）
-## 2. Background & Objective（Mandatory）
+```markdown
+# 1. Overview (Mandatory)
+## 2. Background & Objective (Mandatory)
 ### 2.1 Business Problem / Opportunity
-#### 5.1.1 Module A — 前置准备系统
-## Appendix A — HZ 现有工具已知规则速查
+#### 5.1.1 Module A — Preparation
+## Appendix A — Existing Tool Rules
 ```
 
 Rules:
-- **Number + dot + space + English title + fullwidth `（Mandatory）`/`（Optional）`** at top level. The Mandatory/Optional tag is required exactly as in the QIMA template.
-- **Subsection numbering**: `2.1`, `2.2`, `5.1.1` — never `2.1.`, never roman.
-- **Module/page/page-name titles** at `####` level use **em-dash `—` with single spaces around it** to attach a Chinese descriptor to an English label.
-- **Appendix** uses `Appendix A`, `Appendix B` — NEVER `Appendix 1`.
-- Mixed-language titles are correct and expected. English is the structural label; Chinese (when present) is the descriptive subtitle.
 
-### 1.3 The 11 sections + appendix — exact titles, in order
+- Top-level sections use: number + dot + space + English title + `(Mandatory)` or `(Optional)`.
+- Subsection numbering uses `2.1`, `2.2`, `5.1.1`; never roman numerals.
+- Module/page titles use an em dash with single spaces around it.
+- Appendices use `Appendix A`, `Appendix B`; never `Appendix 1`.
 
-```
-1. Overview（Mandatory）
-2. Background & Objective（Mandatory）
+### 1.3 Exact 11 Sections
+
+```markdown
+1. Overview (Mandatory)
+2. Background & Objective (Mandatory)
    2.1 Business Problem / Opportunity
    2.2 Primary Objective
    2.3 Why Now
-3. Stakeholders（Mandatory）
-4. User Stories / Use Cases（Mandatory）
+3. Stakeholders (Mandatory)
+4. User Stories / Use Cases (Mandatory)
    4.1 Target Users & Personas
    4.2 User Stories
-5. Requirements（Mandatory）
+5. Requirements (Mandatory)
    5.1 Functional Requirements and Priority
        5.1.1 Module A — {name}
        5.1.2 Module B — {name}
-       5.1.3 Cross-cutting / Platform   (only if cross-cutting FRs exist)
-   5.2 Out of Scope（v1 明确不做）
+       5.1.3 Cross-cutting / Platform (only if needed)
+   5.2 Out of Scope
 6. Design
    6.1 Page 1 — {name}
-   6.2 Page 2 — {name}    (one §6.x per page/screen)
+   6.2 Page 2 — {name}
    6.3 Key Interaction Specs
    6.4 Edge Cases
-7. Acceptance Criteria（Optional）
-8. Analytics & Tracking（Mandatory）
+7. Acceptance Criteria (Optional)
+8. Analytics & Tracking (Mandatory)
    8.1 Events to Track
    8.2 Success Metrics
    8.3 Measurement Method
-9. Dependencies & Risks（Optional —— 本 PRD 保留因风险较多）
+9. Dependencies & Risks (Optional — kept because {reason})
    9.1 Dependencies
    9.2 Risks & Mitigations
-10. Rollout & Release Plan（Mandatory）
-    10.1 Phasing（建议）
+10. Rollout & Release Plan (Mandatory)
+    10.1 Phasing
     10.2 Beta / Pilot Plan
     10.3 Release Gates
-11. Open Questions & Next Steps（Optional）
+11. Open Questions & Next Steps (Optional)
     11.1 Open Questions
     11.2 Next Steps
 
@@ -85,270 +79,244 @@ Appendix A — {name}
 Appendix B — {name}
 ```
 
-The `（Optional —— 本 PRD 保留因 X）` form on §9 is the canonical pattern for marking an Optional section that is being kept *with reason*. Use it whenever an Optional section is non-empty.
+The `(Optional — kept because X)` form is the canonical pattern for retaining an optional section with a reason.
 
 ---
 
-## 2 · Required tables — column shapes and headers
+## 2. Required Tables
 
-Every table below appears in the canonical PRD. Use the **exact column headers and order** shown.
+Use the exact column headers and order shown below.
 
-| § | Table | Columns (left → right) |
+| Section | Table | Columns |
 |---|---|---|
-| 1 | Overview meta | `字段` · `内容` |
-| 3 | Stakeholders | `角色` · `姓名` · `职责` |
-| 4.1 | Personas | `Persona` · `描述` · `在流程中的动作` |
-| 5.1.x | Functional Requirements | `ID` · `功能` · `优先级` · `说明 / 备注` |
-| 5.2 | Out of Scope | `Item` · `理由` |
-| 6.3 | Key Interaction Specs | `元素` · `交互` · `行为` |
-| 8.1 | Events to Track | `事件` · `触发时机` · `关键字段` |
-| 9.1 | Dependencies | `Dep` · `说明` · `Owner` |
-| 9.2 | Risks & Mitigations | `风险` · `影响` · `概率` · `Mitigation` |
-| 11.1 | Open Questions | `#` · `问题` · `谁答` · `阻塞 v1？` |
+| 1 | Overview meta | `Field` · `Content` |
+| 3 | Stakeholders | `Role` · `Name` · `Responsibility` |
+| 4.1 | Personas | `Persona` · `Description` · `Action in flow` |
+| 5.1.x | Functional Requirements | `ID` · `Function` · `Priority` · `Description / Notes` |
+| 5.2 | Out of Scope | `Item` · `Reason` |
+| 6.3 | Key Interaction Specs | `Element` · `Interaction` · `Behavior` |
+| 8.1 | Events to Track | `Event` · `Trigger` · `Key business fields` |
+| 9.1 | Dependencies | `Dependency` · `Description` · `Owner` |
+| 9.2 | Risks & Mitigations | `Risk` · `Impact` · `Probability` · `Mitigation` |
+| 11.1 | Open Questions | `#` · `Question` · `Owner to answer` · `Blocks v1?` |
 | 11.2 | Next Steps | `Step` · `Owner` · `When` |
 
 Per-table rules:
-- **§1 Overview meta** must include the rows: `Document Owner`, `Date`, `Version`, `Target System`, `Phase`, `相关资料`. Field names bolded (`**Document Owner**`).
-- **§5.1.x FR table** — `ID` cell holds bolded `**FR-A1**` form; `优先级` cell holds plain `P0` / `P1` / `P2` (no bold, no parens).
-- **§5.1 priority block** — placed *immediately above* the first FR sub-section, in this exact form:
-  ```
-  **优先级说明**：
 
-  * **P0** = MVP 必做，v1 上线前提
-  * **P1** = 快速跟进，可在 v1 后一个 sprint 内补
-  * **P2** = 架构预留 / 未来
-  ```
-- **§9.2 Risks** — `概率` cell uses `高` / `中` / `低` (single hanzi). No "High/Medium/Low" English.
-- **§11.1 OQ** — `阻塞 v1？` cell uses `是 —— {reason / when to resolve}` (bolded `**是**` for blockers) or `否，但影响 {what}`. Never bare yes/no.
-- **All tables** use markdown pipe syntax with header separator row. NEVER use HTML tables.
-- **Empty cells** use `TBD` not blank — and `TBD` is plain, not styled.
+- Section 1 Overview meta must include: `Document Owner`, `Date`, `Version`, `Target System`, `Phase`, `Related Materials`.
+- Section 5.1.x FR table: `ID` uses bold `**FR-A1**`; `Priority` uses plain `P0`, `P1`, `P2`.
+- Section 5.1 priority block is placed immediately above the first FR subsection.
+- Section 9.2 `Probability` uses `High`, `Medium`, or `Low`.
+- Section 11.1 `Blocks v1?` uses `Yes — {reason}` or `No, but affects {impact}`. No bare yes/no.
+- All tables use markdown pipe syntax. Never use HTML tables.
+- Empty cells use `TBD`.
+
+Priority block:
+
+```markdown
+**Priority definitions**:
+
+* **P0** = required for MVP and v1 launch.
+* **P1** = fast follow, usually within one sprint after v1.
+* **P2** = architecture reserve or future scope.
+```
 
 ---
 
-## 3 · Inline formatting
+## 3. Inline Formatting
 
-### 3.1 Bold lead-in label pattern (USE EVERYWHERE)
+### 3.1 Bold Lead-In Labels
 
-Numbered/bulleted lists where each item makes a distinct point start with a **bold 2–6 character label** followed by `：`:
+Lists where each item makes a distinct point start with a bold 2-6 word label followed by a colon:
 
+```markdown
+1. **Data fragmentation**: The current workflow requires manual reconciliation across systems.
+2. **Limited scalability**: The current tool supports one team but cannot scale to additional labs.
+3. **Audit risk**: Manual handoff makes it harder to prove source-of-truth consistency.
 ```
-1. **数据孤岛**：BD working sheet 要从 Submission Folder 的 NAS 路径读 Excel...
-2. **扩展性差**：工具只服务 HZ，多 Lab（上海 / 东莞 / Hamburg）无法复用...
-3. **下游价值未释放**：称样数据没有进入 QIMAlabs，意味着...
-4. **合规 / 审计风险**：称样结果是测试链路的起点...
-```
 
-This pattern is REQUIRED for §2.1 problem list, §6.4 Edge Cases, §10.3 Release Gates. Optional but encouraged elsewhere.
+This pattern is required for Section 2.1 problem list, Section 6.4 Edge Cases, and Section 10.3 Release Gates.
 
-### 3.2 ID conventions (bolded)
+### 3.2 ID Conventions
 
 | Item | Format | Example |
 |---|---|---|
-| Functional requirement | `**FR-{module-letter}{n}**` | `**FR-A1**`, `**FR-B12**`, `**FR-C3**` |
+| Functional requirement | `**FR-{module-letter}{n}**` | `**FR-A1**` |
 | User story | `**US-{n}**` | `**US-1**` |
-| Acceptance criterion | `**AC-{n}（FR-X：{feature label}）**` | `**AC-1（FR-A5：包含关系合并）**` |
-| Open question | `Q{n}` (plain, in `#` column of OQ table) | `Q1`, `Q2` |
+| Acceptance criterion | `**AC-{n} (FR-X: {feature label})**` | `**AC-1 (FR-A5: Merge included relationships)**` |
+| Open question | `Q{n}` | `Q1` |
 
-IDs are bolded **only at definition site**. References in prose are plain text (`见 FR-A5`, `如 §5.2 所述`).
+IDs are bolded only at definition site.
 
-### 3.3 Code-style identifiers (backticks)
+### 3.3 Code-Style Identifiers
 
-Wrap in backticks anything a developer would copy verbatim:
-- DB columns / config-table fields: `parent_shortname`, `lab_scope`, `replicate_count`
-- Analytics event names: `weigh.weight_captured`, `prep.export_version`
-- Example values that are exact strings: `T-26031452-10-R`, `FRCHCC-PBT-CHCC_T25000001-100+200+300_ZP`
+Wrap in backticks only when a developer would copy the value verbatim:
 
-DO NOT backtick: PRD-internal terms (ShortName, Breakdown), system names (QIMAlabs, AIMS), generic English words.
+- DB columns or config fields
+- analytics event names
+- exact string examples
 
-### 3.4 User story syntax (REQUIRED)
+Do not backtick PRD-internal terms, product names, or generic English words.
 
+### 3.4 User Story Syntax
+
+```markdown
+**US-N**: As a **{role}**, I want to {action / capability}, so that {value}.
 ```
-**US-N**：As a **{role}**, I want to {action / capability}, so that {value}.
-```
 
-- Role bolded.
-- Sentence form, single line, no nesting.
-- Keep `As a ... I want to ... so that ...` template even when the prose body is Chinese — the *connective tissue* stays English template, the action and value can be Chinese.
+### 3.5 Acceptance Criterion Syntax
 
-### 3.5 Acceptance criterion syntax (REQUIRED)
-
-```
-**AC-N（FR-X：{feature label}）**
+```markdown
+**AC-N (FR-X: {feature label})**
 
 * Given {precondition}
 * When {action}
-* Then {observable result, with named field/threshold}
+* Then {observable result with named field or threshold}
 ```
 
-`Given / When / Then` are English keywords; the body can be Chinese. Each AC must reference a named FR ID in its header.
+### 3.6 Metrics Split
 
-### 3.6 Metrics split (REQUIRED in §8.2)
+```markdown
+**Leading (within 30 days)**:
 
-```
-**Leading（v1 上线后 30 天内）**：
+* **{metric name}**: {target with operator and number}
 
-* **{metric name}**：{target with operator and number, e.g. ≥ 95%}
-* ...
+**Lagging (within 3 months)**:
 
-**Lagging（上线后 3 个月）**：
-
-* **{metric name}**：{target}
+* **{metric name}**: {target}
 ```
 
-Bold metric names. Leading targets must include a number; Lagging may be a defined-but-unmetered behavior change (with the operator anyway, e.g. "下降 ≥ 30%").
+### 3.7 Phasing
 
-### 3.7 Phasing (REQUIRED in §10.1)
+Each phase uses this order:
 
-Each phase is a `**Phase {Letter} — {name}**` paragraph followed by sub-bullets in this exact order:
+```markdown
+**Phase A — Preparation**
 
-```
-**Phase A — Preparation 模块（Module A）**
-
-* Target：{whom}
-* Scope：{FR list}
-* （optional）依赖：{prereqs}
-* 估时：{honest estimate or "待 dev 评估"}
+* Target: {whom}
+* Scope: {FR list}
+* Dependency: {prereqs, optional}
+* Estimate: {honest estimate or "pending dev estimate"}
 ```
 
-### 3.8 Release Gates (REQUIRED in §10.3)
+### 3.8 Release Gates
 
-Numbered list, ≥ 3 gates with distinct signers in fullwidth parens:
+Numbered list, at least 3 gates with distinct signers:
 
+```markdown
+1. **Tech Gate** (Dev + QA): {specific exit criteria with threshold}
+2. **Business Gate** ({named SME / business owner}): {exit criteria}
+3. **Data Gate** ({PM + BI owner}): {exit criteria}
 ```
-1. **Tech Gate**（Dev + QA）：{specific exit criteria, with a quantitative threshold}
-2. **Business Gate**（{named SME / lab manager}）：{exit criteria}
-3. **Data Gate**（Suki + Simple）：{exit criteria}
-```
-
-Each gate must name signers — `TBD` allowed if explicit.
 
 ---
 
-## 4 · Bilingual policy
+## 4. Language Policy
 
-The canonical PRD mixes Chinese and English in a deliberate, repeatable way:
-
-| Layer | Language | Rationale |
-|---|---|---|
-| Top-level section titles (§1–§11) | English | QIMA template / cross-team |
-| `Mandatory` / `Optional` tag | English in fullwidth parens | Template-mandated |
-| Subsection titles (`2.1`, `5.1.1`, …) | English head + optional `— Chinese` subtitle | Index legibility + business specificity |
-| Prose / descriptions / problem statements | Chinese | PM's working language |
-| FR / US / AC IDs | English code | Cross-system traceability |
-| Domain nouns (ShortName, Breakdown, BD, ZP/ZT, CHCC, etc.) | English/code as established | Match production usage |
-| System names (QIMAlabs, AIMS, NAS) | English | Match production usage |
-| Punctuation between Chinese clauses | Chinese fullwidth `：` `，` `。` | Reader expectation |
-| Punctuation between English clauses or after English label | Halfwidth `:` `,` `.` | Standard English |
-| Lists, tables | bilingual freely; column headers can be Chinese (`角色`/`姓名`) or English (`Item`/`Owner`) — match the canonical PRD's choice per table | Pattern-match |
-
-**Anti-pattern** — translating column headers between drafts (one PRD says `Owner`, another says `负责人`). Stay consistent with the canonical PRD's per-table choice.
+All skill instructions and generated template content must be English. Product names, system names, repo names, and exact source titles may retain their original spelling if they are proper nouns or source-of-truth labels.
 
 ---
 
-## 5 · Punctuation & typography
+## 5. Punctuation and Typography
 
 | Rule | Right | Wrong |
 |---|---|---|
-| Mandatory tag | `# 1. Overview（Mandatory）` | `# 1. Overview (Mandatory)` |
-| Module separator | `Module A — 前置准备系统` | `Module A: 前置准备系统` / `Module A - 前置准备系统` |
-| Optional with reason | `（Optional —— 本 PRD 保留因风险较多）` | `(Optional - many risks)` |
-| Label colon (Chinese label) | `**v1 成功标准**：HZ 化学称样组...` | `**v1 成功标准**: ...` |
-| Label colon (English label) | `Target：HZ BD 主管...` (Chinese body OK) or `Owner: Suki` (English body) | mixed |
-| Numeric ranges | `2 \~ 3 sprints`, `8.5 & < 9 → 12 months` | `2 to 3`, `2-3` |
-| Comparison operators | `≥ 95%`, `≤ 30 分钟`, `< 8.5` | `>= 95%` |
-| Arrows for transformation | `→` (e.g. `T- 前缀和 -10-R 后缀 → 26031452`) | `->` |
-| Approx | `\~ 300` | `~300`, `约 300` |
-| Italic closing line | `_文档结束。..._` | `**文档结束**` |
+| Mandatory tag | `# 1. Overview (Mandatory)` | `# 1. Overview - Mandatory` |
+| Module separator | `Module A — Preparation` | `Module A: Preparation` |
+| Optional with reason | `(Optional — kept because risk coverage is needed)` | `(Optional - many risks)` |
+| Label colon | `**Success criteria**: reduce manual work` | mixed punctuation |
+| Numeric ranges | `2-3 sprints` | ambiguous prose |
+| Comparison operators | `>= 95%`, `<= 30 minutes` | vague targets |
+| Arrow notation | `->` | inconsistent symbols |
+| Italic closing line | `_Document complete. Next action..._` | `**Document complete**` |
 
 ---
 
-## 6 · §1 Overview meta-table — EXACT spec
+## 6. Section 1 Overview Meta-Table
 
 ```markdown
-| 字段 | 内容 |
+| Field | Content |
 | --- | --- |
-| **Document Owner** | {Name}（{Title}） |
+| **Document Owner** | {Name} ({Title}) |
 | **Date** | YYYY-MM-DD |
-| **Version** | v0.1（Draft — {what's pending}） |
+| **Version** | v0.1 (Draft — {what is pending}) |
 | **Target System** | {QIMAlabs / QIMAone / etc.} |
-| **Phase** | {QIMA program phase, e.g. Phase 2（Task Assignment / 仪器连接 / 自动报告）} |
-| **相关资料** | {meeting names, doc links — semicolon-separated} |
+| **Phase** | {program phase} |
+| **Related Materials** | {meeting names and doc links, semicolon-separated} |
 ```
 
 Rules:
-- Six rows, in this order, no extras unless the canonical PRD has them.
+
+- Six rows, in this order.
 - Field names bolded.
-- `Date` is ISO `YYYY-MM-DD`.
-- `Version` always carries the bracketed status (`Draft — ...` / `Reviewed — ...`).
+- Date is ISO `YYYY-MM-DD`.
+- Version includes the status.
 
 ---
 
-## 7 · §11.1 Open Questions — EXACT spec
+## 7. Section 11.1 Open Questions
 
 ```markdown
-| # | 问题 | 谁答 | 阻塞 v1？ |
+| # | Question | Owner to answer | Blocks v1? |
 | --- | --- | --- | --- |
-| Q1 | {question, prose} | {name(s)} | 否，但影响 {what} |
-| Q2 | {question} | {name(s)} | **是 —— 建议在 dev kickoff 前完成** |
+| Q1 | {question} | {name(s)} | No, but affects {impact} |
+| Q2 | {question} | {name(s)} | **Yes — resolve before dev kickoff** |
 ```
 
-The blocker column has only two grammatical shapes:
-- `否，但影响 {downstream impact}` — non-blocking
-- `**是 —— {when/who must resolve}**` — blocking, bolded entirely
+Allowed blocker-column shapes:
 
-No bare `Yes` / `No` / `是` / `否`.
+- `No, but affects {downstream impact}`
+- `**Yes — {when/who must resolve}**`
+
+No bare `Yes` or `No`.
 
 ---
 
-## 8 · Footer & marginalia
+## 8. Footer and Marginalia
 
 The canonical PRD ends with one italic line:
 
-```
-_文档结束。请 dev 在评估时按 FR-ID 拆分工作量并填入表格（Suki 会准备一个工作量收集表）。_
+```markdown
+_Document complete. {Concrete next action by document owner}._
 ```
 
-Match this shape — italic, single sentence or short paragraph, names a concrete next-action by the doc owner.
-
-The horizontal rule `---` is used liberally between top-level sections and before appendices. Between subsections inside a section, no `---`.
+Use horizontal rules between top-level sections and before appendices. Avoid horizontal rules between subsections inside a section.
 
 ---
 
-## 9 · Validation checklist (used by Phase 4.7 review-expert)
+## 9. Validation Checklist
 
-Before sign-off, the review-expert verifies:
+Before sign-off, `prd-critique` verifies:
 
-- [ ] All 11 sections present, in canonical order, with the exact titles from §1.3 above
-- [ ] §1 meta-table has all 6 required rows
-- [ ] Mandatory/Optional tags use fullwidth parens
-- [ ] Every FR ID in `**FR-{letter}{n}**` form, table column order matches §2
-- [ ] Priority block placed above §5.1 (not below, not inline)
-- [ ] §5.2 OOS items each have a `理由` cell that is non-empty (Pattern 4 from prd-patterns-from-best.md)
-- [ ] §6.3 Interaction table present whenever §6 has any UI component
-- [ ] §6.4 Edge Cases lists ≥ 5 items in bold-lead-in format
-- [ ] §8.1 events all use snake_case dotted form (`namespace.action`)
-- [ ] §8.2 split into `**Leading（…）**` and `**Lagging（…）**` blocks with bold metric labels
-- [ ] §9.2 risks table has all 4 columns; 概率 = 高/中/低
-- [ ] §10.3 has ≥ 3 gates with distinct signers in fullwidth parens
-- [ ] §11.1 OQ blocker column uses the two grammatical shapes from §7 (no bare yes/no)
-- [ ] Footer is italic, names a concrete next action by the doc owner
-- [ ] Code identifiers backticked; PRD-internal terms not backticked
-- [ ] Bilingual punctuation rules from §5 obeyed throughout
+- [ ] All 11 sections present in canonical order with exact titles.
+- [ ] Section 1 meta-table has all 6 required rows.
+- [ ] Mandatory / Optional tags use the required format.
+- [ ] Every FR ID uses `**FR-{letter}{n}**`.
+- [ ] Priority block appears above Section 5.1.
+- [ ] Section 5.2 Out of Scope items have non-empty reasons.
+- [ ] Section 6.3 Interaction table exists whenever Section 6 has UI.
+- [ ] Section 6.4 Edge Cases has at least 5 bold-lead-in items.
+- [ ] Section 8.1 events use dotted snake_case when implementation event names are needed.
+- [ ] Section 8.2 is split into Leading and Lagging blocks.
+- [ ] Section 9.2 risks table has all 4 columns and High / Medium / Low probability values.
+- [ ] Section 10.3 has at least 3 gates with distinct signers.
+- [ ] Section 11.1 uses the allowed blocker-column shapes.
+- [ ] Footer is italic and names a concrete next action.
+- [ ] Code identifiers are backticked only when appropriate.
 
-Any failure = a finding. Format violations are at minimum **Medium** priority; structural omissions (missing section, wrong section title) are **High**.
+Any failure is a finding. Format violations are at minimum Medium priority; structural omissions are High.
 
 ---
 
-## 10 · Anti-patterns
+## 10. Anti-Patterns
 
-- ❌ HTML tables, nested tables, or grid-merged cells
-- ❌ Translating canonical column headers (e.g. `负责人` instead of `Owner` in §11.2)
-- ❌ Halfwidth parens around `Mandatory` / `Optional` tags
-- ❌ Hyphen `-` instead of em-dash `—` in module/page titles
-- ❌ Bare `Yes`/`No` in OQ blocker column
-- ❌ Missing priority block above §5.1
-- ❌ FR table without §5.1.x module split when ≥ 8 FRs (canonical PRD splits at this threshold)
-- ❌ §6 with prose only, no Interaction Specs table
-- ❌ §9.2 with `High/Medium/Low` in 概率 column
-- ❌ Inventing new section titles or numbering (`§5.3 Performance`, `§12 ROVO`)
-- ❌ §1 meta-table missing `相关资料` row (this is the link-trail to source meetings)
+- HTML tables, nested tables, or merged cells.
+- Translating canonical column headers inconsistently between drafts.
+- Missing Mandatory / Optional tags.
+- Hyphen instead of em dash in module/page titles.
+- Bare Yes/No in Open Questions.
+- Missing priority block above Section 5.1.
+- FR table without module split when there are 8 or more FRs.
+- Section 6 with prose only and no Interaction Specs table.
+- Inventing new section titles or numbering, such as Section 12.
+- Section 1 meta-table missing `Related Materials`.

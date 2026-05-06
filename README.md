@@ -9,12 +9,13 @@ End-to-end PRD drafting, codebase understanding, and design workflow toolkit for
 - **Skill** `ticket-breakdown` — breaks a Confluence PRD into a Jira Epic and FE / BE / API tickets, requires user approval before Jira writes, links tickets to the Epic, and writes the created ticket links back to the PRD.
 - **Skill** `ui` — unified UI design workflow for shaping, building, critiquing, auditing, polishing, responsive adaptation, typography, layout, motion, hardening, performance, UX writing, and visual direction.
 - **Skill** `design-critique` — evidence-based QIMA design review that connects Figma, Confluence business rules, code implementation, and Jira history into an HTML report.
-- **Agent** `prd-review-expert` — senior PMO/CPO-level reviewer. Auto-invoked after the initial draft; can also be called standalone on any PRD (local file or Confluence URL).
+- **Skill** `prd-critique` — senior PMO/CPO-level PRD reviewer. Auto-invoked after the initial draft; can also be called standalone on any PRD (local file or Confluence URL).
 - **Slash command** `/write-prd` — entry point for the PRD workflow.
   - **Deprecated alias** `/qima-prd-skills` is kept through 0.9.x for muscle memory; will be removed in 1.0.
 - **Slash command** `/codebase-understanding` — entry point for the architecture brief.
 - **Slash command** `/ticket-breakdown` — entry point for Jira Epic/ticket creation from a PRD.
 - **Slash command** `/design-critique` — entry point for evidence-based QIMA design review.
+- **Slash command** `/prd-critique` — entry point for PRD quality review.
 
 ## Install (local)
 
@@ -38,7 +39,7 @@ Or from the Claude Code UI: **Plugins → Install from local path** → select t
 - To create Jira implementation tickets from a PRD: `/ticket-breakdown <confluence-prd-url> <jira-project-key> [design-url]`.
 - For UI design work: `/ui [mode] [target]` (for example, `/ui critique this design`, `/ui responsive mobile layout`, `/ui polish this component`) or ask naturally.
 - For evidence-based QIMA design review: `/design-critique <figma-url> [confluence-page-id] [repo-path]`.
-- Once a draft exists, ask "review this PRD" or pass a Confluence URL to invoke `prd-review-expert` directly.
+- Once a draft exists, ask "review this PRD" or pass a Confluence URL to invoke `prd-critique` directly.
 
 ## Requirements
 
@@ -61,4 +62,4 @@ To upgrade locally: `/plugin uninstall qima-prd-skills && /plugin install ~/Desk
 
 ## Version
 
-1.0.1
+1.0.2

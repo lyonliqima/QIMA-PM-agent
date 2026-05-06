@@ -1,7 +1,7 @@
 {
   "name": "qima-pm-agent",
   "description": "Claude Code plugin marketplace for QIMA Product Manager workflows.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "metadata": {
     "description": "Claude Code plugin marketplace for QIMA Product Manager workflows."
   },
@@ -13,7 +13,7 @@
       "name": "qima-pm-skills",
       "source": "./",
       "description": "End-to-end PRD drafting, codebase understanding, Jira ticket breakdown, PM review, and design critique/polish toolkit for QIMA Product Managers.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "repository": "https://github.com/lyonliqima/QIMA-PM-agent",
       "author": {
         "name": "Lyon"

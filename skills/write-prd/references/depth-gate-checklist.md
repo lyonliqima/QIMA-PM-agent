@@ -52,8 +52,8 @@ Per interactive element, specify:
 
 | UI element | Contract field path | Type | Source | Formatting / Copy rule | Special values |
 |---|---|---|---|---|---|
-| e.g. "Critical 抽检数" | `keyIndicator.inspectionResultSummary.checkedCritical` | string (int) | Interactive Report contract (Confluence 3237249028) | Display as `检 132` | `null` → hide row |
-| "订单总量" | `productDetails.generalInfo.QUANTITY` | string | QSP orderService | `"18 Pcs"` passthrough | `""` → `"-"` placeholder |
+| e.g. "Critical inspected count" | `keyIndicator.inspectionResultSummary.checkedCritical` | string (int) | Interactive Report contract (Confluence 3237249028) | Display as `Checked 132` | `null` -> hide row |
+| "Order quantity" | `productDetails.generalInfo.QUANTITY` | string | QSP orderService | `"18 Pcs"` passthrough | `""` -> `"-"` placeholder |
 | "AQL Level" | `keyIndicator.aqlLevel` | enum `product \| reference` | Interactive Report contract | When `reference` → use per-SKU breakdown | — |
 
 **Coverage bar**: ≥ 80% of numbers / labels / mutable text on the Figma frame for this FR must appear in the table.
@@ -61,7 +61,7 @@ Per interactive element, specify:
 **For integration FRs (data crosses system boundaries)**: add a separate **cross-system handoff table** with columns: sender field path / receiver field path / type / required / release version / missing-value behavior. See `prd-patterns-from-best.md` Pattern 3.
 
 **Anti-pattern triggers depth-pass immediately**:
-- Prose says "抽样总数" without naming the backing field
+- Prose says "sample total" without naming the backing field
 - Two similar-looking concepts (e.g. "Total Inspected" vs Workmanship sample size) not distinguished with their separate field paths
 - "Data from backend" without naming which service or contract
 
@@ -124,9 +124,9 @@ AC-<n> (FR-<m>) — Given <preconditions>, When <action>, Then <observable outco
 For any FR where alternatives were considered, append a § Decisions entry naming Option A / Option B (pros / cons), the chosen option WITH reasoning, and a **reopen trigger**. See `prd-patterns-from-best.md` Pattern 5. Material trade-offs resolved in Slack but not recorded in the PRD = depth-gate fail.
 
 **Banned vocabulary** (Perforce 2026 anti-pattern list):
-- "流程顺畅" / "flows smoothly"
-- "正确显示" / "displays correctly"
-- "体验良好" / "performs well"
+- "flows smoothly"
+- "displays correctly"
+- "performs well"
 - "performs as expected"
 - "handles gracefully"
 - "appropriate messaging"
