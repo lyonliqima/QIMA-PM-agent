@@ -218,6 +218,21 @@ tbody tr:last-child td{border-bottom:0}
 .modal-body{padding:20px 24px;max-height:60vh;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 .modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 24px;box-shadow:inset 0 1px 0 var(--line)}
 .note{padding:12px 16px;border-radius:var(--r-ctl);background:var(--pool-100);color:var(--pool-900);font:400 12px/18px var(--font)}
+/* lazy-loaded section placeholder — heavy sections stay collapsed until opened */
+.skel{display:flex;flex-direction:column;gap:10px;padding:4px 0}
+.skel i{display:block;height:12px;border-radius:4px;background:linear-gradient(90deg,var(--mist),var(--cloud),var(--mist));background-size:200% 100%;animation:sh 1.1s linear infinite}
+.skel i:nth-child(2){width:72%}.skel i:nth-child(3){width:48%}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* search-select: master data lives in another service, so pick, never type freely */
+.picker{position:relative}
+.picker-list{margin-top:6px;border:1px solid var(--smoke);border-radius:var(--r-ctl);overflow:hidden;max-height:148px;overflow-y:auto}
+.picker-list button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;background:var(--white);border:0;cursor:pointer;text-align:left;font:400 14px/20px var(--font);color:var(--carbon)}
+.picker-list button+button{box-shadow:inset 0 1px 0 var(--line)}
+.picker-list button:hover{background:var(--pool-050,#F5F8FF)}
+.picker-list button span{color:var(--seal);font:400 12px/16px var(--font)}
+.picker-list button.on{background:var(--pool-100);color:var(--pool-900)}
+.secret{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--smoke);border-radius:var(--r-ctl);background:var(--cloud);font:400 13px/20px var(--mono,var(--font));color:var(--carbon);word-break:break-all}
+.secret button{margin-left:auto;flex:none}
 
 /* ===== empty ===== */
 .empty{padding:48px 24px;text-align:center;color:var(--seal);font:400 14px/20px var(--font)}
@@ -295,15 +310,15 @@ const DATA={
   {id:'u1008',email:'emma.hu@qima.com',name:'Emma Hu',dept:'Finance',roles:[]}
  ],
  customer:[
-  {id:'ak-c01',client:'Mistress Foods',login:'mistress.api',key:'ak_live_8fa2…',status:'Active',mode:'inherit',web:12,api:18,created:'12-May-2026'},
-  {id:'ak-c02',client:'GlobalGourmet',login:'gg.integration',key:'ak_live_3c91…',status:'Active',mode:'direct',web:0,api:9,created:'01-Jun-2026'},
-  {id:'ak-c03',client:'FreshCo',login:'freshco.svc',key:'ak_test_1b7d…',status:'Suspended',mode:'inherit',web:7,api:11,created:'20-Jun-2026'},
-  {id:'ak-c04',client:'PureHarvest',login:'pureharvest',key:'ak_live_55e0…',status:'Active',mode:'direct',web:0,api:5,created:'02-Jul-2026'}
+  {id:'ak-c01',client:'Mistress Foods',login:'mistress.api',key:'ak_live_8fa2…',status:'Active',mode:'inherit',role:'customer:admin',web:12,api:18,created:'12-May-2026',rate:600,peak:412,lastUsed:'23-Jul-2026 13:55'},
+  {id:'ak-c02',client:'GlobalGourmet',login:'gg.integration',key:'ak_live_3c91…',status:'Active',mode:'direct',role:'',web:0,api:9,created:'01-Jun-2026',rate:300,peak:96,lastUsed:'23-Jul-2026 10:02'},
+  {id:'ak-c03',client:'FreshCo',login:'freshco.svc',key:'ak_test_1b7d…',status:'Suspended',mode:'inherit',role:'customer:viewer',web:7,api:11,created:'20-Jun-2026',rate:120,peak:120,lastUsed:'18-Jul-2026 22:31'},
+  {id:'ak-c04',client:'PureHarvest',login:'pureharvest',key:'ak_live_55e0…',status:'Active',mode:'direct',role:'',web:0,api:5,created:'02-Jul-2026',rate:300,peak:47,lastUsed:'22-Jul-2026 16:40'}
  ],
  platform:[
-  {id:'ak-p01',client:'Mesa',login:'mesa.platform',key:'ak_plt_9d2f…',status:'Active',mode:'direct',web:0,api:14,created:'10-Apr-2026'},
-  {id:'ak-p02',client:'ICP',login:'icp.sync',key:'ak_plt_4a8c…',status:'Active',mode:'direct',web:0,api:22,created:'22-May-2026'},
-  {id:'ak-p03',client:'NetSuite',login:'netsuite.fin',key:'ak_plt_7e1b…',status:'Active',mode:'direct',web:0,api:17,created:'15-Jun-2026'}
+  {id:'ak-p01',client:'Mesa',login:'mesa.platform',key:'ak_plt_9d2f…',status:'Active',mode:'direct',role:'',web:0,api:14,created:'10-Apr-2026',rate:3000,peak:1840,lastUsed:'23-Jul-2026 14:20'},
+  {id:'ak-p02',client:'ICP',login:'icp.sync',key:'ak_plt_4a8c…',status:'Active',mode:'direct',role:'',web:0,api:22,created:'22-May-2026',rate:6000,peak:5210,lastUsed:'23-Jul-2026 14:22'},
+  {id:'ak-p03',client:'NetSuite',login:'netsuite.fin',key:'ak_plt_7e1b…',status:'Active',mode:'direct',role:'',web:0,api:17,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07'}
  ],
  history:[
   {time:'23-Jul-2026 14:32',actor:'leo.chen@qima.com',act:'创建角色 report:generator',meta:'Report 模块 · 关联 10 web / 14 api'},
@@ -314,6 +329,21 @@ const DATA={
   {time:'21-Jul-2026 10:14',actor:'ryan.wu@qima.com',act:'移除用户 u1008 的 finance:admin 角色',meta:'Emma Hu'}
  ]
 };
+
+/* customer master data lives in Customer Service — searched, never edited here */
+const CUSTOMERS=[
+ {code:'C-10428',name:'Mistress Foods',logins:['mistress.api','mistress.portal']},
+ {code:'C-10871',name:'GlobalGourmet',logins:['gg.integration']},
+ {code:'C-11294',name:'FreshCo',logins:['freshco.svc','freshco.ops']},
+ {code:'C-11530',name:'PureHarvest',logins:['pureharvest']},
+ {code:'C-11902',name:'Nordic Seafood',logins:['nordic.api','nordic.edi']}
+];
+const PLATFORMS=[
+ {code:'P-01',name:'Mesa',logins:['mesa.platform']},
+ {code:'P-02',name:'ICP',logins:['icp.sync']},
+ {code:'P-03',name:'NetSuite',logins:['netsuite.fin']},
+ {code:'P-04',name:'Workday',logins:['workday.hr']}
+];
 
 const VIEWS={
  module:{title:'模块'},
@@ -362,7 +392,7 @@ function modeBadge(m){return m==='inherit'?'<span class="badge">inherit</span>':
 /* ================= page bar ================= */
 function listPagebar(view){
  const cfg=VIEWS[view];
- const filterCount=view==='role'?1:(view==='customer'||view==='platform')?2:view==='user'?1:0;
+ const filterCount={role:2,customer:2,platform:2,user:2,module:1,history:4}[view]||0;
  return `<div class="pagebar">
   <div class="pagebar-row">
     <h1>${cfg.title}</h1>
@@ -420,7 +450,9 @@ function detailPrimary(view,r){
  if(view==='user')return btn('编辑用户角色','btn-primary',SVG.edit,`openModal('userRole',${idxOf(view,r)})`);
  if(view==='module')return btn('管理资源','btn-primary',SVG.link,`openModal('resourceManage','module')`);
  if(view==='role')return btn('绑定资源','btn-primary',SVG.link,`openModal('bindWeb',${idxOf(view,r)})`);
- if(view==='customer'||view==='platform')return btn('绑定资源','btn-primary',SVG.link,`openModal('akBind',${idxOf(view,r)})`);
+ if(view==='customer'||view==='platform')return r.mode==='inherit'
+   ?btn('编辑 AccessKey','btn-primary',SVG.edit,`openModal('akEdit',${idxOf(view,r)})`)
+   :btn('绑定资源','btn-primary',SVG.link,`openModal('akBind',${idxOf(view,r)})`);
  return '';
 }
 
@@ -439,7 +471,8 @@ function filterCard(view){
  if(view==='user')extra=sel('部门',['全部','IT','Lab','Finance','Customer','Inspector'])+sel('角色数',['全部','有角色','无角色']);
  if(view==='customer'||view==='platform')extra=sel('状态',['全部','Active','Suspended'])+sel('模式',['全部','inherit','direct']);
  if(view==='module')extra=sel('数据隔离维度',['全部','BU','Legal Entity','Region','None']);
- if(view==='history')extra=sel('操作人',['全部','leo.chen@qima.com','ryan.wu@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
+ if(view==='history')extra=field('起始日期',`<input type="date" value="2026-07-17">`)+field('结束日期',`<input type="date" value="2026-07-23">`)
+   +sel('操作人',['全部','leo.chen@qima.com','ryan.wu@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
  return `<div class="filterbar"><div class="filters">
    ${field('关键字',`<input id="q" placeholder="Type to search..." oninput="filterList(this.value)">`)}
    ${extra}
@@ -488,11 +521,13 @@ function goDetail(view,i){
 }
 function backToList(){render();window.scrollTo(0,0);}
 
-function card(title,acts,body,subtabs){
- return `<div class="card">
+function card(title,acts,body,subtabs,opt){
+ opt=opt||{};
+ const html=body.html!==undefined?body.html:body;
+ return `<div class="card${opt.lazy?' collapsed':''}"${opt.lazy?' data-lazy="1"':''}>
   <div class="card-head" onclick="toggleCard(this)">${SVG.chev}<h3>${title}</h3>${acts?`<div class="acts" onclick="event.stopPropagation()">${acts}</div>`:''}</div>
   ${subtabs||''}
-  <div class="card-body${body.flush?' flush':''}">${body.html!==undefined?body.html:body}</div>
+  <div class="card-body${body.flush?' flush':''}">${opt.lazy?`<div class="skel"><i></i><i></i><i></i></div><template>${html}</template>`:html}</div>
  </div>`;
 }
 function subtabs(items){
@@ -528,7 +563,7 @@ function moduleDetail(r){
  + card('模块内角色',btn('管理角色','btn-secondary',SVG.edit,`openModal('roleManage')`),
    {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>角色 Key</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr></thead><tbody>
      ${roleRows.map(x=>`<tr class="clickable" onclick="jumpToRole('${x.id}')"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?'<span class="badge badge-mango">已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">该模块暂无角色</td></tr>'}
-   </tbody></table></div>`});
+   </tbody></table></div>`},'',{lazy:true});
 }
 
 function roleDetail(r){
@@ -547,33 +582,44 @@ function roleDetail(r){
  + card('已授权用户','',
    {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>用户</th><th>邮箱</th><th>部门</th></tr></thead><tbody>
      ${users.map(u=>`<tr class="clickable" onclick="jumpToUser('${u.id}')"><td><span class="cell-link">${u.name}</span></td><td>${u.email}</td><td>${u.dept}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">暂无授权用户</td></tr>'}
-   </tbody></table></div>`});
+   </tbody></table></div>`},'',{lazy:true});
 }
 
 function userDetail(r){
  const i=idxOf('user',r);
  return card('用户信息','',
-   `<div class="kv">${kv('用户 ID',r.id)}${kv('姓名',r.name)}${kv('邮箱',r.email)}${kv('部门',r.dept)}</div>`)
+   `<div class="kv">${kv('用户 ID',r.id)}${kv('姓名',r.name)}${kv('邮箱',r.email)}${kv('部门',r.dept)}${kv('数据来源','User Service · 只读')}</div>`)
  + card('用户角色',btn('编辑角色','btn-secondary',SVG.edit,`openModal('userRole',${i})`),
    r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" onclick="jumpToRole('${rl}')">${rl}</span>`).join('')}</div>`:'<div class="empty">该用户暂无权限角色</div>');
 }
 
 function akDetail(view,r){
- const i=idxOf(view,r), isPlat=view==='platform';
+ const i=idxOf(view,r), isPlat=view==='platform', inherit=r.mode==='inherit';
  return card('AccessKey 信息',btn('编辑','btn-secondary',SVG.edit,`openModal('akEdit',${i})`),
-   `<div class="kv">${kv('AccessKey ID',r.id)}${kv(isPlat?'平台':'客户',r.client)}${kv('登录账号',r.login)}${kv('Key',r.key)}${kv('模式',r.mode==='inherit'?'inherit（继承角色）':'direct（直接绑资源）')}${kv('状态',statusBadge(r.status))}${kv('创建日期',r.created)}</div>`)
- + card('关联资源',
-   btn('绑定资源','btn-secondary',SVG.link,`openModal('akBind',${i})`),
-   {html:`
-     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">customer.portal</span><span class="chip">customer.order.list</span>':'<span class="muted">无 Web 资源</span>'}<span class="chip chip-add" onclick="openModal('akBind',${i})">绑定</span></div></div>
-     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /v1/order/list</span><span class="chip">POST /v1/order/create</span><span class="chip">GET /v1/report</span><span class="chip chip-add" onclick="openModal('akBind',${i})">绑定 API</span></div></div>`},
-   subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`}]))
+   `<div class="kv">${kv('AccessKey ID',r.id)}${kv(isPlat?'平台':'客户',r.client)}${kv('登录账号',r.login)}${kv('Key',r.key)}${kv('模式',r.mode==='inherit'?'inherit（继承角色）':'direct（直接绑资源）')}${kv('状态',statusBadge(r.status))}${kv('创建日期',r.created)}${kv('最近调用',r.lastUsed)}</div>`)
+ + akResourceCard(view,r,i,inherit)
+ + card('限流配置',btn('编辑','btn-secondary',SVG.edit,`openModal('rateEdit',${i})`),
+   `<div class="kv">${kv('请求上限',`${r.rate} 次 / 分钟`)}${kv('计数方式','Redis 滑动窗口 · 按 AccessKey 计数')}${kv('超限响应','429 Too Many Requests')}${kv('近 24h 峰值',`${r.peak} 次 / 分钟${r.peak>=r.rate?' <span class="badge badge-cherry">已触顶</span>':''}`)}</div>`)
  + card('访问日志',btn('查看全部','btn-tertiary',SVG.log,`openModal('akLog',${i})`),
    `<div class="timeline">
      <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">POST /v1/order/create</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 142 ms</div></div>
      <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /v1/order/list</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 88 ms</div></div>
      <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">IP 10.2.4.8 · 403 Forbidden · 资源未授权</div></div>
-   </div>`);
+   </div>`,'',{lazy:true});
+}
+
+/* inherit mode reads permissions off the customer role, so resources are not
+   bindable on the key itself — only direct mode owns its own resource list */
+function akResourceCard(view,r,i,inherit){
+ if(inherit)return card('关联资源',btn('切换为 direct','btn-tertiary',SVG.sync,`openModal('akEdit',${i})`),
+   `<div class="kv">${kv('权限来源',`继承客户角色 <span class="cell-link" onclick="jumpToRole('${r.role}')">${r.role}</span>`)}${kv('生效资源',`${r.web} Web · ${r.api} API`)}</div>
+    <div class="note" style="margin-top:16px">inherit 模式下资源随角色变动，需单独授权请先切换为 direct 模式。</div>`);
+ return card('关联资源',
+   btn('绑定资源','btn-secondary',SVG.link,`openModal('akBind',${i})`),
+   {html:`
+     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">customer.portal</span><span class="chip">customer.order.list</span>':'<span class="muted">无 Web 资源</span>'}<span class="chip chip-add" onclick="openModal('akBind',${i})">绑定</span></div></div>
+     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /v1/order/list</span><span class="chip">POST /v1/order/create</span><span class="chip">GET /v1/report</span><span class="chip chip-add" onclick="openModal('akBind',${i})">绑定 API</span></div></div>`},
+   subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`}]));
 }
 
 /* ================= interactions ================= */
@@ -582,7 +628,14 @@ function switchView(v){
  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
  render();window.scrollTo(0,0);
 }
-function toggleCard(head){head.parentElement.classList.toggle('collapsed');}
+function toggleCard(head){
+ const c=head.parentElement;
+ c.classList.toggle('collapsed');
+ if(c.classList.contains('collapsed')||!c.dataset.lazy)return;
+ delete c.dataset.lazy;
+ const b=c.querySelector('.card-body'), t=b.querySelector('template');
+ setTimeout(()=>{b.innerHTML=t.innerHTML;},380);
+}
 function toggleFilters(){showFilters=!showFilters;render();}
 function resetFilters(){render();}
 function focusSearch(){if(!showFilters){showFilters=true;render();}const q=$('#q');if(q)q.focus();}
@@ -631,14 +684,29 @@ const MODALS={
   ${field('用户',inp('',`${r.name} · ${r.email}`,true))}
   ${field('已分配角色',`<div class="chips">${r.roles.map(rl=>`<span class="chip">${rl}<span class="x" onclick="this.parentElement.remove()">×</span></span>`).join('')||'<span class="muted">暂无</span>'}</div>`)}
   ${field('添加角色',sel(['选择角色…',...DATA.role.map(x=>x.name)]))}`;}},
- akCreate:{title:t=>t==='platform'?'创建平台 AccessKey':'创建客户 AccessKey',body:t=>`
-  ${field(`${t==='platform'?'平台':'客户'}名称`,inp(`Type to search...`))}
-  <div class="grid-2">${field('登录账号',inp('login id'))}${field('模式',`<div class="seg"><input type="radio" name="m" id="m1"${t==='platform'?'':' checked'}><label for="m1">inherit</label><input type="radio" name="m" id="m2"${t==='platform'?' checked':''}><label for="m2">direct</label></div>`)}</div>
+ akCreate:{title:t=>t==='platform'?'创建平台 AccessKey':'创建客户 AccessKey',
+  foot:t=>btn('取消','btn-tertiary','','closeModal()')+btn('生成 AccessKey','btn-primary','',`openModal('akCreated','${t||'customer'}')`),
+  body:t=>{const src=t==='platform'?PLATFORMS:CUSTOMERS;return `
+  ${field(`${t==='platform'?'平台':'客户'}名称`,`<div class="picker">
+    <input id="pk-q" placeholder="Type to search..." oninput="pickSearch('${t||'customer'}',this.value)">
+    <div class="picker-list" id="pk-list">${src.slice(0,4).map(c=>`<button onclick="pickPick('${c.name}')">${c.name}<span>${c.code}</span></button>`).join('')}</div>
+  </div>`)}
+  <div class="grid-2">${field('登录账号',`<select id="pk-login" disabled><option>先选择${t==='platform'?'平台':'客户'}</option></select>`)}${field('模式',`<div class="seg"><input type="radio" name="m" id="m1"${t==='platform'?'':' checked'}><label for="m1">inherit</label><input type="radio" name="m" id="m2"${t==='platform'?' checked':''}><label for="m2">direct</label></div>`)}</div>
   ${field('备注',inp('用途说明…'))}
-  <div class="note">${t==='platform'?'平台 AccessKey 由后台直接创建并 DIRECT 绑定资源。':'后台代创建：原流程需客户先登录后自行生成，此入口供 IT 直接为客户创建 AccessKey（新接口）。'}创建后生成 access key 与 secret，仅展示一次。</div>`},
+  <div class="note">${t==='platform'?'平台名称与登录账号为本平台维护。':'客户主数据来自 Customer Service，此处仅搜索选择，不新增客户。原流程需客户自行登录生成，此入口为 IT 代客户创建（待新增接口）。'}</div>`;}},
+ akCreated:{title:'AccessKey 已生成',
+  foot:()=>btn('我已保存并复制','btn-primary','','closeModal()'),
+  body:t=>`
+  ${field('AccessKey ID',`<div class="secret">${t==='platform'?'ak-p04':'ak-c05'}${btn('复制','btn-tertiary')}</div>`)}
+  ${field('Access Key',`<div class="secret">ak_live_2f7c91be4d0a83e5${btn('复制','btn-tertiary')}</div>`)}
+  ${field('Secret',`<div class="secret">sk_9b41e07c…d82f6a3510${btn('复制','btn-tertiary')}</div>`)}
+  <div class="note">Secret 仅在此显示一次，关闭后无法再次查看，需重新生成。请立即复制并交付${t==='platform'?'对接方':'客户'}。</div>`},
  akEdit:{title:'编辑 AccessKey',body:i=>{const r=DATA[currentView][i];return `
   ${field('AccessKey ID',inp('',r.id,true))}
   <div class="grid-2">${field('登录账号',inp('',r.login))}${field('状态',sel(['Active','Suspended'].map(v=>({v,sel:v===r.status}))))}</div>`;}},
+ rateEdit:{title:'编辑限流配置',body:i=>{const r=DATA[currentView][i];return `
+  <div class="grid-2">${field('请求上限（次 / 分钟）',inp('',r.rate))}${field('超限响应',sel(['429 Too Many Requests','503 Service Unavailable']))}</div>
+  <div class="note">阈值由 Gateway 读取并在 Redis 按 AccessKey 计数，保存后即时生效。</div>`;}},
  akLog:{title:'AccessKey 访问日志',body:()=>`<div class="timeline">
   <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">POST /v1/order/create</div><div class="tl-meta">200 OK · 142 ms</div></div>
   <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /v1/order/list</div><div class="tl-meta">200 OK · 88 ms</div></div>
@@ -673,14 +741,33 @@ function openModal(key,arg){
  const m=MODALS[key];if(!m)return;
  const title=typeof m.title==='function'?m.title(arg):m.title;
  const body=typeof m.body==='function'?m.body(arg):m.body;
+ const foot=m.foot?(typeof m.foot==='function'?m.foot(arg):m.foot)
+   :btn('取消','btn-tertiary','','closeModal()')+btn('保存','btn-primary','','closeModal()');
  $('#overlay').innerHTML=`<div class="modal">
   <div class="modal-head"><h3>${title}</h3>${iconBtn('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>','关闭','closeModal()')}</div>
   <div class="modal-body">${body}</div>
-  <div class="modal-foot">${btn('取消','btn-tertiary','','closeModal()')}${btn('保存','btn-primary','','closeModal()')}</div>
+  <div class="modal-foot">${foot}</div>
  </div>`;
  $('#overlay').classList.add('show');
 }
 function closeModal(){$('#overlay').classList.remove('show');$('#overlay').innerHTML='';}
+
+/* customer / platform picker — master data is searched, not typed */
+function pickSearch(type,q){
+ const src=type==='platform'?PLATFORMS:CUSTOMERS;
+ q=(q||'').toLowerCase();
+ const hits=src.filter(c=>c.name.toLowerCase().includes(q)||c.code.toLowerCase().includes(q)).slice(0,4);
+ $('#pk-list').innerHTML=hits.map(c=>`<button onclick="pickPick('${c.name}')">${c.name}<span>${c.code}</span></button>`).join('')
+  ||`<button disabled><span>未找到匹配${type==='platform'?'平台':'客户'}</span></button>`;
+}
+function pickPick(name){
+ const c=CUSTOMERS.concat(PLATFORMS).find(x=>x.name===name);if(!c)return;
+ $('#pk-q').value=`${c.name} · ${c.code}`;
+ document.querySelectorAll('#pk-list button').forEach(b=>b.classList.toggle('on',b.textContent.startsWith(c.name)));
+ const s=$('#pk-login');
+ s.disabled=false;
+ s.innerHTML=c.logins.map(l=>`<option>${l}</option>`).join('');
+}
 
 /* sub tabs inside cards */
 document.addEventListener('click',e=>{
