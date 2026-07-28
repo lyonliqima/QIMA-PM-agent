@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IT 权限管理平台 · 原型</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== QSP / ACA design tokens (Figma: QSP Sandbox 2025) ===== */
+:root{
+  /* Neutral */
+  --carbon:#191919;--seal:#737373;--smoke:#B3B3B3;--pearl:#DEDEDE;
+  --line:#E6E6E6;--mist:#F0F0F0;--cloud:#F7F7F7;--white:#fff;
+  --nav-active:#EAEAEA;--header-line:#D6D6D6;
+  /* Accent · Pool */
+  --pool-100:#E6ECFB;--pool-200:#D3DCF8;--pool-500:#4169E1;--pool-600:#1E46BD;--pool-900:#153184;
+  /* Semantic */
+  --kiwi-050:#EAF6F2;--kiwi-500:#00A876;--kiwi-900:#006648;
+  --cherry-050:#FDEFEF;--cherry-500:#E5353D;--cherry-900:#9E141B;
+  --mango-050:#FCF2E6;--mango-500:#F58F00;--mango-900:#B26309;
+  /* Brand */
+  --qima-red:#E4002B;--peach:#FF8261;
+  /* Radii · per DS: 4 chip / 6 nav / 8 control / 16 container */
+  --r-chip:4px;--r-nav:6px;--r-ctl:8px;--r-card:16px;
+  --font:'Inter','Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ease:cubic-bezier(.2,0,0,1);--dur:200ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*:not(textarea)::-webkit-scrollbar{width:8px;height:8px}
+*:not(textarea)::-webkit-scrollbar-thumb{border-radius:8px;background:var(--pearl)}
+*:not(textarea)::-webkit-scrollbar-thumb:hover{background:var(--smoke)}
+body{min-height:100vh;font:400 14px/20px var(--font);color:var(--carbon);background:var(--cloud);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;background:none;border:0}
+
+/* ===== app header · 72px ===== */
+.appbar{position:sticky;z-index:900;top:0;height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;background:var(--white);box-shadow:inset 0 -1px 0 var(--header-line)}
+.appbar-l{display:flex;align-items:center;gap:16px;padding-left:4px;min-width:0}
+.wordmark{display:flex;align-items:flex-end;gap:12px}
+.wordmark .qima{height:20px;width:auto;display:block}
+.wordmark .suffix{font:400 20px/20px var(--font);letter-spacing:2px;color:var(--pool-600)}
+.appbar-r{display:flex;align-items:center;gap:16px}
+.env{height:36px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:var(--r-ctl);color:var(--carbon);font:400 14px/20px var(--font);white-space:nowrap;transition:background var(--dur) var(--ease)}
+.env:hover{background:var(--cloud)}
+.env .dot{width:8px;height:8px;border-radius:50%;background:var(--kiwi-500)}
+.env svg{width:20px;height:20px;color:var(--seal)}
+.divider-v{width:1px;height:36px;background:var(--pearl)}
+.iconbtn{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--r-ctl);color:var(--carbon);transition:background var(--dur) var(--ease)}
+.iconbtn:hover{background:var(--pool-100)}
+.iconbtn svg{width:20px;height:20px}
+.iconbtn.on{background:var(--pool-100);color:var(--pool-500)}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--peach);color:var(--white);display:grid;place-items:center;font:600 12px/12px var(--font);text-transform:uppercase}
+
+/* ===== layout ===== */
+.layout{display:grid;grid-template-columns:116px minmax(0,1fr);min-height:calc(100vh - 72px)}
+
+/* left rail · icon + label, 116px */
+.rail{position:sticky;top:72px;height:calc(100vh - 72px);background:var(--cloud);box-shadow:inset -1px 0 0 var(--line);padding:16px 8px;overflow-y:auto}
+.rail-items{display:flex;flex-direction:column;gap:12px;align-items:center}
+.rail-items button{width:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;border-radius:var(--r-nav);color:var(--seal);font:400 12px/16px var(--font);text-align:center;transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+.rail-items button svg{width:16px;height:16px;flex:none}
+.rail-items button:hover{background:var(--mist);color:var(--carbon)}
+.rail-items button.active{background:var(--nav-active);color:var(--carbon)}
+
+.col{min-width:0;display:flex;flex-direction:column}
+
+/* ===== page bar (sticky under app header) ===== */
+.pagebar{position:sticky;top:72px;z-index:100;background:var(--white);box-shadow:inset 0 -1px 0 var(--line);padding:12px 24px}
+.pagebar-row{display:flex;align-items:center;gap:8px;min-height:36px}
+.pagebar h1{font:600 16px/20px var(--font);color:var(--carbon);white-space:nowrap}
+.pagebar .grow{flex:1;min-width:0}
+.pagebar .tools{display:flex;align-items:center;gap:8px}
+.crumbs{display:flex;align-items:center;gap:12px;font:400 16px/20px var(--font);color:var(--carbon);min-width:0}
+.crumbs .sep{color:var(--carbon)}
+.crumbs .cur{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crumbs a{color:var(--carbon);text-decoration:none;cursor:pointer}
+.crumbs a:hover{color:var(--pool-500)}
+.counter{position:relative;display:inline-flex}
+.counter[data-n]::after{content:attr(data-n);position:absolute;z-index:1;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--pool-500);color:var(--white);font:400 11px/18px var(--font);text-align:center;box-shadow:0 0 0 2px var(--white)}
+
+/* ===== tabs ===== */
+.tabs{display:flex;align-items:center;margin-top:8px}
+.tab{padding:8px 12px;font:400 14px/20px var(--font);color:var(--seal);border-bottom:2px solid transparent;transition:color var(--dur) var(--ease)}
+.tab:hover{color:var(--carbon)}
+.tab.active{color:var(--carbon);border-bottom-color:var(--pool-500)}
+
+/* ===== buttons · h36 / r8 / 14px regular ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:8px 16px;border-radius:var(--r-ctl);background:var(--white);border:1px solid var(--pearl);color:var(--carbon);font:400 14px/20px var(--font);white-space:nowrap;transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+.btn:hover{background:var(--cloud)}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-primary{background:var(--pool-500);border-color:var(--pool-500);color:var(--white)}
+.btn-primary:hover{background:var(--pool-600);border-color:var(--pool-600)}
+.btn-secondary{background:var(--pool-100);border-color:transparent;color:var(--pool-500);padding:8px 12px}
+.btn-secondary:hover{background:var(--pool-200)}
+.btn-tertiary{background:transparent;border-color:transparent;color:var(--pool-500);padding:8px 12px}
+.btn-tertiary:hover{background:var(--pool-100)}
+.btn-danger{background:var(--cherry-050);border-color:transparent;color:var(--cherry-900);padding:8px 12px}
+.btn-danger:hover{background:#fbe2e3}
+.btn-icon{width:36px;padding:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ===== fields · label 12/16 + control h36 r8 border smoke ===== */
+.field{display:flex;flex-direction:column;gap:4px}
+.field > label{font:400 12px/16px var(--font);color:var(--carbon)}
+.field input,.field select,.field textarea{width:100%;height:36px;padding:0 16px;border:1px solid var(--smoke);border-radius:var(--r-ctl);background:var(--white);font:400 14px/20px var(--font);color:var(--carbon);outline:0}
+.field select{cursor:pointer;padding-right:40px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23191919' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:20px 20px}
+.field textarea{height:auto;min-height:76px;padding:8px 16px;resize:vertical}
+.field input::placeholder,.field textarea::placeholder{color:var(--smoke)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--pool-500);box-shadow:0 0 0 3px var(--pool-100)}
+.field input:disabled{background:var(--mist);color:var(--seal)}
+.field .hint{font:400 12px/16px var(--font);color:var(--seal)}
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px 8px}
+.filterbar{margin-bottom:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.seg{display:flex;border:1px solid var(--smoke);border-radius:var(--r-ctl);overflow:hidden;height:36px}
+.seg label{flex:1;display:flex;align-items:center;justify-content:center;padding:0 12px;font:400 14px/20px var(--font);color:var(--seal);cursor:pointer;background:var(--white);box-shadow:inset -1px 0 0 var(--pearl)}
+.seg label:last-child{box-shadow:none}
+.seg input{display:none}
+.seg input:checked+label{background:var(--pool-100);color:var(--pool-500)}
+
+/* ===== content ===== */
+.content{flex:1;padding:20px 24px 40px;min-width:0}
+/* list pages sit on white with a full-bleed table; detail pages keep the
+   tinted page background so the white container cards separate */
+.content-list{background:var(--white);padding-bottom:0}
+.table-block{margin:0 -24px}
+
+/* ===== collapsible container card ===== */
+.card{background:var(--white);border:1px solid var(--pearl);border-radius:var(--r-card);margin-bottom:16px;overflow:hidden}
+.card-head{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 16px 6px 24px;background:var(--pool-100);cursor:pointer}
+.card-head .chev{width:20px;height:20px;flex:none;color:var(--pool-900);transition:transform var(--dur) var(--ease)}
+.card.collapsed .card-head .chev{transform:rotate(-90deg)}
+.card-head h3{flex:1;min-width:0;font:400 14px/20px var(--font);color:var(--pool-900)}
+.card-head .acts{display:flex;align-items:center;gap:8px}
+.card-head .acts .btn-tertiary:hover,.card-head .acts .btn-secondary:hover{background:var(--pool-200)}
+.card-body{padding:16px 24px}
+.card.collapsed .card-body,.card.collapsed .subtabs{display:none}
+.card-body.flush{padding:0}
+
+/* key/value */
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px 24px}
+.kv-item{display:flex;flex-direction:column;gap:4px;min-width:0}
+.kv-item .k{font:400 12px/16px var(--font);color:var(--seal)}
+.kv-item .v{font:400 14px/20px var(--font);color:var(--carbon);word-break:break-word}
+
+/* ===== table · header 48 / row 52 ===== */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{height:48px;padding:0 8px;background:var(--white);box-shadow:inset 0 -1px 0 var(--line);font:600 14px/20px var(--font);color:var(--carbon);text-align:left;white-space:nowrap}
+thead th:first-child{padding-left:24px}
+thead th:last-child{padding-right:24px}
+tbody td{height:52px;padding:6px 8px;border-bottom:1px solid var(--pearl);font:400 14px/20px var(--font);color:var(--seal);vertical-align:middle}
+tbody td:first-child{padding-left:24px}
+tbody td:last-child{padding-right:24px}
+tbody tr{transition:background var(--dur) var(--ease)}
+tbody tr.clickable{cursor:pointer}
+tbody tr.clickable:hover{background:var(--cloud)}
+tbody tr:last-child td{border-bottom:0}
+.cell-link{font:600 14px/20px var(--font);color:var(--pool-500);text-decoration:underline;text-underline-position:from-font}
+.strong{font-weight:600;color:var(--carbon)}
+.muted{color:var(--seal)}
+
+/* ===== badges & chips ===== */
+.badge{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:600 12px/16px var(--font);color:var(--pool-500);white-space:nowrap}
+.badge-kiwi{color:var(--kiwi-900);background:var(--kiwi-050);border-color:#BFE3D8}
+.badge-cherry{color:var(--cherry-900);background:var(--cherry-050);border-color:#F5CACC}
+.badge-mango{color:var(--mango-900);background:var(--mango-050);border-color:#F3DBB9}
+.badge-grey{color:var(--seal);background:var(--mist);border-color:var(--pearl)}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.count{display:inline-flex;align-items:center;justify-content:center;height:20px;min-width:24px;padding:0 6px;border-radius:var(--r-chip);background:var(--mist);font:400 12px/16px var(--font);color:var(--carbon)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:400 12px/16px var(--font);color:var(--carbon);white-space:nowrap}
+.chip .x{color:var(--seal);cursor:pointer;font-size:14px;line-height:1}
+.chip .x:hover{color:var(--cherry-500)}
+.chip-link{color:var(--pool-500);cursor:pointer;font-weight:600}
+.chip-add{border-style:dashed;border-color:var(--pool-200);background:var(--pool-100);color:var(--pool-500);cursor:pointer}
+.chip-add:hover{background:var(--pool-200)}
+
+/* ===== pagination · h56 ===== */
+.pager{display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px;padding:0 24px;box-shadow:inset 0 1px 0 var(--line);font:400 14px/20px var(--font);color:var(--seal)}
+.pager-nav{display:flex;align-items:center;gap:4px}
+.pager-nav button{min-width:32px;height:32px;padding:0 8px;border-radius:var(--r-ctl);color:var(--carbon);font:400 14px/20px var(--font)}
+.pager-nav button:hover{background:var(--pool-100)}
+.pager-nav button.active{background:var(--pool-500);color:var(--white)}
+.pager-nav button:disabled{color:var(--smoke);cursor:not-allowed}
+.pager-nav button:disabled:hover{background:none}
+
+/* ===== sub tabs inside a card ===== */
+.subtabs{display:flex;align-items:center;gap:0;padding:0 24px;box-shadow:inset 0 -1px 0 var(--line);overflow-x:auto}
+.subpane{display:none}
+.subpane.active{display:block}
+
+/* ===== timeline ===== */
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1px;background:var(--pearl)}
+.tl-item{position:relative;padding:0 0 16px 8px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;left:-19px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--white);border:2px solid var(--pool-500)}
+.tl-time{font:400 12px/16px var(--font);color:var(--seal)}
+.tl-act{font:600 14px/20px var(--font);color:var(--carbon);margin:2px 0}
+.tl-meta{font:400 12px/16px var(--font);color:var(--seal)}
+
+/* ===== resource tree ===== */
+.tree{font:400 14px/20px var(--font)}
+.tree .row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r-nav);cursor:pointer;color:var(--carbon)}
+.tree .row:hover{background:var(--cloud)}
+.tree .caret{width:14px;color:var(--seal)}
+.tree-children{margin-left:11px;padding-left:12px;box-shadow:inset 1px 0 0 var(--pearl)}
+
+/* ===== modal ===== */
+.overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:64px 16px;background:rgba(25,25,25,.42);overflow-y:auto}
+.overlay.show{display:flex}
+.modal{width:100%;max-width:600px;background:var(--white);border-radius:var(--r-card);overflow:hidden;box-shadow:0 8px 32px rgba(25,25,25,.2)}
+.modal-head{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 16px 6px 24px;background:var(--pool-100)}
+.modal-head h3{flex:1;font:400 14px/20px var(--font);color:var(--pool-900)}
+.modal-body{padding:20px 24px;max-height:60vh;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 24px;box-shadow:inset 0 1px 0 var(--line)}
+.note{padding:12px 16px;border-radius:var(--r-ctl);background:var(--pool-100);color:var(--pool-900);font:400 12px/18px var(--font)}
+
+/* ===== empty ===== */
+.empty{padding:48px 24px;text-align:center;color:var(--seal);font:400 14px/20px var(--font)}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar-l">
+    <button class="iconbtn" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div class="wordmark">
+      <svg class="qima" viewBox="0 0 411 91.301" xmlns="http://www.w3.org/2000/svg" aria-label="QIMA"><path fill="#E4002B" d="M138.024 8.424a7.167 7.167 0 0 1 14.334 0V76.95a7.167 7.167 0 0 1-14.334 0ZM331.726 74.153l30.3-67.594a9.247 9.247 0 0 1 8.74-5.827 9.728 9.728 0 0 1 9.091 5.827l30.302 67.594a7.754 7.754 0 0 1 .815 3.03 6.718 6.718 0 0 1-6.759 6.876c-3.38 0-5.49-2.01-6.992-5.011l-6.644-15.267h-39.623l-6.877 15.733c-1.522 3.002-3.612 4.545-6.642 4.545a6.567 6.567 0 0 1-6.643-6.643 7.77 7.77 0 0 1 .932-3.263Zm53.376-23.075-14.334-32.981-14.335 32.981ZM89.206 79.093 78.039 67.927a43.081 43.081 0 1 0-10.112 10.112l11.166 11.167a7.15 7.15 0 0 0 10.113-10.113ZM14.302 43.012a28.71 28.71 0 1 1 28.71 28.71 28.742 28.742 0 0 1-28.71-28.71ZM206.932 8.657c0-7.796 10.943-10.276 15.383-3.38l24.707 38.692L271.844 5.16c3.944-6.786 15.267-4.333 15.267 3.496V76.95a7.09 7.09 0 0 1-7.226 7.11 7.015 7.015 0 0 1-6.875-7.11V28.206s-16.885 25.183-20.04 29.748c-3.181 4.603-8.82 4.588-11.912 0l-20.025-29.718v48.83a6.966 6.966 0 0 1-7.11 6.993 6.868 6.868 0 0 1-6.992-6.992Z"/></svg>
+      <span class="suffix">access</span>
+    </div>
+  </div>
+  <div class="appbar-r">
+    <button class="env" type="button"><span class="dot"></span>PROD · permission_master<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9.5l6 6 6-6"/></svg></button>
+    <div class="divider-v"></div>
+    <button class="iconbtn" type="button" aria-label="Help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 113.2 2.4c-.5.2-.7.6-.7 1.1v.5"/><circle cx="12" cy="16.8" r=".9" fill="currentColor" stroke="none"/></svg></button>
+    <button class="iconbtn" type="button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 15V10a6 6 0 10-12 0v5l-1.5 3h15L18 15z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
+    <div class="divider-v"></div>
+    <div class="avatar">it</div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="rail">
+    <div class="rail-items" id="nav">
+      <button data-view="module" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg>模块</button>
+      <button data-view="role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20v-1.5a6.5 6.5 0 0113 0V20"/></svg>角色 &amp; 资源</button>
+      <button data-view="user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20v-1a6 6 0 0112 0v1"/><path d="M16 6.2a3.2 3.2 0 010 6M18 20v-1a5 5 0 00-1.6-3.6"/></svg>内部用户</button>
+      <button data-view="customer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a4 4 0 018 0v2"/><circle cx="12" cy="14" r="1.6"/></svg>客户权限</button>
+      <button data-view="platform"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4"/></svg>平台权限</button>
+      <button data-view="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>历史记录</button>
+    </div>
+  </aside>
+
+  <div class="col">
+    <div id="pagebar"></div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()"></div>
+
+<script id="app-script">
+/* ================= data ================= */
+const DATA={
+ module:[
+  {id:'lab',name:'Lab',desc:'实验室业务模块',roles:5,resources:42,isolation:'BU'},
+  {id:'customer',name:'Customer',desc:'客户管理模块',roles:4,resources:28,isolation:'Legal Entity'},
+  {id:'inspector',name:'Inspector',desc:'检验员移动端',roles:3,resources:19,isolation:'Region'},
+  {id:'finance',name:'Finance',desc:'财务模块',roles:6,resources:35,isolation:'BU'},
+  {id:'report',name:'Report',desc:'报告生成模块',roles:3,resources:24,isolation:'None'},
+  {id:'admin',name:'Admin',desc:'平台管理',roles:2,resources:12,isolation:'None'}
+ ],
+ role:[
+  {id:'lab-admin',name:'lab:admin',module:'Lab',desc:'实验室管理员',web:18,api:24,data:1},
+  {id:'lab-viewer',name:'lab:viewer',module:'Lab',desc:'实验室只读',web:12,api:8,data:0},
+  {id:'cust-admin',name:'customer:admin',module:'Customer',desc:'客户管理员',web:15,api:20,data:1},
+  {id:'cust-viewer',name:'customer:viewer',module:'Customer',desc:'客户只读',web:9,api:6,data:0},
+  {id:'fin-admin',name:'finance:admin',module:'Finance',desc:'财务管理员',web:16,api:22,data:1},
+  {id:'rpt-gen',name:'report:generator',module:'Report',desc:'报告生成',web:10,api:14,data:0},
+  {id:'insp-field',name:'inspector:field',module:'Inspector',desc:'现场检验员',web:6,api:13,data:1},
+  {id:'sys-audit',name:'admin:audit',module:'Admin',desc:'审计只读',web:8,api:4,data:0}
+ ],
+ user:[
+  {id:'u1001',email:'leo.chen@qima.com',name:'Leo Chen',dept:'IT',roles:['lab:admin','admin:audit']},
+  {id:'u1002',email:'mia.zhang@qima.com',name:'Mia Zhang',dept:'Lab',roles:['lab:viewer']},
+  {id:'u1003',email:'noah.liu@qima.com',name:'Noah Liu',dept:'Finance',roles:['finance:admin']},
+  {id:'u1004',email:'ava.wang@qima.com',name:'Ava Wang',dept:'Customer',roles:['customer:admin','customer:viewer']},
+  {id:'u1005',email:'ethan.zhao@qima.com',name:'Ethan Zhao',dept:'Lab',roles:['lab:viewer','report:generator']},
+  {id:'u1006',email:'ivy.sun@qima.com',name:'Ivy Sun',dept:'Inspector',roles:['inspector:field']},
+  {id:'u1007',email:'ryan.wu@qima.com',name:'Ryan Wu',dept:'IT',roles:['admin:audit']},
+  {id:'u1008',email:'emma.hu@qima.com',name:'Emma Hu',dept:'Finance',roles:[]}
+ ],
+ customer:[
+  {id:'ak-c01',client:'Mistress Foods',login:'mistress.api',key:'ak_live_8fa2…',status:'Active',mode:'inherit',web:12,api:18,created:'12-May-2026'},
+  {id:'ak-c02',client:'GlobalGourmet',login:'gg.integration',key:'ak_live_3c91…',status:'Active',mode:'direct',web:0,api:9,created:'01-Jun-2026'},
+  {id:'ak-c03',client:'FreshCo',login:'freshco.svc',key:'ak_test_1b7d…',status:'Suspended',mode:'inherit',web:7,api:11,created:'20-Jun-2026'},
+  {id:'ak-c04',client:'PureHarvest',login:'pureharvest',key:'ak_live_55e0…',status:'Active',mode:'direct',web:0,api:5,created:'02-Jul-2026'}
+ ],
+ platform:[
+  {id:'ak-p01',client:'Mesa',login:'mesa.platform',key:'ak_plt_9d2f…',status:'Active',mode:'direct',web:0,api:14,created:'10-Apr-2026'},
+  {id:'ak-p02',client:'ICP',login:'icp.sync',key:'ak_plt_4a8c…',status:'Active',mode:'direct',web:0,api:22,created:'22-May-2026'},
+  {id:'ak-p03',client:'NetSuite',login:'netsuite.fin',key:'ak_plt_7e1b…',status:'Active',mode:'direct',web:0,api:17,created:'15-Jun-2026'}
+ ],
+ history:[
+  {time:'23-Jul-2026 14:32',actor:'leo.chen@qima.com',act:'创建角色 report:generator',meta:'Report 模块 · 关联 10 web / 14 api'},
+  {time:'23-Jul-2026 11:08',actor:'leo.chen@qima.com',act:'为用户 u1004 增加 customer:admin 角色',meta:'Ava Wang · Customer'},
+  {time:'22-Jul-2026 16:45',actor:'ryan.wu@qima.com',act:'创建客户 AccessKey · Mistress Foods',meta:'mode=inherit · ak_live_8fa2…'},
+  {time:'22-Jul-2026 09:20',actor:'leo.chen@qima.com',act:'更新模块 Finance 数据隔离为 BU',meta:'原: Legal Entity'},
+  {time:'21-Jul-2026 17:03',actor:'leo.chen@qima.com',act:'创建平台 AccessKey · Mesa',meta:'mode=direct · 14 api 资源'},
+  {time:'21-Jul-2026 10:14',actor:'ryan.wu@qima.com',act:'移除用户 u1008 的 finance:admin 角色',meta:'Emma Hu'}
+ ]
+};
+
+const VIEWS={
+ module:{title:'模块'},
+ role:{title:'角色 & 资源'},
+ user:{title:'内部用户'},
+ customer:{title:'客户权限'},
+ platform:{title:'平台权限'},
+ history:{title:'历史记录'}
+};
+
+const SVG={
+ plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>',
+ edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M11 4.5H4.5v15h15V13"/><path d="M18.2 2.8a2 2 0 012.9 2.9L12 14.8l-3.9 1 1-3.9 9.1-9.1z"/></svg>',
+ link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 13.5a3.5 3.5 0 005 0l3-3a3.5 3.5 0 00-5-5l-1 1"/><path d="M14 10.5a3.5 3.5 0 00-5 0l-3 3a3.5 3.5 0 005 5l1-1"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M19 12H5.5M11 5.5L4.5 12l6.5 6.5"/></svg>',
+ search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></svg>',
+ erase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 19h11M4.5 15.5l7-7 5 5-6.5 6.5H7l-2.5-2.5z"/></svg>',
+ columns:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4.5" width="16" height="15" rx="1.5"/><path d="M10 4.5v15M15 4.5v15"/></svg>',
+ download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v10M8 10.5l4 4 4-4M5 19.5h14"/></svg>',
+ filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4.5 6.5h15M7 12h10M10 17.5h4"/></svg>',
+ chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9.5l6 6 6-6"/></svg>',
+ sync:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 0113.7-5.6M20 12a8 8 0 01-13.7 5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>',
+ shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3.5l7 2.5v5.5c0 4.3-2.9 7.5-7 9-4.1-1.5-7-4.7-7-9V6l7-2.5z"/></svg>',
+ log:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3.5h9l4 4v13H6z"/><path d="M9 11h7M9 15h5"/></svg>'
+};
+
+const $=s=>document.querySelector(s);
+const pagebar=$('#pagebar'), content=$('#content');
+let currentView='module', showFilters=true;
+
+/* ================= helpers ================= */
+function btn(label,cls,svg,fn){
+ return `<button class="btn ${cls||''}"${fn?` onclick="${fn}"`:''}>${svg||''}${label?`<span>${label}</span>`:''}</button>`;
+}
+function iconBtn(svg,title,fn,cls){
+ return `<button class="iconbtn ${cls||''}" title="${title}" aria-label="${title}"${fn?` onclick="${fn}"`:''}>${svg}</button>`;
+}
+function kv(k,v){return `<div class="kv-item"><div class="k">${k}</div><div class="v">${v}</div></div>`;}
+function field(label,control,hint){return `<div class="field"><label>${label}</label>${control}${hint?`<div class="hint">${hint}</div>`:''}</div>`;}
+function idxOf(view,r){return DATA[view].indexOf(r);}
+
+function isoBadge(v){return v==='None'?'<span class="badge badge-grey">无</span>':`<span class="badge badge-mango">${v}</span>`;}
+function statusBadge(s){return s==='Active'?'<span class="badge badge-kiwi"><span class="dot"></span>Active</span>':'<span class="badge badge-cherry"><span class="dot"></span>Suspended</span>';}
+function modeBadge(m){return m==='inherit'?'<span class="badge">inherit</span>':'<span class="badge badge-mango">direct</span>';}
+
+/* ================= page bar ================= */
+function listPagebar(view){
+ const cfg=VIEWS[view];
+ const filterCount=view==='role'?1:(view==='customer'||view==='platform')?2:view==='user'?1:0;
+ return `<div class="pagebar">
+  <div class="pagebar-row">
+    <h1>${cfg.title}</h1>
+    <span class="count">${DATA[view].length}</span>
+    <div class="grow"></div>
+    <div class="tools">
+      ${iconBtn(SVG.search,'搜索',`focusSearch()`)}
+      ${iconBtn(SVG.erase,'重置筛选',`resetFilters()`)}
+      ${iconBtn(SVG.columns,'列设置')}
+      ${iconBtn(SVG.download,'导出')}
+      <span class="counter"${filterCount?` data-n="${filterCount}"`:''}>${iconBtn(SVG.filter,'筛选',`toggleFilters()`,showFilters?'on':'')}</span>
+      ${listAction(view)}
+    </div>
+  </div>
+  ${listTabs(view)}
+ </div>`;
+}
+
+function listTabs(view){
+ if(view==='customer'||view==='platform')return `<div class="tabs">
+   <button class="tab ${view==='customer'?'active':''}" onclick="switchView('customer')">客户 AccessKey</button>
+   <button class="tab ${view==='platform'?'active':''}" onclick="switchView('platform')">平台 AccessKey</button>
+ </div>`;
+ if(view==='module'||view==='role')return `<div class="tabs">
+   <button class="tab ${view==='module'?'active':''}" onclick="switchView('module')">模块</button>
+   <button class="tab ${view==='role'?'active':''}" onclick="switchView('role')">角色 &amp; 资源</button>
+ </div>`;
+ return '';
+}
+
+function listAction(view){
+ if(view==='module')return btn('新建模块','btn-primary',SVG.plus,`openModal('moduleCreate')`);
+ if(view==='role')return btn('新建角色','btn-primary',SVG.plus,`openModal('roleCreate')`);
+ if(view==='customer')return btn('创建客户 AccessKey','btn-primary',SVG.plus,`openModal('akCreate','customer')`);
+ if(view==='platform')return btn('创建平台 AccessKey','btn-primary',SVG.plus,`openModal('akCreate','platform')`);
+ return '';
+}
+
+function detailPagebar(view,r){
+ return `<div class="pagebar">
+  <div class="pagebar-row">
+    ${btn('Back','btn-tertiary',SVG.back,`backToList()`)}
+    <div class="crumbs">
+      <span class="sep">/</span><a onclick="backToList()">${VIEWS[view].title}</a>
+      <span class="sep">/</span><span class="cur">${detailTitle(view,r)}</span>
+    </div>
+    <div class="grow"></div>
+    <div class="tools">${detailStatus(view,r)}${detailPrimary(view,r)}</div>
+  </div>
+ </div>`;
+}
+function detailTitle(view,r){return view==='customer'||view==='platform'?r.id:r.name;}
+function detailStatus(view,r){return (view==='customer'||view==='platform')?statusBadge(r.status):'';}
+function detailPrimary(view,r){
+ if(view==='user')return btn('编辑用户角色','btn-primary',SVG.edit,`openModal('userRole',${idxOf(view,r)})`);
+ if(view==='module')return btn('管理资源','btn-primary',SVG.link,`openModal('resourceManage','module')`);
+ if(view==='role')return btn('绑定资源','btn-primary',SVG.link,`openModal('bindWeb',${idxOf(view,r)})`);
+ if(view==='customer'||view==='platform')return btn('绑定资源','btn-primary',SVG.link,`openModal('akBind',${idxOf(view,r)})`);
+ return '';
+}
+
+/* ================= list ================= */
+function render(){
+ pagebar.innerHTML=listPagebar(currentView);
+ content.className='content content-list';
+ content.innerHTML=filterCard(currentView)+`<div class="table-block"><div class="table-wrap">${listTable(currentView)}</div>${pager(DATA[currentView].length)}</div>`;
+}
+
+function filterCard(view){
+ if(!showFilters)return '';
+ const sel=(label,opts)=>field(label,`<select>${opts.map(o=>`<option>${o}</option>`).join('')}</select>`);
+ let extra='';
+ if(view==='role')extra=sel('模块前缀',['全部','Lab','Customer','Finance','Report','Inspector','Admin'])+sel('数据隔离',['全部','已配置','未配置']);
+ if(view==='user')extra=sel('部门',['全部','IT','Lab','Finance','Customer','Inspector'])+sel('角色数',['全部','有角色','无角色']);
+ if(view==='customer'||view==='platform')extra=sel('状态',['全部','Active','Suspended'])+sel('模式',['全部','inherit','direct']);
+ if(view==='module')extra=sel('数据隔离维度',['全部','BU','Legal Entity','Region','None']);
+ if(view==='history')extra=sel('操作人',['全部','leo.chen@qima.com','ryan.wu@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
+ return `<div class="filterbar"><div class="filters">
+   ${field('关键字',`<input id="q" placeholder="Type to search..." oninput="filterList(this.value)">`)}
+   ${extra}
+ </div></div>`;
+}
+
+function listTable(view){
+ const rows=DATA[view].map((r,i)=>listRow(view,r,i)).join('');
+ return `<table><thead>${listHead(view)}</thead><tbody id="tbody">${rows}</tbody></table>`;
+}
+
+function listHead(view){
+ return {
+  module:`<tr><th>模块 ID</th><th>名称</th><th>描述</th><th>角色</th><th>资源</th><th>数据隔离</th></tr>`,
+  role:`<tr><th>角色 Key</th><th>模块前缀</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr>`,
+  user:`<tr><th>用户 ID</th><th>姓名</th><th>邮箱</th><th>部门</th><th>角色数</th></tr>`,
+  customer:`<tr><th>AccessKey ID</th><th>客户名称</th><th>登录账号</th><th>模式</th><th>状态</th><th>创建日期</th></tr>`,
+  platform:`<tr><th>AccessKey ID</th><th>平台名称</th><th>登录账号</th><th>模式</th><th>状态</th><th>创建日期</th></tr>`,
+  history:`<tr><th>时间</th><th>操作人</th><th>操作</th><th>对象</th></tr>`
+ }[view];
+}
+
+function listRow(view,r,i){
+ const cl=`class="clickable" data-idx="${i}" onclick="goDetail('${view}',${i})"`;
+ if(view==='module')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.desc}</td><td><span class="count">${r.roles}</span></td><td><span class="count">${r.resources}</span></td><td>${isoBadge(r.isolation)}</td></tr>`;
+ if(view==='role')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td class="strong">${r.module}</td><td>${r.desc}</td><td><span class="count">${r.web}</span></td><td><span class="count">${r.api}</span></td><td>${r.data?'<span class="badge badge-mango"><span class="dot"></span>已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`;
+ if(view==='user')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.email}</td><td>${r.dept}</td><td>${r.roles.length?`<span class="count">${r.roles.length}</span>`:'<span class="badge badge-grey">0</span>'}</td></tr>`;
+ if(view==='customer'||view==='platform')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.client}</td><td>${r.login}</td><td>${modeBadge(r.mode)}</td><td>${statusBadge(r.status)}</td><td>${r.created}</td></tr>`;
+ if(view==='history')return `<tr><td>${r.time}</td><td>${r.actor}</td><td class="strong">${r.act}</td><td>${r.meta}</td></tr>`;
+ return '';
+}
+
+function pager(total){
+ return `<div class="pager"><span>共 ${total} 条 · 每页 10 条</span>
+  <div class="pager-nav"><button disabled>‹</button><button class="active">1</button><button disabled>›</button></div></div>`;
+}
+
+/* ================= detail ================= */
+function goDetail(view,i){
+ const r=DATA[view][i];
+ if(!r||view==='history')return;
+ pagebar.innerHTML=detailPagebar(view,r);
+ content.className='content';
+ content.innerHTML=detailBody(view,r);
+ window.scrollTo(0,0);
+}
+function backToList(){render();window.scrollTo(0,0);}
+
+function card(title,acts,body,subtabs){
+ return `<div class="card">
+  <div class="card-head" onclick="toggleCard(this)">${SVG.chev}<h3>${title}</h3>${acts?`<div class="acts" onclick="event.stopPropagation()">${acts}</div>`:''}</div>
+  ${subtabs||''}
+  <div class="card-body${body.flush?' flush':''}">${body.html!==undefined?body.html:body}</div>
+ </div>`;
+}
+function subtabs(items){
+ return `<div class="subtabs">${items.map((t,i)=>`<button class="tab${i===0?' active':''}" data-p="${t.p}">${t.label}</button>`).join('')}</div>`;
+}
+
+function detailBody(view,r){
+ if(view==='module')return moduleDetail(r);
+ if(view==='role')return roleDetail(r);
+ if(view==='user')return userDetail(r);
+ return akDetail(view,r);
+}
+
+function moduleDetail(r){
+ const i=idxOf('module',r);
+ const roleRows=DATA.role.filter(x=>x.module===r.name);
+ return card('模块信息',btn('编辑','btn-secondary',SVG.edit,`openModal('moduleEdit',${i})`),
+   `<div class="kv">${kv('模块 ID',r.id)}${kv('名称',r.name)}${kv('描述',r.desc)}${kv('数据隔离维度',isoBadge(r.isolation))}</div>`)
+ + card('关联资源',
+   btn('管理资源','btn-secondary',SVG.link,`openModal('resourceManage','module')`),
+   {html:`
+     <div class="subpane active" data-p="web"><div class="chips">
+       <span class="chip">lab.dashboard</span><span class="chip">lab.sample.list</span><span class="chip">lab.sample.detail</span><span class="chip">lab.report.view</span><span class="chip">lab.test.assign</span><span class="chip chip-add" onclick="openModal('resourceManage','module')">${SVG.plus.replace('<svg','<svg style="width:14px;height:14px"')}添加资源</span>
+     </div></div>
+     <div class="subpane" data-p="api"><div class="chips">
+       <span class="chip">GET /v1/lab/samples</span><span class="chip">POST /v1/lab/test</span><span class="chip">GET /v1/lab/report</span><span class="chip chip-add" onclick="openModal('resourceManage','module')">添加 API</span>
+     </div></div>
+     <div class="subpane" data-p="data">
+       <div class="kv">${kv('隔离维度',r.isolation==='None'?'未配置':isoBadge(r.isolation))}${kv('说明','按该维度对模块内资源访问做行级数据隔离，主数据维度在此配置')}</div>
+       <div style="margin-top:16px">${btn('配置数据隔离','btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
+     </div>`},
+   subtabs([{p:'web',label:'Web'},{p:'api',label:'API'},{p:'data',label:'Data'}]))
+ + card('模块内角色',btn('管理角色','btn-secondary',SVG.edit,`openModal('roleManage')`),
+   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>角色 Key</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr></thead><tbody>
+     ${roleRows.map(x=>`<tr class="clickable" onclick="jumpToRole('${x.id}')"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?'<span class="badge badge-mango">已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">该模块暂无角色</td></tr>'}
+   </tbody></table></div>`});
+}
+
+function roleDetail(r){
+ const i=idxOf('role',r);
+ const users=DATA.user.filter(u=>u.roles.includes(r.name));
+ return card('角色信息',btn('编辑','btn-secondary',SVG.edit,`openModal('roleEdit',${i})`),
+   `<div class="kv">${kv('角色 Key',r.name)}${kv('模块前缀',r.module)}${kv('描述',r.desc)}</div>
+    <div class="note" style="margin-top:16px">角色 Key 冒号前为模块前缀，但角色可跨模块绑定资源（例如 Tiktok admin 绑定 customer service 接口）。</div>`)
+ + card('关联资源',
+   btn('绑定 Web','btn-secondary',SVG.link,`openModal('bindWeb',${i})`)+btn('绑定 API','btn-tertiary',SVG.link,`openModal('bindApi',${i})`)+btn('数据隔离','btn-tertiary',SVG.shield,`openModal('bindData',${i})`),
+   {html:`
+     <div class="subpane active" data-p="web"><div class="chips"><span class="chip">lab.dashboard</span><span class="chip">lab.sample.list</span><span class="chip">lab.report.view</span><span class="chip chip-add" onclick="openModal('bindWeb',${i})">绑定 Web</span></div></div>
+     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /v1/lab/samples</span><span class="chip">POST /v1/lab/test</span><span class="chip">GET /v1/lab/report</span><span class="chip chip-add" onclick="openModal('bindApi',${i})">绑定 API</span></div></div>
+     <div class="subpane" data-p="data"><div class="chips">${r.data?'<span class="chip">维度：BU</span><span class="chip">值：700万 BU</span>':'<span class="muted">该角色无数据隔离</span>'}<span class="chip chip-add" onclick="openModal('bindData',${i})">配置隔离</span></div></div>`},
+   subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
+ + card('已授权用户','',
+   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>用户</th><th>邮箱</th><th>部门</th></tr></thead><tbody>
+     ${users.map(u=>`<tr class="clickable" onclick="jumpToUser('${u.id}')"><td><span class="cell-link">${u.name}</span></td><td>${u.email}</td><td>${u.dept}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">暂无授权用户</td></tr>'}
+   </tbody></table></div>`});
+}
+
+function userDetail(r){
+ const i=idxOf('user',r);
+ return card('用户信息','',
+   `<div class="kv">${kv('用户 ID',r.id)}${kv('姓名',r.name)}${kv('邮箱',r.email)}${kv('部门',r.dept)}</div>`)
+ + card('用户角色',btn('编辑角色','btn-secondary',SVG.edit,`openModal('userRole',${i})`),
+   r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" onclick="jumpToRole('${rl}')">${rl}</span>`).join('')}</div>`:'<div class="empty">该用户暂无权限角色</div>');
+}
+
+function akDetail(view,r){
+ const i=idxOf(view,r), isPlat=view==='platform';
+ return card('AccessKey 信息',btn('编辑','btn-secondary',SVG.edit,`openModal('akEdit',${i})`),
+   `<div class="kv">${kv('AccessKey ID',r.id)}${kv(isPlat?'平台':'客户',r.client)}${kv('登录账号',r.login)}${kv('Key',r.key)}${kv('模式',r.mode==='inherit'?'inherit（继承角色）':'direct（直接绑资源）')}${kv('状态',statusBadge(r.status))}${kv('创建日期',r.created)}</div>`)
+ + card('关联资源',
+   btn('绑定资源','btn-secondary',SVG.link,`openModal('akBind',${i})`),
+   {html:`
+     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">customer.portal</span><span class="chip">customer.order.list</span>':'<span class="muted">无 Web 资源</span>'}<span class="chip chip-add" onclick="openModal('akBind',${i})">绑定</span></div></div>
+     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /v1/order/list</span><span class="chip">POST /v1/order/create</span><span class="chip">GET /v1/report</span><span class="chip chip-add" onclick="openModal('akBind',${i})">绑定 API</span></div></div>`},
+   subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`}]))
+ + card('访问日志',btn('查看全部','btn-tertiary',SVG.log,`openModal('akLog',${i})`),
+   `<div class="timeline">
+     <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">POST /v1/order/create</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 142 ms</div></div>
+     <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /v1/order/list</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 88 ms</div></div>
+     <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">IP 10.2.4.8 · 403 Forbidden · 资源未授权</div></div>
+   </div>`);
+}
+
+/* ================= interactions ================= */
+function switchView(v){
+ currentView=v;
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+ render();window.scrollTo(0,0);
+}
+function toggleCard(head){head.parentElement.classList.toggle('collapsed');}
+function toggleFilters(){showFilters=!showFilters;render();}
+function resetFilters(){render();}
+function focusSearch(){if(!showFilters){showFilters=true;render();}const q=$('#q');if(q)q.focus();}
+
+function filterList(q){
+ q=(q||'').toLowerCase();
+ const tbody=$('#tbody');if(!tbody)return;
+ tbody.innerHTML=DATA[currentView].map((r,i)=>JSON.stringify(r).toLowerCase().includes(q)?listRow(currentView,r,i):'').join('')
+  ||`<tr><td colspan="6" class="empty">未找到匹配记录</td></tr>`;
+}
+
+function jumpToRole(key){
+ const i=DATA.role.findIndex(x=>x.id===key||x.name===key);
+ if(i<0)return;currentView='role';
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view==='role'));
+ goDetail('role',i);
+}
+function jumpToUser(id){
+ const i=DATA.user.findIndex(x=>x.id===id);
+ if(i<0)return;currentView='user';
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view==='user'));
+ goDetail('user',i);
+}
+
+/* ================= modals ================= */
+const inp=(ph,val,dis)=>`<input placeholder="${ph||''}"${val!==undefined?` value="${val}"`:''}${dis?' disabled':''}>`;
+const sel=opts=>`<select>${opts.map(o=>`<option${o.sel?' selected':''}>${o.v!==undefined?o.v:o}</option>`).join('')}</select>`;
+
+const MODALS={
+ moduleCreate:{title:'新建模块',body:()=>`
+  <div class="grid-2">${field('模块 ID',inp('如 lab'))}${field('名称',inp('Lab'))}</div>
+  ${field('描述',`<textarea placeholder="模块用途…"></textarea>`)}
+  ${field('数据隔离维度',sel(['None','BU','Legal Entity','Region']))}`},
+ moduleEdit:{title:'编辑模块信息',body:i=>{const r=DATA.module[i];return `
+  <div class="grid-2">${field('模块 ID',inp('',r.id,true))}${field('名称',inp('',r.name))}</div>
+  ${field('描述',`<textarea>${r.desc}</textarea>`)}`;}},
+ isoConfig:{title:'配置数据隔离',body:i=>{const r=DATA.module[i];return field('隔离维度',sel(['None','BU','Legal Entity','Region'].map(v=>({v,sel:v===r.isolation}))));}},
+ roleCreate:{title:'新建角色',body:()=>`
+  <div class="grid-2">${field('角色 Key',inp('module:roleName'))}${field('模块前缀',sel(DATA.module.map(m=>m.name)))}</div>
+  ${field('描述',inp('角色用途…'))}
+  <div class="note">模块前缀仅用于命名归属，角色仍可跨模块绑定资源。</div>`},
+ roleEdit:{title:'编辑角色',body:i=>{const r=DATA.role[i];return `
+  <div class="grid-2">${field('角色 Key',inp('',r.name))}${field('模块前缀',inp('',r.module,true))}</div>
+  ${field('描述',inp('',r.desc))}`;}},
+ userRole:{title:'编辑用户角色',body:i=>{const r=DATA.user[i];return `
+  ${field('用户',inp('',`${r.name} · ${r.email}`,true))}
+  ${field('已分配角色',`<div class="chips">${r.roles.map(rl=>`<span class="chip">${rl}<span class="x" onclick="this.parentElement.remove()">×</span></span>`).join('')||'<span class="muted">暂无</span>'}</div>`)}
+  ${field('添加角色',sel(['选择角色…',...DATA.role.map(x=>x.name)]))}`;}},
+ akCreate:{title:t=>t==='platform'?'创建平台 AccessKey':'创建客户 AccessKey',body:t=>`
+  ${field(`${t==='platform'?'平台':'客户'}名称`,inp(`Type to search...`))}
+  <div class="grid-2">${field('登录账号',inp('login id'))}${field('模式',`<div class="seg"><input type="radio" name="m" id="m1"${t==='platform'?'':' checked'}><label for="m1">inherit</label><input type="radio" name="m" id="m2"${t==='platform'?' checked':''}><label for="m2">direct</label></div>`)}</div>
+  ${field('备注',inp('用途说明…'))}
+  <div class="note">${t==='platform'?'平台 AccessKey 由后台直接创建并 DIRECT 绑定资源。':'后台代创建：原流程需客户先登录后自行生成，此入口供 IT 直接为客户创建 AccessKey（新接口）。'}创建后生成 access key 与 secret，仅展示一次。</div>`},
+ akEdit:{title:'编辑 AccessKey',body:i=>{const r=DATA[currentView][i];return `
+  ${field('AccessKey ID',inp('',r.id,true))}
+  <div class="grid-2">${field('登录账号',inp('',r.login))}${field('状态',sel(['Active','Suspended'].map(v=>({v,sel:v===r.status}))))}</div>`;}},
+ akLog:{title:'AccessKey 访问日志',body:()=>`<div class="timeline">
+  <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">POST /v1/order/create</div><div class="tl-meta">200 OK · 142 ms</div></div>
+  <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /v1/order/list</div><div class="tl-meta">200 OK · 88 ms</div></div>
+  <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">403 Forbidden · 资源未授权</div></div>
+ </div>`},
+ bindWeb:{title:'绑定 Web 资源',body:()=>`
+  ${field('搜索资源',inp('lab.dashboard…'))}
+  ${field('已选',`<div class="chips"><span class="chip">lab.dashboard<span class="x">×</span></span><span class="chip">lab.sample.list<span class="x">×</span></span></div>`)}`},
+ bindApi:{title:'绑定 API 资源',body:()=>`
+  ${field('搜索接口',inp('GET /v1/…'))}
+  ${field('已选',`<div class="chips"><span class="chip">GET /v1/lab/samples<span class="x">×</span></span></div>`)}`},
+ bindData:{title:'配置数据隔离',body:()=>`
+  ${field('隔离维度',sel(['BU','Legal Entity','Region']))}
+  ${field('隔离值',inp('如 700万 BU'))}`},
+ akBind:{title:'绑定资源',body:()=>`
+  ${field('资源类型',`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
+  ${field('搜索',inp('资源 / 接口…'))}`},
+ resourceManage:{title:'管理模块资源',body:()=>`
+  ${field('资源类型',`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label><input type="radio" name="rt" id="rt3"><label for="rt3">API</label></div>`)}
+  ${field('资源树',`<div class="tree">
+    <div class="row"><span class="caret">▾</span>lab.dashboard</div>
+    <div class="tree-children">
+      <div class="row"><span class="caret">▸</span>lab.sample.list</div>
+      <div class="row"><span class="caret">▸</span>lab.report.view</div>
+    </div></div>`)}`},
+ roleManage:{title:'管理模块内角色',body:()=>`
+  ${field('角色列表',`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
+  ${field('新建角色',inp('module:roleName'))}`}
+};
+
+function openModal(key,arg){
+ const m=MODALS[key];if(!m)return;
+ const title=typeof m.title==='function'?m.title(arg):m.title;
+ const body=typeof m.body==='function'?m.body(arg):m.body;
+ $('#overlay').innerHTML=`<div class="modal">
+  <div class="modal-head"><h3>${title}</h3>${iconBtn('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>','关闭','closeModal()')}</div>
+  <div class="modal-body">${body}</div>
+  <div class="modal-foot">${btn('取消','btn-tertiary','','closeModal()')}${btn('保存','btn-primary','','closeModal()')}</div>
+ </div>`;
+ $('#overlay').classList.add('show');
+}
+function closeModal(){$('#overlay').classList.remove('show');$('#overlay').innerHTML='';}
+
+/* sub tabs inside cards */
+document.addEventListener('click',e=>{
+ const st=e.target.closest('.subtabs .tab');
+ if(!st)return;
+ const wrap=st.parentElement;
+ wrap.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+ st.classList.add('active');
+ const body=wrap.parentElement.querySelector('.card-body');
+ if(body)body.querySelectorAll('.subpane').forEach(x=>x.classList.toggle('active',x.dataset.p===st.dataset.p));
+});
+
+document.querySelectorAll('#nav button').forEach(b=>{b.onclick=()=>switchView(b.dataset.view);});
+render();
+</script>
+</body>
+</html>
