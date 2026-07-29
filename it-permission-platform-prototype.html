@@ -244,11 +244,11 @@ tbody tr:last-child td{border-bottom:0}
     <button class="iconbtn" type="button" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <div class="wordmark">
       <svg class="qima" viewBox="0 0 411 91.301" xmlns="http://www.w3.org/2000/svg" aria-label="QIMA"><path fill="#E4002B" d="M138.024 8.424a7.167 7.167 0 0 1 14.334 0V76.95a7.167 7.167 0 0 1-14.334 0ZM331.726 74.153l30.3-67.594a9.247 9.247 0 0 1 8.74-5.827 9.728 9.728 0 0 1 9.091 5.827l30.302 67.594a7.754 7.754 0 0 1 .815 3.03 6.718 6.718 0 0 1-6.759 6.876c-3.38 0-5.49-2.01-6.992-5.011l-6.644-15.267h-39.623l-6.877 15.733c-1.522 3.002-3.612 4.545-6.642 4.545a6.567 6.567 0 0 1-6.643-6.643 7.77 7.77 0 0 1 .932-3.263Zm53.376-23.075-14.334-32.981-14.335 32.981ZM89.206 79.093 78.039 67.927a43.081 43.081 0 1 0-10.112 10.112l11.166 11.167a7.15 7.15 0 0 0 10.113-10.113ZM14.302 43.012a28.71 28.71 0 1 1 28.71 28.71 28.742 28.742 0 0 1-28.71-28.71ZM206.932 8.657c0-7.796 10.943-10.276 15.383-3.38l24.707 38.692L271.844 5.16c3.944-6.786 15.267-4.333 15.267 3.496V76.95a7.09 7.09 0 0 1-7.226 7.11 7.015 7.015 0 0 1-6.875-7.11V28.206s-16.885 25.183-20.04 29.748c-3.181 4.603-8.82 4.588-11.912 0l-20.025-29.718v48.83a6.966 6.966 0 0 1-7.11 6.993 6.868 6.868 0 0 1-6.992-6.992Z"/></svg>
-      <span class="suffix">access</span>
+      <span class="suffix">labs</span>
     </div>
   </div>
   <div class="appbar-r">
-    <button class="env" type="button"><span class="dot"></span>PROD · permission_master<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9.5l6 6 6-6"/></svg></button>
+    <button class="env" type="button"><span class="dot"></span>PROD · lab-service-cloud<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9.5l6 6 6-6"/></svg></button>
     <div class="divider-v"></div>
     <button class="iconbtn" type="button" aria-label="Help"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 113.2 2.4c-.5.2-.7.6-.7 1.1v.5"/><circle cx="12" cy="16.8" r=".9" fill="currentColor" stroke="none"/></svg></button>
     <button class="iconbtn" type="button" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 15V10a6 6 0 10-12 0v5l-1.5 3h15L18 15z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
@@ -278,70 +278,94 @@ tbody tr:last-child td{border-bottom:0}
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()"></div>
 
 <script id="app-script">
-/* ================= data ================= */
+/* ================= data =================
+ * Grounded in QIMAlabs (qimalabs-web-develop / apps/qima-labs):
+ * - auth2 module name used by FE: lab-service-cloud
+ * - resource codes from *appUserPermission / permissionKey (50 keys)
+ * - menu domains from aside-menus.constants.ts
+ * Role keys are ASSUMED (FE only consumes resource codes, not role names).
+ */
 const DATA={
  module:[
-  {id:'lab',name:'Lab',desc:'实验室业务模块',roles:5,resources:42,isolation:'BU'},
-  {id:'customer',name:'Customer',desc:'客户管理模块',roles:4,resources:28,isolation:'Legal Entity'},
-  {id:'inspector',name:'Inspector',desc:'检验员移动端',roles:3,resources:19,isolation:'Region'},
-  {id:'finance',name:'Finance',desc:'财务模块',roles:6,resources:35,isolation:'BU'},
-  {id:'report',name:'Report',desc:'报告生成模块',roles:3,resources:24,isolation:'None'},
-  {id:'admin',name:'Admin',desc:'平台管理',roles:2,resources:12,isolation:'None'}
+  {id:'report-generation',name:'Report Generation',desc:'报告生成 · auth2 归属 lab-service-cloud',roles:3,resources:10,isolation:'Lab Code'},
+  {id:'test-assignment',name:'Test Assignment',desc:'测试分配 (TA) · auth2 归属 lab-service-cloud',roles:2,resources:17,isolation:'Lab Code'},
+  {id:'test-set-up',name:'Test Set Up',desc:'测试方法 / 参数 / Master Data',roles:2,resources:18,isolation:'None'},
+  {id:'template',name:'Template',desc:'结果表模板',roles:2,resources:2,isolation:'None'},
+  {id:'dashboard',name:'Dashboard',desc:'实验室看板',roles:1,resources:1,isolation:'None'},
+  {id:'to-do-list',name:'To-do List',desc:'待办（菜单可见性）',roles:1,resources:1,isolation:'None'}
  ],
  role:[
-  {id:'lab-admin',name:'lab:admin',module:'Lab',desc:'实验室管理员',web:18,api:24,data:1},
-  {id:'lab-viewer',name:'lab:viewer',module:'Lab',desc:'实验室只读',web:12,api:8,data:0},
-  {id:'cust-admin',name:'customer:admin',module:'Customer',desc:'客户管理员',web:15,api:20,data:1},
-  {id:'cust-viewer',name:'customer:viewer',module:'Customer',desc:'客户只读',web:9,api:6,data:0},
-  {id:'fin-admin',name:'finance:admin',module:'Finance',desc:'财务管理员',web:16,api:22,data:1},
-  {id:'rpt-gen',name:'report:generator',module:'Report',desc:'报告生成',web:10,api:14,data:0},
-  {id:'insp-field',name:'inspector:field',module:'Inspector',desc:'现场检验员',web:6,api:13,data:1},
-  {id:'sys-audit',name:'admin:audit',module:'Admin',desc:'审计只读',web:8,api:4,data:0}
+  {id:'labs-admin',name:'lab-service-cloud:admin',module:'Report Generation',desc:'QIMAlabs 全权限管理员',web:24,api:12,data:1},
+  {id:'labs-rg-approver',name:'lab-service-cloud:report-approver',module:'Report Generation',desc:'报告 First Page / Result Table 审批',web:8,api:4,data:1},
+  {id:'labs-rg-editor',name:'lab-service-cloud:report-editor',module:'Report Generation',desc:'报告编辑（含 Unlock）',web:6,api:6,data:0},
+  {id:'labs-ta-editor',name:'lab-service-cloud:ta-editor',module:'Test Assignment',desc:'Test Assignment 编辑 / Unlock',web:14,api:8,data:1},
+  {id:'labs-setup-admin',name:'lab-service-cloud:testsetup-admin',module:'Test Set Up',desc:'Test / Method / Parameters / Master Data',web:16,api:10,data:0},
+  {id:'labs-template',name:'lab-service-cloud:template-editor',module:'Template',desc:'模板查看与编辑',web:2,api:1,data:0},
+  {id:'labs-viewer',name:'lab-service-cloud:viewer',module:'Dashboard',desc:'看板 + 报告只读',web:5,api:2,data:0},
+  {id:'labs-todo',name:'lab-service-cloud:todolist',module:'To-do List',desc:'待办菜单可见',web:1,api:0,data:0}
  ],
  user:[
-  {id:'u1001',email:'leo.chen@qima.com',name:'Leo Chen',dept:'IT',roles:['lab:admin','admin:audit']},
-  {id:'u1002',email:'mia.zhang@qima.com',name:'Mia Zhang',dept:'Lab',roles:['lab:viewer']},
-  {id:'u1003',email:'noah.liu@qima.com',name:'Noah Liu',dept:'Finance',roles:['finance:admin']},
-  {id:'u1004',email:'ava.wang@qima.com',name:'Ava Wang',dept:'Customer',roles:['customer:admin','customer:viewer']},
-  {id:'u1005',email:'ethan.zhao@qima.com',name:'Ethan Zhao',dept:'Lab',roles:['lab:viewer','report:generator']},
-  {id:'u1006',email:'ivy.sun@qima.com',name:'Ivy Sun',dept:'Inspector',roles:['inspector:field']},
-  {id:'u1007',email:'ryan.wu@qima.com',name:'Ryan Wu',dept:'IT',roles:['admin:audit']},
-  {id:'u1008',email:'emma.hu@qima.com',name:'Emma Hu',dept:'Finance',roles:[]}
+  {id:'u1001',email:'stephen.song@qima.com',name:'Stephen Song',dept:'Lab Testing',roles:['lab-service-cloud:admin']},
+  {id:'u1002',email:'yulong.li@qima.com',name:'Yulong Li',dept:'Lab Testing',roles:['lab-service-cloud:report-approver','lab-service-cloud:report-editor']},
+  {id:'u1003',email:'mia.zhang@qima.com',name:'Mia Zhang',dept:'Lab Ops',roles:['lab-service-cloud:ta-editor']},
+  {id:'u1004',email:'ethan.zhao@qima.com',name:'Ethan Zhao',dept:'Lab Ops',roles:['lab-service-cloud:testsetup-admin','lab-service-cloud:template-editor']},
+  {id:'u1005',email:'ava.wang@qima.com',name:'Ava Wang',dept:'Lab Testing',roles:['lab-service-cloud:viewer','lab-service-cloud:todolist']},
+  {id:'u1006',email:'ivy.sun@qima.com',name:'Ivy Sun',dept:'Lab Testing',roles:['lab-service-cloud:report-editor']},
+  {id:'u1007',email:'ryan.wu@qima.com',name:'Ryan Wu',dept:'IT',roles:['lab-service-cloud:admin']},
+  {id:'u1008',email:'emma.hu@qima.com',name:'Emma Hu',dept:'Lab Ops',roles:[]}
  ],
  customer:[
-  {id:'ak-c01',client:'Mistress Foods',login:'mistress.api',key:'ak_live_8fa2…',status:'Active',mode:'inherit',role:'customer:admin',web:12,api:18,created:'12-May-2026',rate:600,peak:412,lastUsed:'23-Jul-2026 13:55'},
-  {id:'ak-c02',client:'GlobalGourmet',login:'gg.integration',key:'ak_live_3c91…',status:'Active',mode:'direct',role:'',web:0,api:9,created:'01-Jun-2026',rate:300,peak:96,lastUsed:'23-Jul-2026 10:02'},
-  {id:'ak-c03',client:'FreshCo',login:'freshco.svc',key:'ak_test_1b7d…',status:'Suspended',mode:'inherit',role:'customer:viewer',web:7,api:11,created:'20-Jun-2026',rate:120,peak:120,lastUsed:'18-Jul-2026 22:31'},
-  {id:'ak-c04',client:'PureHarvest',login:'pureharvest',key:'ak_live_55e0…',status:'Active',mode:'direct',role:'',web:0,api:5,created:'02-Jul-2026',rate:300,peak:47,lastUsed:'22-Jul-2026 16:40'}
+  {id:'ak-c01',client:'Mistress Foods',login:'mistress.lab.api',key:'ak_live_8fa2…',status:'Active',mode:'inherit',role:'lab-service-cloud:viewer',web:4,api:6,created:'12-May-2026',rate:600,peak:412,lastUsed:'23-Jul-2026 13:55'},
+  {id:'ak-c02',client:'GlobalGourmet',login:'gg.lab.integration',key:'ak_live_3c91…',status:'Active',mode:'direct',role:'',web:0,api:9,created:'01-Jun-2026',rate:300,peak:96,lastUsed:'23-Jul-2026 10:02'},
+  {id:'ak-c03',client:'FreshCo',login:'freshco.lab',key:'ak_test_1b7d…',status:'Suspended',mode:'inherit',role:'lab-service-cloud:viewer',web:2,api:4,created:'20-Jun-2026',rate:120,peak:120,lastUsed:'18-Jul-2026 22:31'},
+  {id:'ak-c04',client:'PureHarvest',login:'pureharvest.lab',key:'ak_live_55e0…',status:'Active',mode:'direct',role:'',web:0,api:5,created:'02-Jul-2026',rate:300,peak:47,lastUsed:'22-Jul-2026 16:40'}
  ],
  platform:[
-  {id:'ak-p01',client:'Mesa',login:'mesa.platform',key:'ak_plt_9d2f…',status:'Active',mode:'direct',role:'',web:0,api:14,created:'10-Apr-2026',rate:3000,peak:1840,lastUsed:'23-Jul-2026 14:20'},
-  {id:'ak-p02',client:'ICP',login:'icp.sync',key:'ak_plt_4a8c…',status:'Active',mode:'direct',role:'',web:0,api:22,created:'22-May-2026',rate:6000,peak:5210,lastUsed:'23-Jul-2026 14:22'},
-  {id:'ak-p03',client:'NetSuite',login:'netsuite.fin',key:'ak_plt_7e1b…',status:'Active',mode:'direct',role:'',web:0,api:17,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07'}
+  {id:'ak-p01',client:'AIMS',login:'aims.lab.sync',key:'ak_plt_9d2f…',status:'Active',mode:'direct',role:'',web:0,api:14,created:'10-Apr-2026',rate:3000,peak:1840,lastUsed:'23-Jul-2026 14:20'},
+  {id:'ak-p02',client:'myQIMA',login:'myqima.lab',key:'ak_plt_4a8c…',status:'Active',mode:'direct',role:'',web:0,api:22,created:'22-May-2026',rate:6000,peak:5210,lastUsed:'23-Jul-2026 14:22'},
+  {id:'ak-p03',client:'Public-API',login:'publicapi.lab',key:'ak_plt_7e1b…',status:'Active',mode:'direct',role:'',web:0,api:17,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07'}
  ],
  history:[
-  {time:'23-Jul-2026 14:32',actor:'leo.chen@qima.com',act:'创建角色 report:generator',meta:'Report 模块 · 关联 10 web / 14 api'},
-  {time:'23-Jul-2026 11:08',actor:'leo.chen@qima.com',act:'为用户 u1004 增加 customer:admin 角色',meta:'Ava Wang · Customer'},
+  {time:'23-Jul-2026 14:32',actor:'ryan.wu@qima.com',act:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER',meta:'角色 lab-service-cloud:report-approver'},
+  {time:'23-Jul-2026 11:08',actor:'ryan.wu@qima.com',act:'为用户 u1002 增加 lab-service-cloud:report-approver',meta:'Yulong Li · Lab Testing'},
   {time:'22-Jul-2026 16:45',actor:'ryan.wu@qima.com',act:'创建客户 AccessKey · Mistress Foods',meta:'mode=inherit · ak_live_8fa2…'},
-  {time:'22-Jul-2026 09:20',actor:'leo.chen@qima.com',act:'更新模块 Finance 数据隔离为 BU',meta:'原: Legal Entity'},
-  {time:'21-Jul-2026 17:03',actor:'leo.chen@qima.com',act:'创建平台 AccessKey · Mesa',meta:'mode=direct · 14 api 资源'},
-  {time:'21-Jul-2026 10:14',actor:'ryan.wu@qima.com',act:'移除用户 u1008 的 finance:admin 角色',meta:'Emma Hu'}
+  {time:'22-Jul-2026 09:20',actor:'stephen.song@qima.com',act:'更新模块 Report Generation 数据隔离为 Lab Code',meta:'原: None'},
+  {time:'21-Jul-2026 17:03',actor:'ryan.wu@qima.com',act:'创建平台 AccessKey · AIMS',meta:'mode=direct · AIMS→Labs 同步'},
+  {time:'21-Jul-2026 10:14',actor:'ryan.wu@qima.com',act:'移除用户 u1008 的 lab-service-cloud:ta-editor',meta:'Emma Hu'}
  ]
 };
 
-/* customer master data lives in Customer Service — searched, never edited here */
+/* Real PAGE/BUTTON resource codes under auth2 module lab-service-cloud */
+const LAB_RESOURCES={
+ 'report-generation':{
+  web:['REPORTGENERATION:VIEW','REPORTGENERATION:FIRSTPAGE:VIEW','REPORTGENERATION:FIRSTPAGE:EDIT','REPORTGENERATION:FIRSTPAGE:APPROVER','REPORTGENERATION:RESULTTABLE:VIEW','REPORTGENERATION:RESULTTABLE:EDIT','REPORTGENERATION:RESULTTABLE:APPROVER','REPORTGENERATION:RESULTTABLE:UNLOCK','REPORTGENERATION:DEPARTMENT:APPROVER','REPORTGENERATION:ADMIN','INFO:PAGE:VIEW'],
+  api:['GET /lab-service-cloud/v1.0/report/{id}','PUT /lab-service-cloud/v1.0/report/{id}/first-page','POST /lab-service-cloud/v1.0/business-lock/**']
+ },
+ 'test-assignment':{
+  web:['TA:VIEW','TA:PAGE:CONFIRMPARAMETERS:VIEW','TA:PAGE:CONFIRMPARAMETERS:EDIT','TA:PAGE:CONFIRMPARAMETERS:UNLOCK','TA:PAGE:EDITSPECIMEN:VIEW','TA:PAGE:EDITSPECIMEN:EDIT','TA:PAGE:EDITSPECIMEN:ADDSPECIMEN','TA:PAGE:GENERATEBREAKDOWNLIST:VIEW','TA:PAGE:GENERATEBREAKDOWNLIST:EDIT','TA:PAGE:GENERATEBREAKDOWNLIST:EXPORTBREAKDOWNCHECKLIST'],
+  api:['GET /lab-service-cloud/v1.0/todo-task/**','POST /lab-service-cloud/v1.0/business-lock/types/{type}']
+ },
+ 'test-set-up':{
+  web:['TESTSETUP:VIEW','TESTSETUP:PAGE:TEST:VIEW','TESTSETUP:PAGE:TEST:EDIT','TESTSETUP:PAGE:TEST:GENERALINFO:VIEW','TESTSETUP:PAGE:TEST:LABINFO:VIEW','TESTSETUP:PAGE:TEST:PARAMETERINFO:VIEW','TESTSETUP:PAGE:TESTMETHOD:VIEW','TESTSETUP:PAGE:PARAMETERS:VIEW','TESTSETUP:PAGE:MASTERDATA:VIEW','TESTSETUP:PAGE:TEST:AIMSTOLABS:EDIT'],
+  api:['GET /lab-service-cloud/v1.0/test/**','GET /lab-service-cloud/v1.0/lab/list','POST /lab-service-cloud/v1.0/data-config/**']
+ },
+ template:{web:['TEMPLATE:VIEW','TEMPLATE:EDIT'],api:['GET /lab-service-cloud/v1.0/template/**']},
+ dashboard:{web:['DASHBOARD:VIEW'],api:[]},
+ 'to-do-list':{web:['TODOLIST:VIEW'],api:[]}
+};
+
 const CUSTOMERS=[
- {code:'C-10428',name:'Mistress Foods',logins:['mistress.api','mistress.portal']},
- {code:'C-10871',name:'GlobalGourmet',logins:['gg.integration']},
- {code:'C-11294',name:'FreshCo',logins:['freshco.svc','freshco.ops']},
- {code:'C-11530',name:'PureHarvest',logins:['pureharvest']},
- {code:'C-11902',name:'Nordic Seafood',logins:['nordic.api','nordic.edi']}
+ {code:'C-10428',name:'Mistress Foods',logins:['mistress.lab.api','mistress.portal']},
+ {code:'C-10871',name:'GlobalGourmet',logins:['gg.lab.integration']},
+ {code:'C-11294',name:'FreshCo',logins:['freshco.lab','freshco.ops']},
+ {code:'C-11530',name:'PureHarvest',logins:['pureharvest.lab']},
+ {code:'C-11902',name:'Nordic Seafood',logins:['nordic.lab.api']}
 ];
 const PLATFORMS=[
- {code:'P-01',name:'Mesa',logins:['mesa.platform']},
- {code:'P-02',name:'ICP',logins:['icp.sync']},
- {code:'P-03',name:'NetSuite',logins:['netsuite.fin']},
- {code:'P-04',name:'Workday',logins:['workday.hr']}
+ {code:'P-01',name:'AIMS',logins:['aims.lab.sync']},
+ {code:'P-02',name:'myQIMA',logins:['myqima.lab']},
+ {code:'P-03',name:'Public-API',logins:['publicapi.lab']},
+ {code:'P-04',name:'NetSuite',logins:['netsuite.fin']}
 ];
 
 const VIEWS={
@@ -422,7 +446,7 @@ function listTabs(view){
 }
 
 function listAction(view){
- if(view==='module')return btn('新建模块','btn-primary',SVG.plus,`openModal('moduleCreate')`);
+ if(view==='module')return btn('新建功能域','btn-primary',SVG.plus,`openModal('moduleCreate')`);
  if(view==='role')return btn('新建角色','btn-primary',SVG.plus,`openModal('roleCreate')`);
  if(view==='customer')return btn('创建客户 AccessKey','btn-primary',SVG.plus,`openModal('akCreate','customer')`);
  if(view==='platform')return btn('创建平台 AccessKey','btn-primary',SVG.plus,`openModal('akCreate','platform')`);
@@ -465,12 +489,12 @@ function filterCard(view){
  if(!showFilters)return '';
  const sel=(label,opts)=>field(label,`<select>${opts.map(o=>`<option>${o}</option>`).join('')}</select>`);
  let extra='';
- if(view==='role')extra=sel('模块前缀',['全部','Lab','Customer','Finance','Report','Inspector','Admin'])+sel('数据隔离',['全部','已配置','未配置']);
- if(view==='user')extra=sel('部门',['全部','IT','Lab','Finance','Customer','Inspector'])+sel('角色数',['全部','有角色','无角色']);
+ if(view==='role')extra=sel('模块前缀',['全部','Report Generation','Test Assignment','Test Set Up','Template','Dashboard','To-do List'])+sel('数据隔离',['全部','已配置','未配置']);
+ if(view==='user')extra=sel('部门',['全部','Lab Testing','Lab Ops','IT'])+sel('角色数',['全部','有角色','无角色']);
  if(view==='customer'||view==='platform')extra=sel('状态',['全部','Active','Suspended'])+sel('模式',['全部','inherit','direct']);
- if(view==='module')extra=sel('数据隔离维度',['全部','BU','Legal Entity','Region','None']);
+ if(view==='module')extra=sel('数据隔离维度',['全部','Lab Code','None']);
  if(view==='history')extra=field('起始日期',`<input type="date" value="2026-07-17">`)+field('结束日期',`<input type="date" value="2026-07-23">`)
-   +sel('操作人',['全部','leo.chen@qima.com','ryan.wu@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
+   +sel('操作人',['全部','ryan.wu@qima.com','stephen.song@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
  return `<div class="filterbar"><div class="filters">
    ${field('关键字',`<input id="q" placeholder="Type to search..." oninput="filterList(this.value)">`)}
    ${extra}
@@ -484,8 +508,8 @@ function listTable(view){
 
 function listHead(view){
  return {
-  module:`<tr><th>模块 ID</th><th>名称</th><th>描述</th><th>角色</th><th>资源</th><th>数据隔离</th></tr>`,
-  role:`<tr><th>角色 Key</th><th>模块前缀</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr>`,
+  module:`<tr><th>功能域 ID</th><th>名称</th><th>描述</th><th>角色</th><th>资源</th><th>数据隔离</th></tr>`,
+  role:`<tr><th>角色 Key</th><th>功能域</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr>`,
   user:`<tr><th>用户 ID</th><th>姓名</th><th>邮箱</th><th>部门</th><th>角色数</th></tr>`,
   customer:`<tr><th>AccessKey ID</th><th>客户名称</th><th>登录账号</th><th>模式</th><th>状态</th><th>创建日期</th></tr>`,
   platform:`<tr><th>AccessKey ID</th><th>平台名称</th><th>登录账号</th><th>模式</th><th>状态</th><th>创建日期</th></tr>`,
@@ -542,22 +566,23 @@ function detailBody(view,r){
 function moduleDetail(r){
  const i=idxOf('module',r);
  const roleRows=DATA.role.filter(x=>x.module===r.name);
+ const res=LAB_RESOURCES[r.id]||{web:[],api:[]};
+ const webChips=res.web.slice(0,8).map(c=>`<span class="chip">${c}</span>`).join('')
+  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">${SVG.plus.replace('<svg','<svg style="width:14px;height:14px"')}添加资源</span>`;
+ const apiChips=(res.api.length?res.api:['（本域主要为 PAGE/BUTTON 资源）']).map(c=>`<span class="chip">${c}</span>`).join('')
+  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">添加 API</span>`;
  return card('模块信息',btn('编辑','btn-secondary',SVG.edit,`openModal('moduleEdit',${i})`),
-   `<div class="kv">${kv('模块 ID',r.id)}${kv('名称',r.name)}${kv('描述',r.desc)}${kv('数据隔离维度',isoBadge(r.isolation))}</div>`)
+   `<div class="kv">${kv('功能域 ID',r.id)}${kv('名称',r.name)}${kv('auth2 Module','lab-service-cloud')}${kv('描述',r.desc)}${kv('数据隔离维度',isoBadge(r.isolation))}</div>`)
  + card('关联资源',
    btn('管理资源','btn-secondary',SVG.link,`openModal('resourceManage','module')`),
    {html:`
-     <div class="subpane active" data-p="web"><div class="chips">
-       <span class="chip">lab.dashboard</span><span class="chip">lab.sample.list</span><span class="chip">lab.sample.detail</span><span class="chip">lab.report.view</span><span class="chip">lab.test.assign</span><span class="chip chip-add" onclick="openModal('resourceManage','module')">${SVG.plus.replace('<svg','<svg style="width:14px;height:14px"')}添加资源</span>
-     </div></div>
-     <div class="subpane" data-p="api"><div class="chips">
-       <span class="chip">GET /v1/lab/samples</span><span class="chip">POST /v1/lab/test</span><span class="chip">GET /v1/lab/report</span><span class="chip chip-add" onclick="openModal('resourceManage','module')">添加 API</span>
-     </div></div>
+     <div class="subpane active" data-p="web"><div class="chips">${webChips}</div></div>
+     <div class="subpane" data-p="api"><div class="chips">${apiChips}</div></div>
      <div class="subpane" data-p="data">
-       <div class="kv">${kv('隔离维度',r.isolation==='None'?'未配置':isoBadge(r.isolation))}${kv('说明','按该维度对模块内资源访问做行级数据隔离，主数据维度在此配置')}</div>
+       <div class="kv">${kv('隔离维度',r.isolation==='None'?'未配置':isoBadge(r.isolation))}${kv('说明',r.isolation==='Lab Code'?'按 Lab Code 限制订单 / 报告可见范围（字段 labCodes）':'该功能域未配置行级数据隔离')}</div>
        <div style="margin-top:16px">${btn('配置数据隔离','btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
      </div>`},
-   subtabs([{p:'web',label:'Web'},{p:'api',label:'API'},{p:'data',label:'Data'}]))
+   subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:'Data'}]))
  + card('模块内角色',btn('管理角色','btn-secondary',SVG.edit,`openModal('roleManage')`),
    {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>角色 Key</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr></thead><tbody>
      ${roleRows.map(x=>`<tr class="clickable" onclick="jumpToRole('${x.id}')"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?'<span class="badge badge-mango">已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">该模块暂无角色</td></tr>'}
@@ -567,15 +592,18 @@ function moduleDetail(r){
 function roleDetail(r){
  const i=idxOf('role',r);
  const users=DATA.user.filter(u=>u.roles.includes(r.name));
+ const mod=DATA.module.find(m=>m.name===r.module);
+ const res=LAB_RESOURCES[mod?mod.id:'report-generation']||{web:[],api:[]};
+ const webShow=res.web.slice(0,4);
+ const apiShow=res.api.slice(0,3);
  return card('角色信息',btn('编辑','btn-secondary',SVG.edit,`openModal('roleEdit',${i})`),
-   `<div class="kv">${kv('角色 Key',r.name)}${kv('模块前缀',r.module)}${kv('描述',r.desc)}</div>
-    <div class="note" style="margin-top:16px">角色 Key 冒号前为模块前缀，但角色可跨模块绑定资源（例如 Tiktok admin 绑定 customer service 接口）。</div>`)
+   `<div class="kv">${kv('角色 Key',r.name)}${kv('功能域',r.module)}${kv('auth2 Module','lab-service-cloud')}${kv('描述',r.desc)}</div>`)
  + card('关联资源',
    btn('绑定 Web','btn-secondary',SVG.link,`openModal('bindWeb',${i})`)+btn('绑定 API','btn-tertiary',SVG.link,`openModal('bindApi',${i})`)+btn('数据隔离','btn-tertiary',SVG.shield,`openModal('bindData',${i})`),
    {html:`
-     <div class="subpane active" data-p="web"><div class="chips"><span class="chip">lab.dashboard</span><span class="chip">lab.sample.list</span><span class="chip">lab.report.view</span><span class="chip chip-add" onclick="openModal('bindWeb',${i})">绑定 Web</span></div></div>
-     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /v1/lab/samples</span><span class="chip">POST /v1/lab/test</span><span class="chip">GET /v1/lab/report</span><span class="chip chip-add" onclick="openModal('bindApi',${i})">绑定 API</span></div></div>
-     <div class="subpane" data-p="data"><div class="chips">${r.data?'<span class="chip">维度：BU</span><span class="chip">值：700万 BU</span>':'<span class="muted">该角色无数据隔离</span>'}<span class="chip chip-add" onclick="openModal('bindData',${i})">配置隔离</span></div></div>`},
+     <div class="subpane active" data-p="web"><div class="chips">${webShow.map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindWeb',${i})">绑定 Web</span></div></div>
+     <div class="subpane" data-p="api"><div class="chips">${(apiShow.length?apiShow:['（无独立 API 资源码）']).map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindApi',${i})">绑定 API</span></div></div>
+     <div class="subpane" data-p="data"><div class="chips">${r.data?'<span class="chip">维度：Lab Code</span><span class="chip">值：LAB001 · LAB002</span>':'<span class="muted">该角色无数据隔离</span>'}<span class="chip chip-add" onclick="openModal('bindData',${i})">配置隔离</span></div></div>`},
    subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
  + card('已授权用户','',
    {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>用户</th><th>邮箱</th><th>部门</th></tr></thead><tbody>
@@ -600,9 +628,9 @@ function akDetail(view,r){
    `<div class="kv">${kv('请求上限',`${r.rate} 次 / 分钟`)}${kv('计数方式','Redis 滑动窗口 · 按 AccessKey 计数')}${kv('超限响应','429 Too Many Requests')}${kv('近 24h 峰值',`${r.peak} 次 / 分钟${r.peak>=r.rate?' <span class="badge badge-cherry">已触顶</span>':''}`)}</div>`)
  + card('访问日志',btn('查看全部','btn-tertiary',SVG.log,`openModal('akLog',${i})`),
    `<div class="timeline">
-     <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">POST /v1/order/create</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 142 ms</div></div>
-     <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /v1/order/list</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 88 ms</div></div>
-     <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">IP 10.2.4.8 · 403 Forbidden · 资源未授权</div></div>
+     <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">GET /lab-service-cloud/v1.0/report/{id}</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 142 ms</div></div>
+     <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /lab-service-cloud/v1.0/lab/list</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 88 ms</div></div>
+     <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">PUT /lab-service-cloud/v1.0/report/{id}/first-page</div><div class="tl-meta">IP 10.2.4.8 · 403 Forbidden · 缺 REPORTGENERATION:FIRSTPAGE:EDIT</div></div>
    </div>`,'',{lazy:true});
 }
 
@@ -615,8 +643,8 @@ function akResourceCard(view,r,i,inherit){
  return card('关联资源',
    btn('绑定资源','btn-secondary',SVG.link,`openModal('akBind',${i})`),
    {html:`
-     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">customer.portal</span><span class="chip">customer.order.list</span>':'<span class="muted">无 Web 资源</span>'}<span class="chip chip-add" onclick="openModal('akBind',${i})">绑定</span></div></div>
-     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /v1/order/list</span><span class="chip">POST /v1/order/create</span><span class="chip">GET /v1/report</span><span class="chip chip-add" onclick="openModal('akBind',${i})">绑定 API</span></div></div>`},
+     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">REPORTGENERATION:VIEW</span><span class="chip">INFO:PAGE:VIEW</span>':'<span class="muted">无 Web 资源</span>'}<span class="chip chip-add" onclick="openModal('akBind',${i})">绑定</span></div></div>
+     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list</span><span class="chip">GET /lab-service-cloud/v1.0/report/{id}</span><span class="chip chip-add" onclick="openModal('akBind',${i})">绑定 API</span></div></div>`},
    subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`}]));
 }
 
@@ -663,20 +691,21 @@ const inp=(ph,val,dis)=>`<input placeholder="${ph||''}"${val!==undefined?` value
 const sel=opts=>`<select>${opts.map(o=>`<option${o.sel?' selected':''}>${o.v!==undefined?o.v:o}</option>`).join('')}</select>`;
 
 const MODALS={
- moduleCreate:{title:'新建模块',body:()=>`
-  <div class="grid-2">${field('模块 ID',inp('如 lab'))}${field('名称',inp('Lab'))}</div>
-  ${field('描述',`<textarea placeholder="模块用途…"></textarea>`)}
-  ${field('数据隔离维度',sel(['None','BU','Legal Entity','Region']))}`},
- moduleEdit:{title:'编辑模块信息',body:i=>{const r=DATA.module[i];return `
-  <div class="grid-2">${field('模块 ID',inp('',r.id,true))}${field('名称',inp('',r.name))}</div>
+ moduleCreate:{title:'新建功能域',body:()=>`
+  <div class="grid-2">${field('功能域 ID',inp('如 report-generation'))}${field('名称',inp('Report Generation'))}</div>
+  ${field('描述',`<textarea placeholder="用途…（资源仍归属 auth2 module lab-service-cloud）"></textarea>`)}
+  ${field('数据隔离维度',sel(['None','Lab Code']))}`},
+ moduleEdit:{title:'编辑功能域',body:i=>{const r=DATA.module[i];return `
+  <div class="grid-2">${field('功能域 ID',inp('',r.id,true))}${field('名称',inp('',r.name))}</div>
+  ${field('auth2 Module',inp('','lab-service-cloud',true))}
   ${field('描述',`<textarea>${r.desc}</textarea>`)}`;}},
- isoConfig:{title:'配置数据隔离',body:i=>{const r=DATA.module[i];return field('隔离维度',sel(['None','BU','Legal Entity','Region'].map(v=>({v,sel:v===r.isolation}))));}},
+ isoConfig:{title:'配置数据隔离',body:i=>{const r=DATA.module[i];return field('隔离维度',sel(['None','Lab Code'].map(v=>({v,sel:v===r.isolation}))));}},
  roleCreate:{title:'新建角色',body:()=>`
-  <div class="grid-2">${field('角色 Key',inp('module:roleName'))}${field('模块前缀',sel(DATA.module.map(m=>m.name)))}</div>
+  <div class="grid-2">${field('角色 Key',inp('lab-service-cloud:roleName'))}${field('功能域',sel(DATA.module.map(m=>m.name)))}</div>
   ${field('描述',inp('角色用途…'))}
-  <div class="note">模块前缀仅用于命名归属，角色仍可跨模块绑定资源。</div>`},
+  <div class="note">QIMAlabs FE 只校验资源码；角色名在 auth2 中配置，建议统一 lab-service-cloud: 前缀。</div>`},
  roleEdit:{title:'编辑角色',body:i=>{const r=DATA.role[i];return `
-  <div class="grid-2">${field('角色 Key',inp('',r.name))}${field('模块前缀',inp('',r.module,true))}</div>
+  <div class="grid-2">${field('角色 Key',inp('',r.name))}${field('功能域',inp('',r.module,true))}</div>
   ${field('描述',inp('',r.desc))}`;}},
  userRole:{title:'编辑用户角色',body:i=>{const r=DATA.user[i];return `
   ${field('用户',inp('',`${r.name} · ${r.email}`,true))}
@@ -711,28 +740,29 @@ const MODALS={
   <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">403 Forbidden · 资源未授权</div></div>
  </div>`},
  bindWeb:{title:'绑定 Web 资源',body:()=>`
-  ${field('搜索资源',inp('lab.dashboard…'))}
-  ${field('已选',`<div class="chips"><span class="chip">lab.dashboard<span class="x">×</span></span><span class="chip">lab.sample.list<span class="x">×</span></span></div>`)}`},
+  ${field('搜索资源',inp('REPORTGENERATION:FIRSTPAGE:VIEW…'))}
+  ${field('已选',`<div class="chips"><span class="chip">REPORTGENERATION:VIEW<span class="x">×</span></span><span class="chip">REPORTGENERATION:FIRSTPAGE:VIEW<span class="x">×</span></span></div>`)}`},
  bindApi:{title:'绑定 API 资源',body:()=>`
-  ${field('搜索接口',inp('GET /v1/…'))}
-  ${field('已选',`<div class="chips"><span class="chip">GET /v1/lab/samples<span class="x">×</span></span></div>`)}`},
+  ${field('搜索接口',inp('/lab-service-cloud/v1.0/…'))}
+  ${field('已选',`<div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list<span class="x">×</span></span></div>`)}`},
  bindData:{title:'配置数据隔离',body:()=>`
-  ${field('隔离维度',sel(['BU','Legal Entity','Region']))}
-  ${field('隔离值',inp('如 700万 BU'))}`},
+  ${field('隔离维度',sel(['Lab Code']))}
+  ${field('隔离值',inp('如 LAB001, LAB002'))}`},
  akBind:{title:'绑定资源',body:()=>`
   ${field('资源类型',`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
-  ${field('搜索',inp('资源 / 接口…'))}`},
- resourceManage:{title:'管理模块资源',body:()=>`
+  ${field('搜索',inp('REPORTGENERATION:… / TA:…'))}`},
+ resourceManage:{title:'管理功能域资源',body:()=>`
   ${field('资源类型',`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label><input type="radio" name="rt" id="rt3"><label for="rt3">API</label></div>`)}
-  ${field('资源树',`<div class="tree">
-    <div class="row"><span class="caret">▾</span>lab.dashboard</div>
+  ${field('资源树 · lab-service-cloud',`<div class="tree">
+    <div class="row"><span class="caret">▾</span>REPORTGENERATION:VIEW</div>
     <div class="tree-children">
-      <div class="row"><span class="caret">▸</span>lab.sample.list</div>
-      <div class="row"><span class="caret">▸</span>lab.report.view</div>
+      <div class="row"><span class="caret">▸</span>REPORTGENERATION:FIRSTPAGE:VIEW</div>
+      <div class="row"><span class="caret">▸</span>REPORTGENERATION:RESULTTABLE:EDIT</div>
+      <div class="row"><span class="caret">▸</span>REPORTGENERATION:FIRSTPAGE:APPROVER</div>
     </div></div>`)}`},
- roleManage:{title:'管理模块内角色',body:()=>`
+ roleManage:{title:'管理功能域内角色',body:()=>`
   ${field('角色列表',`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
-  ${field('新建角色',inp('module:roleName'))}`}
+  ${field('新建角色',inp('lab-service-cloud:roleName'))}`}
 };
 
 function openModal(key,arg){
