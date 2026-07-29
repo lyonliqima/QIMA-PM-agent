@@ -177,11 +177,15 @@ tbody tr:last-child td{border-bottom:0}
 .chip-add{border-style:dashed;border-color:var(--pool-200);background:var(--pool-100);color:var(--pool-500);cursor:pointer}
 .chip-add:hover{background:var(--pool-200)}
 
-/* ===== permission board (page cards · action checks) ===== */
-.perm-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+/* ===== permission board · module column → page cards → actions ===== */
+.perm-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
+.perm-col{border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);overflow:hidden;min-width:0}
+.perm-col-head{min-height:44px;display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--cloud);box-shadow:inset 0 -1px 0 var(--pearl);font:600 13px/18px var(--font);color:var(--carbon);flex-wrap:wrap}
+.perm-col-head .mod-acts{display:flex;flex-wrap:wrap;gap:4px 10px;width:100%;margin-top:2px;padding-left:24px}
+.perm-col-head .mod-acts label,.perm-col-head .mod-acts .perm-act{min-height:28px;padding:2px 0;font:400 12px/16px var(--font)}
+.perm-tree{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;padding:12px;background:var(--white)}
 .perm-page{border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--cloud);overflow:hidden;min-width:0}
 .perm-page-head{min-height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--white);box-shadow:inset 0 -1px 0 var(--pearl);font:600 13px/18px var(--font);color:var(--carbon)}
-.perm-page-head .code{margin-left:auto;font:400 11px/14px var(--font);color:var(--smoke);max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .perm-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;padding:8px}
 .perm-act{min-height:34px;display:flex;align-items:flex-start;gap:8px;padding:7px 8px;border-radius:var(--r-nav);color:var(--seal);font:400 13px/18px var(--font);cursor:default}
 .perm-act.interactive{cursor:pointer}
@@ -190,7 +194,8 @@ tbody tr:last-child td{border-bottom:0}
 .perm-act .act-label{flex:1;min-width:0}
 .perm-act .act-code{display:block;margin-top:2px;font:400 11px/14px var(--font);color:var(--smoke);word-break:break-all}
 .perm-board-empty{padding:24px;text-align:center;color:var(--seal);font:400 13px/18px var(--font)}
-.modal.wide{max-width:880px}
+.perm-col[hidden],.perm-page[hidden]{display:none!important}
+.modal.wide{max-width:960px}
 .modal.wide .modal-body{max-height:70vh}
 
 /* ===== pagination · h56 ===== */
@@ -457,32 +462,51 @@ function prettySeg(s){
  if(SEG_LABEL[s])return SEG_LABEL[s];
  return s.toLowerCase().replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 }
-/* Split codes like TESTSETUP:PAGE:TEST:GENERALINFO:VIEW → {page, action, code} */
+/* Split codes like TESTSETUP:PAGE:TEST:GENERALINFO:VIEW → module / page / action */
 function parseWebCode(code){
  const parts=String(code).split(':').filter(Boolean);
- if(!parts.length)return {page:'Other',action:code,code};
+ if(!parts.length)return {page:'Other',action:code,code,root:'Other',rootKey:'_',moduleLevel:false};
  const ACTIONS=new Set(['VIEW','EDIT','APPROVER','UNLOCK','ADMIN','ADDSPECIMEN','EXPORTBREAKDOWNCHECKLIST']);
+ const rootKey=parts[0];
+ const root=prettySeg(rootKey);
  let action=parts[parts.length-1];
  let pageParts=parts.slice(0,-1);
  if(!ACTIONS.has(action)&&parts.length===1){action='access';pageParts=parts;}
- /* drop noise tokens that don't help the page title */
  pageParts=pageParts.filter(p=>p!=='PAGE');
- if(!pageParts.length)pageParts=[parts[0]];
- /* Prefer the most specific page segment (e.g. GENERALINFO under TEST) */
- let page;
- if(pageParts.length>=3)page=prettySeg(pageParts[pageParts.length-2])+' · '+prettySeg(pageParts[pageParts.length-1]);
- else if(pageParts.length===2&&pageParts[0]!==pageParts[1])page=prettySeg(pageParts[1]);
- else page=prettySeg(pageParts[pageParts.length-1]);
- return {page,action:prettySeg(action),code,root:prettySeg(parts[0])};
+ if(!pageParts.length)pageParts=[rootKey];
+ /* ROOT:VIEW / ROOT:ADMIN (no :PAGE:) → module-level header actions, not a peer page card */
+ const hadPage=parts.includes('PAGE');
+ const moduleLevel=!hadPage&&pageParts.length===1&&pageParts[0]===rootKey;
+ let page=null;
+ if(!moduleLevel){
+  if(pageParts.length>=3)page=prettySeg(pageParts[pageParts.length-2])+' · '+prettySeg(pageParts[pageParts.length-1]);
+  else if(pageParts.length===2&&pageParts[0]!==pageParts[1])page=prettySeg(pageParts[1]);
+  else page=prettySeg(pageParts[pageParts.length-1]);
+ }
+ return {page,action:prettySeg(action),code,root,rootKey,moduleLevel};
 }
-function groupWebCodes(codes){
+const COMMON_ROOTS=new Set(['INFO','LOG','INSTRUCTION']);
+function groupByModule(codes){
  const map=new Map();
  (codes||[]).forEach(code=>{
   const p=parseWebCode(code);
-  if(!map.has(p.page))map.set(p.page,{page:p.page,root:p.root,actions:[]});
-  map.get(p.page).actions.push(p);
+  const isCommon=COMMON_ROOTS.has(p.rootKey);
+  const key=isCommon?'_common':p.rootKey;
+  const label=isCommon?t('commonPages'):p.root;
+  if(!map.has(key))map.set(key,{key,label,moduleActions:[],pages:new Map()});
+  const col=map.get(key);
+  if(p.moduleLevel){col.moduleActions.push(p);return;}
+  const pageName=p.page||prettySeg(p.rootKey);
+  if(!col.pages.has(pageName))col.pages.set(pageName,{page:pageName,actions:[]});
+  col.pages.get(pageName).actions.push(p);
  });
- return [...map.values()];
+ const order=['TA','REPORTGENERATION','TESTSETUP','TEMPLATE','DASHBOARD','TODOLIST','_common'];
+ return [...map.values()]
+  .map(c=>({key:c.key,label:c.label,moduleActions:c.moduleActions,pages:[...c.pages.values()]}))
+  .sort((a,b)=>{
+   const ia=order.indexOf(a.key),ib=order.indexOf(b.key);
+   return (ia<0?99:ia)-(ib<0?99:ib);
+  });
 }
 function roleBoundCodes(role,all){
  if(!all||!all.length)return [];
@@ -500,7 +524,6 @@ function roleBoundCodes(role,all){
  if(/test-?setup|test setup/.test(n))hits.push('TESTSETUP','TEST','TESTMETHOD','PARAMETERS','MASTERDATA');
  if(/viewer/.test(n)&&!hits.length)return all.filter(c=>/:VIEW$/.test(c)||c.endsWith(':VIEW'));
  let bound=hits.length?all.filter(c=>hits.some(h=>c.includes(h))):all.slice(0,Math.min(all.length,role.web||4));
- /* tighten by role verb */
  if(/approver/.test(n)&&!/editor|admin/.test(n))bound=bound.filter(c=>!/:(EDIT|ADDSPECIMEN)$/.test(c));
  if(/editor/.test(n)&&!/approver|admin/.test(n))bound=bound.filter(c=>!/:APPROVER$/.test(c));
  if(/viewer/.test(n)&&!/admin|editor|approver/.test(n))bound=bound.filter(c=>/:VIEW$/.test(c));
@@ -508,30 +531,38 @@ function roleBoundCodes(role,all){
  if(rootView&&!bound.includes(rootView))bound=[rootView,...bound];
  return [...new Set(bound)];
 }
-/* Read-only board for detail cards; interactive=true for bind modal */
+function actHtml(a,on,opts){
+ if(opts.interactive)return `<label class="perm-act interactive"><input type="checkbox"${on?' checked':''} data-code="${a.code}"><span class="act-label">${a.action}<span class="act-code">${a.code}</span></span></label>`;
+ return `<div class="perm-act"><input type="checkbox"${on?' checked':''} disabled><span class="act-label">${a.action}${opts.showCode?`<span class="act-code">${a.code}</span>`:''}</span></div>`;
+}
+/* Nested board: module column → page cards → actions */
 function permBoardHtml(codes,opts){
  opts=opts||{};
  const selected=new Set(opts.selected||codes||[]);
- const groups=groupWebCodes(codes||[]);
- if(!groups.length)return `<div class="perm-board-empty">${opts.empty||t('noWebRes')}</div>`;
- return `<div class="perm-board">${groups.map(g=>`
-  <div class="perm-page">
-   <div class="perm-page-head"><span>${g.page}</span>${g.root&&g.root!==g.page?`<span class="code">${g.root}</span>`:''}</div>
-   <div class="perm-actions">${g.actions.map(a=>{
-    const on=selected.has(a.code);
-    if(opts.interactive)return `<label class="perm-act interactive"><input type="checkbox"${on?' checked':''} data-code="${a.code}"><span class="act-label">${a.action}<span class="act-code">${a.code}</span></span></label>`;
-    return `<div class="perm-act"><input type="checkbox"${on?' checked':''} disabled><span class="act-label">${a.action}${opts.showCode?`<span class="act-code">${a.code}</span>`:''}</span></div>`;
-   }).join('')}</div>
-  </div>`).join('')}</div>`;
+ const cols=groupByModule(codes||[]);
+ if(!cols.length)return `<div class="perm-board-empty">${opts.empty||t('noWebRes')}</div>`;
+ return `<div class="perm-board">${cols.map(col=>{
+  const modOn=col.moduleActions.length&&col.moduleActions.every(a=>selected.has(a.code));
+  return `<div class="perm-col" data-col="${col.key}">
+   <div class="perm-col-head">
+    <input type="checkbox"${modOn?' checked':''}${opts.interactive?'':' disabled'} aria-label="${col.label}">
+    <span>${col.label}</span>
+    ${col.moduleActions.length?`<div class="mod-acts">${col.moduleActions.map(a=>actHtml(a,selected.has(a.code),opts)).join('')}</div>`:''}
+   </div>
+   ${col.pages.length?`<div class="perm-tree">${col.pages.map(g=>`
+    <div class="perm-page" data-page="${g.page}">
+     <div class="perm-page-head"><span>${g.page}</span></div>
+     <div class="perm-actions">${g.actions.map(a=>actHtml(a,selected.has(a.code),opts)).join('')}</div>
+    </div>`).join('')}</div>`:''}
+  </div>`;
+ }).join('')}</div>`;
 }
 function apiListHtml(apis,opts){
  opts=opts||{};
  if(!apis||!apis.length)return `<div class="perm-board-empty">${opts.empty||t('noApiCodes')}</div>`;
- return `<div class="perm-board">${apis.map(a=>`
-  <div class="perm-page">
-   <div class="perm-page-head"><span>${a.startsWith('/')?'API':a.split(' ')[0]||'API'}</span></div>
-   <div class="perm-actions"><div class="perm-act"><input type="checkbox" checked disabled><span class="act-label" style="word-break:break-all">${a}</span></div></div>
-  </div>`).join('')}</div>`;
+ return `<div class="perm-board"><div class="perm-col"><div class="perm-col-head"><span>API</span></div><div class="perm-tree">${apis.map(a=>`
+  <div class="perm-page"><div class="perm-page-head"><span>${a.startsWith('/')?'Endpoint':(a.split(' ')[0]||'API')}</span></div>
+  <div class="perm-actions"><div class="perm-act"><input type="checkbox" checked disabled><span class="act-label" style="word-break:break-all">${a}</span></div></div></div>`).join('')}</div></div></div>`;
 }
 
 const CUSTOMERS=[
@@ -653,7 +684,8 @@ const I18N = {
   addApi:'Add API',pageButtonNote:'(mostly PAGE/BUTTON resources in this domain)',
   isoExplain:'Limits order and report visibility by Site / labCode / Department (business fields include labCodes)',
   isoDimLabel:'Isolation dimension',
-  permBoardHint:'Permissions are grouped by page. Check actions to grant; the technical resource code is shown under each action.',
+  permBoardHint:'Permissions nest as module → page → action. Module-level codes (e.g. TA:VIEW) sit in the column header; pages are cards underneath. INFO/LOG land under Common Pages.',
+  commonPages:'Common Pages',
  },
  zh:{
   docTitle:'IT 权限管理平台 · 原型',
@@ -737,7 +769,8 @@ const I18N = {
   addApi:'添加 API',pageButtonNote:'（本域主要为 PAGE/BUTTON 资源）',
   isoExplain:'按 Site / labCode / Department 限制订单与报告可见范围（业务字段含 labCodes）',
   isoDimLabel:'隔离维度',
-  permBoardHint:'权限按页面分组。勾选动作即可授权；技术资源码显示在动作下方。',
+  permBoardHint:'权限按「模块 → 页面 → 动作」嵌套展示。模块级码（如 TA:VIEW）放在列头；页面为下方卡片。INFO/LOG 归入公共页面。',
+  commonPages:'公共页面',
  }
 };
 function t(k,p){
@@ -1449,12 +1482,21 @@ function pickPick(name){
  s.innerHTML=c.logins.map(l=>`<option>${l}</option>`).join('');
 }
 
-/* Filter permission cards by page title / action / raw code */
+/* Filter permission columns / page cards by title · action · raw code */
 function filterPermBoard(q){
  q=(q||'').toLowerCase().trim();
- document.querySelectorAll('#perm-board-wrap .perm-page').forEach(card=>{
-  const hit=!q||card.textContent.toLowerCase().includes(q);
-  card.style.display=hit?'':'none';
+ document.querySelectorAll('#perm-board-wrap .perm-col').forEach(col=>{
+  if(!q){col.hidden=false;col.querySelectorAll('.perm-page').forEach(p=>p.hidden=false);return;}
+  let any=false;
+  col.querySelectorAll('.perm-page').forEach(card=>{
+   const hit=card.textContent.toLowerCase().includes(q);
+   card.hidden=!hit;
+   if(hit)any=true;
+  });
+  const headHit=col.querySelector('.perm-col-head')?.textContent.toLowerCase().includes(q);
+  const modHit=[...col.querySelectorAll('.mod-acts')].some(m=>m.textContent.toLowerCase().includes(q));
+  col.hidden=!(any||headHit||modHit);
+  if(headHit||modHit)col.querySelectorAll('.perm-page').forEach(p=>p.hidden=false);
  });
 }
 
