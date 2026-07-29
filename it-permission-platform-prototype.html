@@ -112,21 +112,9 @@ button{cursor:pointer;background:none;border:0}
 .field .hint{font:400 12px/16px var(--font);color:var(--seal)}
 
 /* ===== list filters (all views) ===== */
-.filterbar{margin:0 0 16px;padding:14px 16px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--cloud)}
+.filterbar{margin:0 0 16px}
 .filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 12px;align-items:end}
-.filters .field-search{grid-column:span 2;min-width:0}
-.filters .field-chips{grid-column:1 / -1}
-.filters .field-span{grid-column:1 / -1}
-.filter-foot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--pearl);min-height:28px}
-.filter-foot .muted{font:400 12px/16px var(--font);color:var(--seal)}
-.filter-tags{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}
-.filter-tag{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px 0 10px;border-radius:999px;background:var(--white);border:1px solid var(--pool-200);font:500 12px/16px var(--font);color:var(--pool-900)}
-.filter-tag button{width:16px;height:16px;border-radius:50%;color:var(--seal);font:600 12px/16px var(--font);display:grid;place-items:center}
-.filter-tag button:hover{background:var(--pool-100);color:var(--pool-900)}
-.type-chips{display:flex;flex-wrap:wrap;gap:6px}
-.type-chips button{height:32px;padding:0 12px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:400 13px/16px var(--font);color:var(--seal);cursor:pointer}
-.type-chips button:hover{background:var(--white);border-color:var(--pool-200);color:var(--carbon)}
-.type-chips button.on{background:var(--pool-100);border-color:var(--pool-200);color:var(--pool-900);font-weight:600}
+.filters .field-clear .btn{height:36px}
 
 /* ===== audit feed (history) ===== */
 .audit-feed{display:flex;flex-direction:column;gap:0;padding:4px 24px 8px;max-width:920px}
@@ -155,7 +143,6 @@ button{cursor:pointer;background:none;border:0}
 .audit-foot b{font-weight:600;color:var(--carbon)}
 .audit-empty{padding:48px 24px;text-align:center;color:var(--seal)}
 @media (max-width:900px){
-  .filters .field-search{grid-column:span 1}
   .audit-top .audit-time{margin-left:0;width:100%}
 }
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -1009,30 +996,23 @@ const COL_DEFS={
 function COLS(view){return (COL_DEFS[view]||[]).map(c=>({...c,label:c.label||t(c.lk)}));}
 
 const AK_FILTERS=[
- {k:'status',lk:'f.status',ui:'chips',opts:[{v:'Active',l:'Active'},{v:'Suspended',l:'Suspended'}],test:(r,v)=>r.status===v},
- {k:'mode',lk:'f.mode',ui:'chips',opts:[{v:'inherit',l:'inherit'},{v:'direct',l:'direct'}],test:(r,v)=>r.mode===v}
+ {k:'status',lk:'f.status',opts:[{v:'Active',l:'Active'},{v:'Suspended',l:'Suspended'}],test:(r,v)=>r.status===v},
+ {k:'mode',lk:'f.mode',opts:[{v:'inherit',l:'inherit'},{v:'direct',l:'direct'}],test:(r,v)=>r.mode===v}
 ];
 const FILTERS={
- module:[{k:'isolation',lk:'f.isoDim',ui:'chips',opts:['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,l:v})),test:(r,v)=>r.isolation===v}],
- role:[{k:'module',lk:'f.domain',ui:'select',opts:()=>DATA.module.map(m=>({v:m.name,l:m.name})),test:(r,v)=>r.module===v},
-  {k:'data',lk:'f.dataIso',ui:'chips',opts:[{v:'yes',lk:'configured'},{v:'no',lk:'notConfigured'}],test:(r,v)=>v==='yes'?!!r.data:!r.data}],
- user:[{k:'dept',lk:'f.dept',ui:'chips',opts:[{v:'Lab',l:'Lab'}],test:(r,v)=>r.dept===v},
-  {k:'hasRole',lk:'f.roleCount',ui:'chips',opts:[{v:'yes',lk:'hasRoles'},{v:'no',lk:'noRoles'}],test:(r,v)=>v==='yes'?r.roles.length>0:r.roles.length===0}],
+ module:[{k:'isolation',lk:'f.isoDim',opts:['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,l:v})),test:(r,v)=>r.isolation===v}],
+ role:[{k:'module',lk:'f.domain',opts:()=>DATA.module.map(m=>({v:m.name,l:m.name})),test:(r,v)=>r.module===v},
+  {k:'data',lk:'f.dataIso',opts:[{v:'yes',lk:'configured'},{v:'no',lk:'notConfigured'}],test:(r,v)=>v==='yes'?!!r.data:!r.data}],
+ user:[{k:'dept',lk:'f.dept',opts:[{v:'Lab',l:'Lab'}],test:(r,v)=>r.dept===v},
+  {k:'hasRole',lk:'f.roleCount',opts:[{v:'yes',lk:'hasRoles'},{v:'no',lk:'noRoles'}],test:(r,v)=>v==='yes'?r.roles.length>0:r.roles.length===0}],
  customer:AK_FILTERS,
  platform:AK_FILTERS,
  history:[{k:'from',lk:'f.from',type:'date',test:(r,v)=>dnum(r.time)>=new Date(v+'T00:00:00').getTime()},
   {k:'to',lk:'f.to',type:'date',test:(r,v)=>dnum(r.time)<=new Date(v+'T23:59:59').getTime()},
-  {k:'actor',lk:'f.actor',ui:'chips',opts:()=>[...new Set(DATA.history.map(h=>h.actor))].map(v=>({v,l:v})),test:(r,v)=>r.actor===v},
-  {k:'type',lk:'f.objType',ui:'chips',opts:[{v:'module',lk:'type.module'},{v:'role',lk:'type.role'},{v:'userRole',lk:'type.userRole'},{v:'ak',lk:'type.ak'}],test:(r,v)=>r.type===v}]
+  {k:'actor',lk:'f.actor',opts:()=>[...new Set(DATA.history.map(h=>h.actor))].map(v=>({v,l:v})),test:(r,v)=>r.actor===v},
+  {k:'type',lk:'f.objType',opts:[{v:'module',lk:'type.module'},{v:'role',lk:'type.role'},{v:'userRole',lk:'type.userRole'},{v:'ak',lk:'type.ak'}],test:(r,v)=>r.type===v}]
 };
 function filterOpts(d){const o=typeof d.opts==='function'?d.opts():(d.opts||[]);return o.map(x=>typeof x==='string'?{v:x,l:x}:{v:x.v,l:x.lk?t(x.lk):(x.l||x.v)});}
-function useChipFilter(d){
- if(!d||d.type==='date')return false;
- if(d.ui==='chips')return true;
- if(d.ui==='select')return false;
- const n=filterOpts(d).length;
- return n>0&&n<=5;
-}
 function visibleRows(view){
  const s=st(view), defs=FILTERS[view]||[], q=s.q.trim().toLowerCase();
  let rows=DATA[view].filter(r=>{
@@ -1064,25 +1044,22 @@ function render(){
  content.innerHTML=filterCard(currentView)+colStyle(currentView)+`<div id="list-body">${listBody(currentView)}</div>`;
  syncSticky();
 }
-/* re-render list + filter chrome; keep keyword caret when typing */
+/* re-render only the table + pager so filter inputs keep focus and caret */
 function refreshList(){
  const el=$('#list-body');
  if(!el)return render();
- const q=$('#q'), focused=document.activeElement===q, start=q&&q.selectionStart, end=q&&q.selectionEnd;
- if(showFilters){
-  const bar=$('.filterbar');
-  if(bar){
-   const tmp=document.createElement('div');
-   tmp.innerHTML=filterCard(currentView);
-   bar.replaceWith(tmp.firstElementChild);
-  }
- }
  el.innerHTML=listBody(currentView);
  const c=$('#list-count');if(c)c.textContent=visibleRows(currentView).length;
  const fc=$('#filter-counter');
  if(fc){const n=activeFilterCount(currentView);n?fc.dataset.n=n:delete fc.dataset.n;}
  const cs=$('#col-style');if(cs)cs.outerHTML=colStyle(currentView);
- if(focused){const nq=$('#q');if(nq){nq.focus();try{nq.setSelectionRange(start,end);}catch(e){}}}
+ /* show/hide clear button without rebuilding inputs */
+ const clear=$('.filters .field-clear');
+ const n=activeFilterCount(currentView);
+ if(n&&!clear){
+  const wrap=$('.filters');
+  if(wrap)wrap.insertAdjacentHTML('beforeend',`<div class="field field-clear"><label>&nbsp;</label>${btn(t('clearFilters'),'btn-tertiary',SVG.erase,'resetFilters()')}</div>`);
+ }else if(!n&&clear)clear.remove();
  syncSticky();
 }
 
@@ -1107,53 +1084,21 @@ function colStyle(view){
  return `<style id="col-style">${rules}</style>`;
 }
 
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 function filterCard(view){
  if(!showFilters)return '';
- const s=st(view), defs=FILTERS[view]||[];
+ const s=st(view), defs=FILTERS[view]||[], n=activeFilterCount(view);
  const ctrl=d=>{
   if(d.type==='date')return `<input type="date" value="${s.filters[d.k]||''}" onchange="setFilter('${d.k}',this.value)">`;
-  if(useChipFilter(d)){
-   const cur=s.filters[d.k]||'';
-   const chips=[{v:'',l:t('all')},...filterOpts(d)].map(o=>
-    `<button type="button" class="${cur===o.v?'on':''}" onclick="setFilter('${d.k}',decodeURIComponent('${encodeURIComponent(o.v)}'))">${o.l}</button>`).join('');
-   return `<div class="type-chips">${chips}</div>`;
-  }
   const opts=[{v:'',l:t('all')},...filterOpts(d)];
   const cur=s.filters[d.k]||'';
-  return `<select onchange="setFilter('${d.k}',this.value)">${opts.map(o=>`<option value="${o.v}"${cur===o.v?' selected':''}>${o.l}</option>`).join('')}</select>`;
+  return `<select onchange="setFilter('${d.k}',this.value)">${opts.map(o=>`<option value="${escAttr(o.v)}"${cur===o.v?' selected':''}>${o.l}</option>`).join('')}</select>`;
  };
- const chipDefs=defs.filter(useChipFilter);
- const fieldDefs=defs.filter(d=>!useChipFilter(d));
- const fields=[
-  field(t('keyword'),`<input id="q" placeholder="${t('searchPh')}" value="${escAttr(s.q)}" oninput="setQuery(this.value)">`).replace('class="field"','class="field field-search"'),
-  ...fieldDefs.map(d=>field(t(d.lk),ctrl(d))),
-  ...chipDefs.map(d=>field(t(d.lk),ctrl(d)).replace('class="field"','class="field field-chips"'))
- ].join('');
- return `<div class="filterbar">
-  <div class="filters">${fields}</div>
-  ${filterActiveRow(view)}
- </div>`;
-}
-function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
-function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function filterActiveRow(view){
- const s=st(view), defs=FILTERS[view]||[], n=activeFilterCount(view);
- if(!n)return `<div class="filter-foot"><span class="muted">${t('noFilter')}</span></div>`;
- const tags=[];
- if(s.q.trim())tags.push({k:'_q',label:`${t('keyword')}: ${s.q.trim()}`});
- defs.forEach(d=>{
-  const v=s.filters[d.k];if(!v)return;
-  let label=v;
-  if(d.type!=='date'){
-   const hit=filterOpts(d).find(o=>o.v===v);
-   label=hit?hit.l:v;
-  }
-  tags.push({k:d.k,label:`${t(d.lk)}: ${label}`});
- });
- return `<div class="filter-foot">
-  <div class="filter-tags">${tags.map(x=>`<span class="filter-tag">${escHtml(x.label)}<button type="button" title="${t('clearFilters')}" onclick="${x.k==='_q'?`setQuery('')`:`setFilter('${x.k}','')`}">×</button></span>`).join('')}</div>
-  ${btn(t('clearFilters'),'btn-tertiary',SVG.erase,'resetFilters()')}
- </div>`;
+ return `<div class="filterbar"><div class="filters">
+  ${field(t('keyword'),`<input id="q" placeholder="${t('searchPh')}" value="${escAttr(s.q)}" oninput="setQuery(this.value)">`)}
+  ${defs.map(d=>field(t(d.lk),ctrl(d))).join('')}
+  ${n?`<div class="field field-clear"><label>&nbsp;</label>${btn(t('clearFilters'),'btn-tertiary',SVG.erase,'resetFilters()')}</div>`:''}
+ </div></div>`;
 }
 
 function listBody(view){
