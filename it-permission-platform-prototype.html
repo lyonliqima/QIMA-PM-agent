@@ -110,8 +110,42 @@ button{cursor:pointer;background:none;border:0}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--pool-500);box-shadow:0 0 0 3px var(--pool-100)}
 .field input:disabled{background:var(--mist);color:var(--seal)}
 .field .hint{font:400 12px/16px var(--font);color:var(--seal)}
-.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px 8px}
-.filterbar{margin-bottom:16px}
+/* ===== audit feed (history) ===== */
+.filters.filters-audit{grid-template-columns:minmax(200px,1.4fr) repeat(3,minmax(140px,1fr));align-items:end}
+.filters-audit .field-type{grid-column:1 / -1}
+.type-chips{display:flex;flex-wrap:wrap;gap:8px}
+.type-chips button{height:32px;padding:0 12px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:400 13px/16px var(--font);color:var(--seal);cursor:pointer}
+.type-chips button:hover{background:var(--cloud);color:var(--carbon)}
+.type-chips button.on{background:var(--pool-100);border-color:var(--pool-200);color:var(--pool-900);font-weight:600}
+.audit-feed{display:flex;flex-direction:column;gap:0;padding:4px 24px 8px;max-width:920px}
+.audit-item{display:grid;grid-template-columns:28px 1fr;gap:0 14px;padding:0}
+.audit-rail{position:relative;display:flex;justify-content:center}
+.audit-rail::before{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--pearl)}
+.audit-item:first-child .audit-rail::before{top:18px}
+.audit-item:last-child .audit-rail::before{bottom:calc(100% - 18px)}
+.audit-dot{position:relative;z-index:1;width:12px;height:12px;margin-top:16px;border-radius:50%;background:var(--pool-500);box-shadow:0 0 0 3px var(--white)}
+.audit-dot.v-bind,.audit-dot.v-add,.audit-dot.v-create{background:var(--pool-500)}
+.audit-dot.v-update{background:var(--mango-500,#E8A317)}
+.audit-dot.v-remove{background:var(--cherry-500,#E24B4A)}
+.audit-dot.v-copy{background:var(--kiwi-500,#2A9B7A)}
+.audit-card{margin:6px 0 10px;padding:14px 16px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--cloud);min-width:0}
+.audit-card:hover{border-color:var(--pool-200);background:var(--white)}
+.audit-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+.audit-top .audit-time{margin-left:auto;font:400 12px/16px var(--font);color:var(--seal);white-space:nowrap}
+.badge-verb{border:0;font-weight:600}
+.badge-verb.v-bind,.badge-verb.v-add,.badge-verb.v-create{background:var(--pool-100);color:var(--pool-900)}
+.badge-verb.v-update{background:var(--mango-050);color:var(--mango-900)}
+.badge-verb.v-remove{background:var(--cherry-050);color:var(--cherry-900)}
+.badge-verb.v-copy{background:var(--kiwi-050);color:var(--kiwi-900)}
+.audit-title{font:600 14px/20px var(--font);color:var(--carbon);margin:0 0 4px}
+.audit-code{display:inline-block;max-width:100%;margin:4px 0 8px;padding:4px 8px;border-radius:6px;background:var(--white);border:1px solid var(--pearl);font:500 12px/16px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--pool-900);word-break:break-all}
+.audit-foot{display:flex;flex-wrap:wrap;gap:8px 16px;font:400 12px/16px var(--font);color:var(--seal)}
+.audit-foot b{font-weight:600;color:var(--carbon)}
+.audit-empty{padding:48px 24px;text-align:center;color:var(--seal)}
+@media (max-width:900px){
+  .filters.filters-audit{grid-template-columns:1fr 1fr}
+  .audit-top .audit-time{margin-left:0;width:100%}
+}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .seg{display:flex;border:1px solid var(--smoke);border-radius:var(--r-ctl);overflow:hidden;height:36px}
 .seg label{flex:1;display:flex;align-items:center;justify-content:center;padding:0 12px;font:400 14px/20px var(--font);color:var(--seal);cursor:pointer;background:var(--white);box-shadow:inset -1px 0 0 var(--pearl)}
@@ -418,12 +452,39 @@ const DATA={
   {id:'ak-p03',client:'Public-API',login:'publicapi.lab',key:'ak_plt_7e1b…',status:'Active',mode:'direct',role:'',web:0,api:17,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07'}
  ],
  history:[
-  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',type:'role',act:{en:'Bound resource REPORTGENERATION:FIRSTPAGE:APPROVER',zh:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER'},meta:{en:'Role First-Page-Approver',zh:'角色 First-Page-Approver'}},
-  {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',type:'userRole',act:{en:'Added Department-Approver to Kyle Yao',zh:'为用户 Kyle Yao 增加 Department-Approver'},meta:{en:'kyle.yao@qima.com · Lab',zh:'kyle.yao@qima.com · Lab'}},
-  {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',type:'ak',act:{en:'Created customer AccessKey · Brand LIMS Integrator',zh:'创建客户 AccessKey · Brand LIMS Integrator'},meta:{en:'mode=inherit · ak_live_lab_…',zh:'mode=inherit · ak_live_lab_…'}},
-  {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',type:'module',act:{en:'Updated Report Generation isolation to Site · Department',zh:'更新功能域 Report Generation 隔离为 Site · Department'},meta:{en:'Was: Site',zh:'原: Site'}},
-  {time:'21-Jul-2026 17:03',actor:'joyce.liu@qima.com',type:'ak',act:{en:'Created platform AccessKey · AIMS',zh:'创建平台 AccessKey · AIMS'},meta:{en:'mode=direct · AIMS→Labs',zh:'mode=direct · AIMS→Labs'}},
-  {time:'21-Jul-2026 10:14',actor:'joyce.liu@qima.com',type:'userRole',act:{en:'Removed Test-Assignment-Viewer from New Hire',zh:'移除用户 New Hire 的 Test-Assignment-Viewer'},meta:{en:'new.hire@qima.com',zh:'new.hire@qima.com'}}
+  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',type:'role',verb:'bind',
+   title:{en:'Bound resource to role',zh:'绑定资源到角色'},
+   code:'REPORTGENERATION:FIRSTPAGE:APPROVER',
+   object:{en:'First-Page-Approver',zh:'First-Page-Approver'},
+   act:{en:'Bound resource REPORTGENERATION:FIRSTPAGE:APPROVER',zh:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER'},
+   meta:{en:'Role First-Page-Approver',zh:'角色 First-Page-Approver'}},
+  {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',type:'userRole',verb:'add',
+   title:{en:'Added role to user',zh:'为用户增加角色'},
+   code:'Department-Approver',
+   object:{en:'Kyle Yao',zh:'Kyle Yao'},
+   act:{en:'Added Department-Approver to Kyle Yao',zh:'为用户 Kyle Yao 增加 Department-Approver'},
+   meta:{en:'kyle.yao@qima.com · Lab',zh:'kyle.yao@qima.com · Lab'}},
+  {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',type:'ak',verb:'create',
+   title:{en:'Created customer AccessKey',zh:'创建客户 AccessKey'},
+   object:{en:'Brand LIMS Integrator',zh:'Brand LIMS Integrator'},
+   act:{en:'Created customer AccessKey · Brand LIMS Integrator',zh:'创建客户 AccessKey · Brand LIMS Integrator'},
+   meta:{en:'mode=inherit · ak_live_lab_…',zh:'mode=inherit · ak_live_lab_…'}},
+  {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',type:'module',verb:'update',
+   title:{en:'Updated data isolation',zh:'更新数据隔离'},
+   object:{en:'Report Generation',zh:'Report Generation'},
+   act:{en:'Updated Report Generation isolation to Site · Department',zh:'更新功能域 Report Generation 隔离为 Site · Department'},
+   meta:{en:'Was: Site → Site · Department',zh:'原: Site → Site · Department'}},
+  {time:'21-Jul-2026 17:03',actor:'joyce.liu@qima.com',type:'ak',verb:'create',
+   title:{en:'Created platform AccessKey',zh:'创建平台 AccessKey'},
+   object:{en:'AIMS',zh:'AIMS'},
+   act:{en:'Created platform AccessKey · AIMS',zh:'创建平台 AccessKey · AIMS'},
+   meta:{en:'mode=direct · AIMS→Labs',zh:'mode=direct · AIMS→Labs'}},
+  {time:'21-Jul-2026 10:14',actor:'joyce.liu@qima.com',type:'userRole',verb:'remove',
+   title:{en:'Removed role from user',zh:'移除用户角色'},
+   code:'Test-Assignment-Viewer',
+   object:{en:'New Hire',zh:'New Hire'},
+   act:{en:'Removed Test-Assignment-Viewer from New Hire',zh:'移除用户 New Hire 的 Test-Assignment-Viewer'},
+   meta:{en:'new.hire@qima.com',zh:'new.hire@qima.com'}}
  ]
 };
 
@@ -686,6 +747,8 @@ const I18N = {
   isoDimLabel:'Isolation dimension',
   permBoardHint:'Permissions nest as module → page → action. Module-level codes (e.g. TA:VIEW) sit in the column header; pages are cards underneath. INFO/LOG land under Common Pages.',
   commonPages:'Common Pages',
+  'verb.bind':'Bind','verb.add':'Add','verb.create':'Create','verb.update':'Update','verb.remove':'Remove','verb.copy':'Copy','verb.change':'Change',
+  histActor:'By',histObject:'Object',histDetail:'Detail',objTypeQuick:'Object type',
  },
  zh:{
   docTitle:'IT 权限管理平台 · 原型',
@@ -771,6 +834,8 @@ const I18N = {
   isoDimLabel:'隔离维度',
   permBoardHint:'权限按「模块 → 页面 → 动作」嵌套展示。模块级码（如 TA:VIEW）放在列头；页面为下方卡片。INFO/LOG 归入公共页面。',
   commonPages:'公共页面',
+  'verb.bind':'绑定','verb.add':'增加','verb.create':'创建','verb.update':'更新','verb.remove':'移除','verb.copy':'复制','verb.change':'变更',
+  histActor:'操作人',histObject:'对象',histDetail:'详情',objTypeQuick:'对象类型',
  }
 };
 function t(k,p){
@@ -799,6 +864,42 @@ function setLang(lang){
 }
 function viewTitle(view){return t('nav.'+view);}
 function histText(r,field){const v=r[field];return v&&typeof v==='object'?(v[LANG]||v.en||''): (v||'');}
+function histVerb(r){
+ if(r.verb)return r.verb;
+ const a=histText(r,'act').toLowerCase();
+ if(/bound|绑定/.test(a))return 'bind';
+ if(/added|增加/.test(a))return 'add';
+ if(/created|创建/.test(a))return 'create';
+ if(/updated|更新/.test(a))return 'update';
+ if(/removed|移除/.test(a))return 'remove';
+ if(/copied|复制/.test(a))return 'copy';
+ return 'change';
+}
+function histTypeLabel(type){return t('type.'+(type==='userRole'?'userRole':type==='ak'?'ak':type==='role'?'role':'module'));}
+function histFeedItem(r){
+ const verb=histVerb(r);
+ const title=histText(r,'title')||histText(r,'act');
+ const object=histText(r,'object');
+ const detail=histText(r,'meta');
+ const showDetail=detail&&detail!==object&&!(object&&detail.includes(object));
+ const code=r.code?`<code class="audit-code">${r.code}</code>`:'';
+ return `<article class="audit-item">
+  <div class="audit-rail"><span class="audit-dot v-${verb}"></span></div>
+  <div class="audit-card">
+   <div class="audit-top">
+    <span class="badge badge-verb v-${verb}">${t('verb.'+verb)}</span>
+    <span class="badge badge-grey">${histTypeLabel(r.type)}</span>
+    <span class="audit-time">${r.time}</span>
+   </div>
+   <div class="audit-title">${title}${object?` · <b>${object}</b>`:''}</div>
+   ${code}
+   <div class="audit-foot">
+    <span>${t('histActor')} <b>${r.actor}</b></span>
+    ${showDetail?`<span>${t('histDetail')} <b>${detail}</b></span>`:(!object&&detail?`<span>${t('histObject')} <b>${detail}</b></span>`:'')}
+   </div>
+  </div>
+ </article>`;
+}
 
 
 
@@ -828,7 +929,7 @@ function listPagebar(view){
     <div class="tools">
       ${iconBtn(SVG.search,t('search'),`focusSearch()`)}
       ${iconBtn(SVG.erase,t('resetFilters'),`resetFilters()`)}
-      ${iconBtn(SVG.columns,t('columns'),`openModal('columns')`)}
+      ${view==='history'?'':iconBtn(SVG.columns,t('columns'),`openModal('columns')`)}
       ${iconBtn(SVG.download,t('export'),`exportList()`)}
       <span class="counter" id="filter-counter"${n?` data-n="${n}"`:''}>${iconBtn(SVG.filter,t('filter'),`toggleFilters()`,showFilters?'on':'')}</span>
       ${listAction(view)}
@@ -988,6 +1089,18 @@ function filterCard(view){
   const cur=s.filters[d.k]||'';
   return `<select onchange="setFilter('${d.k}',this.value)">${opts.map(o=>`<option value="${o.v}"${cur===o.v?' selected':''}>${o.l}</option>`).join('')}</select>`;
  };
+ if(view==='history'){
+  const typeDef=defs.find(d=>d.k==='type');
+  const other=defs.filter(d=>d.k!=='type');
+  const cur=s.filters.type||'';
+  const chips=[{v:'',l:t('all')},...filterOpts(typeDef)].map(o=>
+   `<button type="button" class="${cur===o.v?'on':''}" onclick="setFilter('type','${o.v}')">${o.l}</button>`).join('');
+  return `<div class="filterbar"><div class="filters filters-audit">
+   ${field(t('keyword'),`<input id="q" placeholder="${t('searchPh')}" value="${s.q}" oninput="setQuery(this.value)">`)}
+   ${other.map(d=>field(t(d.lk),ctrl(d))).join('')}
+   <div class="field field-type"><label>${t('objTypeQuick')}</label><div class="type-chips">${chips}</div></div>
+  </div></div>`;
+ }
  return `<div class="filterbar"><div class="filters">
    ${field(t('keyword'),`<input id="q" placeholder="${t('searchPh')}" value="${s.q}" oninput="setQuery(this.value)">`)}
    ${defs.map(d=>field(t(d.lk),ctrl(d))).join('')}
@@ -999,6 +1112,12 @@ function listBody(view){
  const pages=Math.max(1,Math.ceil(rows.length/s.size));
  if(s.page>pages)s.page=pages;
  const slice=rows.slice((s.page-1)*s.size,s.page*s.size);
+ if(view==='history'){
+  const feed=slice.length
+   ?`<div class="audit-feed">${slice.map(r=>histFeedItem(r)).join('')}</div>`
+   :`<div class="audit-empty">${t('noMatch')}${activeFilterCount(view)?`<div style="margin-top:16px">${btn(t('clearFilters'),'btn-secondary',SVG.erase,'resetFilters()')}</div>`:''}</div>`;
+  return `<div class="table-block">${feed}${listPager(view,rows.length,pages)}</div>`;
+ }
  return `<div class="table-block"><div class="table-wrap">${listTable(view,slice)}</div>${listPager(view,rows.length,pages)}</div>`;
 }
 
@@ -1566,7 +1685,9 @@ function applyCopyRoles(){
  const stamp=`${pad(now.getDate())}-${months[now.getMonth()]}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
  const modeWord=copyState.mode==='replace'?t('overwriteWord'):t('mergeWord');
  DATA.history.unshift({
-  time:stamp,actor:'it@qima.com',type:'userRole',
+  time:stamp,actor:'it@qima.com',type:'userRole',verb:'copy',
+  title:{en:'Copied permissions between users',zh:'在用户间复制权限'},
+  object:{en:`${source.name} → ${target.name}`,zh:`${source.name} → ${target.name}`},
   act:{en:`Copied permissions from ${source.name} to ${target.name}`,zh:`从 ${source.name} 复制权限到 ${target.name}`},
   meta:{en:`${copyState.mode==='replace'?'Overwrite':'Merge'} · ${before.length} → ${target.roles.length} roles`,zh:`${modeWord} · ${before.length} → ${target.roles.length} 个角色`}
  });
