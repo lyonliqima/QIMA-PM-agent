@@ -201,6 +201,9 @@ tbody tr:last-child td{border-bottom:0}
 .badge-grey{color:var(--seal);background:var(--mist);border-color:var(--pearl)}
 .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
 .count{display:inline-flex;align-items:center;justify-content:center;height:20px;min-width:24px;padding:0 6px;border-radius:var(--r-chip);background:var(--mist);font:400 12px/16px var(--font);color:var(--carbon)}
+.roles-cell{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-width:0;cursor:default}
+.roles-cell .roles-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:400 14px/20px var(--font);color:var(--carbon);max-width:140px}
+.roles-cell .roles-more{flex:none;height:20px;min-width:28px;padding:0 6px;border-radius:var(--r-chip);background:var(--pool-100);font:600 12px/20px var(--font);color:var(--pool-900);text-align:center}
 .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:400 12px/16px var(--font);color:var(--carbon);white-space:nowrap}
 .chip .x{color:var(--seal);cursor:pointer;font-size:14px;line-height:1}
@@ -671,7 +674,7 @@ const I18N = {
   back:'Back',copyFrom:'Copy from user',editUserRoles:'Edit user roles',manageResources:'Manage resources',
   bindResources:'Bind resources',editAk:'Edit AccessKey',
   'col.domainId':'Domain ID','col.name':'Name','col.desc':'Description','col.roles':'Roles','col.resources':'Resources','col.isolation':'Data isolation',
-  'col.roleKey':'Role key','col.domain':'Feature domain','col.userId':'User ID','col.fullName':'Name','col.email':'Email','col.dept':'Department','col.roleCount':'Role count',
+  'col.roleKey':'Role key','col.domain':'Feature domain','col.userId':'User ID','col.fullName':'Name','col.email':'Email','col.dept':'Department','col.roleCount':'Roles',
   'col.akId':'AccessKey ID','col.customer':'Customer','col.platform':'Platform','col.login':'Login','col.mode':'Mode','col.status':'Status','col.created':'Created',
   'col.time':'Time','col.actor':'Actor','col.action':'Action','col.object':'Object',
   all:'All',keyword:'Keyword',searchPh:'Type to search...',
@@ -758,7 +761,7 @@ const I18N = {
   back:'返回',copyFrom:'从他人复制',editUserRoles:'编辑用户角色',manageResources:'管理资源',
   bindResources:'绑定资源',editAk:'编辑 AccessKey',
   'col.domainId':'功能域 ID','col.name':'名称','col.desc':'描述','col.roles':'角色','col.resources':'资源','col.isolation':'数据隔离',
-  'col.roleKey':'角色 Key','col.domain':'功能域','col.userId':'用户 ID','col.fullName':'姓名','col.email':'邮箱','col.dept':'部门','col.roleCount':'角色数',
+  'col.roleKey':'角色 Key','col.domain':'功能域','col.userId':'用户 ID','col.fullName':'姓名','col.email':'邮箱','col.dept':'部门','col.roleCount':'角色',
   'col.akId':'AccessKey ID','col.customer':'客户名称','col.platform':'平台名称','col.login':'登录账号','col.mode':'模式','col.status':'状态','col.created':'创建日期',
   'col.time':'时间','col.actor':'操作人','col.action':'操作','col.object':'对象',
   all:'全部',keyword:'关键字',searchPh:'输入关键字搜索…',
@@ -916,6 +919,14 @@ function idxOf(view,r){return DATA[view].indexOf(r);}
 function isoBadge(v){return !v||v==='None'?`<span class="badge badge-grey">${t('iso.none')}</span>`:`<span class="badge badge-mango">${v}</span>`;}
 function statusBadge(s){return s==='Active'?'<span class="badge badge-kiwi"><span class="dot"></span>Active</span>':'<span class="badge badge-cherry"><span class="dot"></span>Suspended</span>';}
 function modeBadge(m){return m==='inherit'?'<span class="badge">inherit</span>':'<span class="badge badge-mango">direct</span>';}
+function rolesCell(roles){
+ if(!roles||!roles.length)return `<span class="badge badge-grey">${t('none')}</span>`;
+ const tip=escAttr(roles.join('\n'));
+ const more=roles.length>1?`<span class="roles-more">+${roles.length-1}</span>`:'';
+ return `<span class="roles-cell" title="${tip}"><span class="roles-name">${escHtml(roles[0])}</span>${more}</span>`;
+}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 
 /* ================= page bar ================= */
 function listPagebar(view){
@@ -1084,7 +1095,6 @@ function colStyle(view){
  return `<style id="col-style">${rules}</style>`;
 }
 
-function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 function filterCard(view){
  if(!showFilters)return '';
  const s=st(view), defs=FILTERS[view]||[], n=activeFilterCount(view);
@@ -1164,7 +1174,7 @@ function listRow(view,r,i){
  const cl=`class="clickable" tabindex="0" data-idx="${i}" onclick="goDetail('${view}',${i})" onkeydown="rowKey(event,'${view}',${i})"`;
  if(view==='module')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.desc}</td><td><span class="count">${r.roles}</span></td><td><span class="count">${r.resources}</span></td><td>${isoBadge(r.isolation)}</td></tr>`;
  if(view==='role')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td class="strong">${r.module}</td><td>${r.desc}</td><td><span class="count">${r.web}</span></td><td><span class="count">${r.api}</span></td><td>${r.data?`<span class="badge badge-mango"><span class="dot"></span>${t('iso.configured')}</span>`:`<span class="badge badge-grey">${t('iso.none')}</span>`}</td></tr>`;
- if(view==='user')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.email}</td><td>${r.dept}</td><td>${r.roles.length?`<span class="count">${r.roles.length}</span>`:'<span class="badge badge-grey">0</span>'}</td></tr>`;
+ if(view==='user')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.email}</td><td>${r.dept}</td><td>${rolesCell(r.roles)}</td></tr>`;
  if(view==='customer'||view==='platform')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.client}</td><td>${r.login}</td><td>${modeBadge(r.mode)}</td><td>${statusBadge(r.status)}</td><td>${r.created}</td></tr>`;
  if(view==='history')return `<tr><td>${r.time}</td><td>${r.actor}</td><td class="strong">${histText(r,'act')}</td><td>${histText(r,'meta')}</td></tr>`;
  return '';
