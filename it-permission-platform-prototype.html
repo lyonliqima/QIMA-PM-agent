@@ -279,46 +279,54 @@ tbody tr:last-child td{border-bottom:0}
 
 <script id="app-script">
 /* ================= data =================
- * Grounded in QIMAlabs (qimalabs-web-develop / apps/qima-labs):
- * - auth2 module name used by FE: lab-service-cloud
- * - resource codes from *appUserPermission / permissionKey (50 keys)
- * - menu domains from aside-menus.constants.ts
- * Role keys are ASSUMED (FE only consumes resource codes, not role names).
+ * Grounded in QIMAlabs FE + Permission CSV (via qima-pm-agent research):
+ * - auth2 SoR module: lab-service-cloud
+ * - Role keys: hyphenated names from Permission export (First-Page-Approver, …)
+ * - Isolation: Site · labCode · Department (not BU)
+ * - Resource codes: REPORTGENERATION:… / TA:… / TESTSETUP:…
  */
 const DATA={
  module:[
-  {id:'report-generation',name:'Report Generation',desc:'报告生成 · auth2 归属 lab-service-cloud',roles:3,resources:10,isolation:'Lab Code'},
-  {id:'test-assignment',name:'Test Assignment',desc:'测试分配 (TA) · auth2 归属 lab-service-cloud',roles:2,resources:17,isolation:'Lab Code'},
-  {id:'test-set-up',name:'Test Set Up',desc:'测试方法 / 参数 / Master Data',roles:2,resources:18,isolation:'None'},
-  {id:'template',name:'Template',desc:'结果表模板',roles:2,resources:2,isolation:'None'},
-  {id:'dashboard',name:'Dashboard',desc:'实验室看板',roles:1,resources:1,isolation:'None'},
-  {id:'to-do-list',name:'To-do List',desc:'待办（菜单可见性）',roles:1,resources:1,isolation:'None'}
+  {id:'test-assignment',name:'Test Assignment',desc:'Report Preparation · 参数 / specimen / breakdown',roles:3,resources:23,isolation:'Site · labCode · Department'},
+  {id:'report-generation',name:'Report Generation',desc:'First Page · Result Table · 审批',roles:8,resources:12,isolation:'Site · Department'},
+  {id:'test-setup',name:'Test Setup',desc:'Tests · Master Data · Parameters · AIMS→Labs',roles:4,resources:18,isolation:'Site · labCode'},
+  {id:'template',name:'Template',desc:'结果表模板',roles:2,resources:2,isolation:'Site'},
+  {id:'dashboard',name:'Dashboard',desc:'实验室看板',roles:1,resources:1,isolation:'Site'},
+  {id:'todo-list',name:'To-Do List',desc:'待办菜单可见性',roles:1,resources:1,isolation:'Site'}
  ],
  role:[
-  {id:'labs-admin',name:'lab-service-cloud:admin',module:'Report Generation',desc:'QIMAlabs 全权限管理员',web:24,api:12,data:1},
-  {id:'labs-rg-approver',name:'lab-service-cloud:report-approver',module:'Report Generation',desc:'报告 First Page / Result Table 审批',web:8,api:4,data:1},
-  {id:'labs-rg-editor',name:'lab-service-cloud:report-editor',module:'Report Generation',desc:'报告编辑（含 Unlock）',web:6,api:6,data:0},
-  {id:'labs-ta-editor',name:'lab-service-cloud:ta-editor',module:'Test Assignment',desc:'Test Assignment 编辑 / Unlock',web:14,api:8,data:1},
-  {id:'labs-setup-admin',name:'lab-service-cloud:testsetup-admin',module:'Test Set Up',desc:'Test / Method / Parameters / Master Data',web:16,api:10,data:0},
-  {id:'labs-template',name:'lab-service-cloud:template-editor',module:'Template',desc:'模板查看与编辑',web:2,api:1,data:0},
-  {id:'labs-viewer',name:'lab-service-cloud:viewer',module:'Dashboard',desc:'看板 + 报告只读',web:5,api:2,data:0},
-  {id:'labs-todo',name:'lab-service-cloud:todolist',module:'To-do List',desc:'待办菜单可见',web:1,api:0,data:0}
+  {id:'ta-viewer',name:'Test-Assignment-Viewer',module:'Test Assignment',desc:'View Test Assignment',web:8,api:6,data:1},
+  {id:'ta-editor',name:'Test-Assignment-Editor',module:'Test Assignment',desc:'Edit parameters / specimen / breakdown',web:16,api:12,data:1},
+  {id:'ta-admin',name:'Test-Assignment-Admin',module:'Test Assignment',desc:'Unlock + admin on Test Assignment',web:20,api:14,data:1},
+  {id:'fp-viewer',name:'First-Page-Viewer',module:'Report Generation',desc:'View First Page',web:4,api:4,data:1},
+  {id:'fp-editor',name:'First-Page-Editor',module:'Report Generation',desc:'Edit First Page',web:6,api:6,data:1},
+  {id:'fp-approver',name:'First-Page-Approver',module:'Report Generation',desc:'Approve First Page',web:6,api:6,data:1},
+  {id:'rt-viewer',name:'ResultTable-Viewer',module:'Report Generation',desc:'View Result Table',web:4,api:5,data:1},
+  {id:'rt-editor',name:'ResultTable-Editor',module:'Report Generation',desc:'Edit Result Table',web:6,api:8,data:1},
+  {id:'rt-approver',name:'ResultTable-Approver',module:'Report Generation',desc:'Approve / unlock Result Table',web:7,api:8,data:1},
+  {id:'dept-approver',name:'Department-Approver',module:'Report Generation',desc:'Department-level approval',web:5,api:5,data:1},
+  {id:'rg-admin',name:'Report-Generation-Admin',module:'Report Generation',desc:'Report Generation admin',web:12,api:14,data:1},
+  {id:'tpl-viewer',name:'Template-Viewer',module:'Template',desc:'View templates',web:1,api:2,data:0},
+  {id:'rt-tpl-editor',name:'ResultTable-Template-Editor',module:'Template',desc:'Edit result-table templates',web:2,api:4,data:0},
+  {id:'ts-viewer',name:'Test-Setup-Viewer',module:'Test Setup',desc:'View Test Setup',web:10,api:6,data:1},
+  {id:'ts-editor',name:'Test-Setup-Editor',module:'Test Setup',desc:'Edit tests / master data / parameters',web:16,api:10,data:1},
+  {id:'ts-admin',name:'Test-Setup-Admin',module:'Test Setup',desc:'Test Setup admin',web:18,api:12,data:1},
+  {id:'ql-admin',name:'Qimalabs-Admin',module:'Test Setup',desc:'Cross-area QIMAlabs admin',web:18,api:14,data:1}
  ],
  user:[
-  {id:'u1001',email:'stephen.song@qima.com',name:'Stephen Song',dept:'Lab Testing',roles:['lab-service-cloud:admin']},
-  {id:'u1002',email:'yulong.li@qima.com',name:'Yulong Li',dept:'Lab Testing',roles:['lab-service-cloud:report-approver','lab-service-cloud:report-editor']},
-  {id:'u1003',email:'mia.zhang@qima.com',name:'Mia Zhang',dept:'Lab Ops',roles:['lab-service-cloud:ta-editor']},
-  {id:'u1004',email:'ethan.zhao@qima.com',name:'Ethan Zhao',dept:'Lab Ops',roles:['lab-service-cloud:testsetup-admin','lab-service-cloud:template-editor']},
-  {id:'u1005',email:'ava.wang@qima.com',name:'Ava Wang',dept:'Lab Testing',roles:['lab-service-cloud:viewer','lab-service-cloud:todolist']},
-  {id:'u1006',email:'ivy.sun@qima.com',name:'Ivy Sun',dept:'Lab Testing',roles:['lab-service-cloud:report-editor']},
-  {id:'u1007',email:'ryan.wu@qima.com',name:'Ryan Wu',dept:'IT',roles:['lab-service-cloud:admin']},
-  {id:'u1008',email:'emma.hu@qima.com',name:'Emma Hu',dept:'Lab Ops',roles:[]}
+  {id:'u-kyle',email:'kyle.yao@qima.com',name:'Kyle Yao',dept:'Lab',roles:['First-Page-Approver','Department-Approver']},
+  {id:'u-pearl',email:'pearl.tse@qima.com',name:'Pearl Tse',dept:'Lab',roles:['First-Page-Approver','Department-Approver']},
+  {id:'u-sandy',email:'sandy.yu@qima.com',name:'Sandy Yu',dept:'Lab',roles:['First-Page-Editor','ResultTable-Editor']},
+  {id:'u-joyce',email:'joyce.liu@qima.com',name:'Joyce Liu',dept:'Lab',roles:['Test-Assignment-Admin','First-Page-Approver','Department-Approver']},
+  {id:'u-emma-f',email:'emma.fang@qima.com',name:'Emma Fang',dept:'Lab',roles:['ResultTable-Template-Editor','First-Page-Approver']},
+  {id:'u-kenny',email:'kenny.wang@qima.com',name:'Kenny Wang',dept:'Lab',roles:['Test-Assignment-Viewer','First-Page-Viewer','ResultTable-Viewer']},
+  {id:'u-andreu',email:'andreu.criquet@qima.com',name:'Andreu Criquet',dept:'Lab',roles:['ResultTable-Viewer','First-Page-Viewer']},
+  {id:'u-empty',email:'new.hire@qima.com',name:'New Hire',dept:'Lab',roles:[]}
  ],
  customer:[
-  {id:'ak-c01',client:'Mistress Foods',login:'mistress.lab.api',key:'ak_live_8fa2…',status:'Active',mode:'inherit',role:'lab-service-cloud:viewer',web:4,api:6,created:'12-May-2026',rate:600,peak:412,lastUsed:'23-Jul-2026 13:55'},
-  {id:'ak-c02',client:'GlobalGourmet',login:'gg.lab.integration',key:'ak_live_3c91…',status:'Active',mode:'direct',role:'',web:0,api:9,created:'01-Jun-2026',rate:300,peak:96,lastUsed:'23-Jul-2026 10:02'},
-  {id:'ak-c03',client:'FreshCo',login:'freshco.lab',key:'ak_test_1b7d…',status:'Suspended',mode:'inherit',role:'lab-service-cloud:viewer',web:2,api:4,created:'20-Jun-2026',rate:120,peak:120,lastUsed:'18-Jul-2026 22:31'},
-  {id:'ak-c04',client:'PureHarvest',login:'pureharvest.lab',key:'ak_live_55e0…',status:'Active',mode:'direct',role:'',web:0,api:5,created:'02-Jul-2026',rate:300,peak:47,lastUsed:'22-Jul-2026 16:40'}
+  {id:'ak-c-lab-01',client:'Brand LIMS Integrator',login:'brand.lims.api',key:'ak_live_lab_…',status:'Active',mode:'inherit',role:'ResultTable-Viewer',web:0,api:12,created:'12-May-2026',rate:600,peak:412,lastUsed:'23-Jul-2026 13:55'},
+  {id:'ak-c-lab-02',client:'SHEIN Lab Sync',login:'shein.lab.sync',key:'ak_live_shn_…',status:'Active',mode:'direct',role:'',web:0,api:8,created:'01-Jun-2026',rate:300,peak:96,lastUsed:'23-Jul-2026 10:02'},
+  {id:'ak-c-lab-03',client:'Retailer Portal API',login:'retailer.lab',key:'ak_test_rtl_…',status:'Suspended',mode:'inherit',role:'First-Page-Viewer',web:2,api:4,created:'20-Jun-2026',rate:120,peak:120,lastUsed:'18-Jul-2026 22:31'}
  ],
  platform:[
   {id:'ak-p01',client:'AIMS',login:'aims.lab.sync',key:'ak_plt_9d2f…',status:'Active',mode:'direct',role:'',web:0,api:14,created:'10-Apr-2026',rate:3000,peak:1840,lastUsed:'23-Jul-2026 14:20'},
@@ -326,46 +334,42 @@ const DATA={
   {id:'ak-p03',client:'Public-API',login:'publicapi.lab',key:'ak_plt_7e1b…',status:'Active',mode:'direct',role:'',web:0,api:17,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07'}
  ],
  history:[
-  {time:'23-Jul-2026 14:32',actor:'ryan.wu@qima.com',act:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER',meta:'角色 lab-service-cloud:report-approver'},
-  {time:'23-Jul-2026 11:08',actor:'ryan.wu@qima.com',act:'为用户 u1002 增加 lab-service-cloud:report-approver',meta:'Yulong Li · Lab Testing'},
-  {time:'22-Jul-2026 16:45',actor:'ryan.wu@qima.com',act:'创建客户 AccessKey · Mistress Foods',meta:'mode=inherit · ak_live_8fa2…'},
-  {time:'22-Jul-2026 09:20',actor:'stephen.song@qima.com',act:'更新模块 Report Generation 数据隔离为 Lab Code',meta:'原: None'},
-  {time:'21-Jul-2026 17:03',actor:'ryan.wu@qima.com',act:'创建平台 AccessKey · AIMS',meta:'mode=direct · AIMS→Labs 同步'},
-  {time:'21-Jul-2026 10:14',actor:'ryan.wu@qima.com',act:'移除用户 u1008 的 lab-service-cloud:ta-editor',meta:'Emma Hu'}
+  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',act:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER',meta:'角色 First-Page-Approver'},
+  {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',act:'为用户 Kyle Yao 增加 Department-Approver',meta:'kyle.yao@qima.com · Lab'},
+  {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',act:'创建客户 AccessKey · Brand LIMS Integrator',meta:'mode=inherit · ak_live_lab_…'},
+  {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',act:'更新功能域 Report Generation 隔离为 Site · Department',meta:'原: Site'},
+  {time:'21-Jul-2026 17:03',actor:'joyce.liu@qima.com',act:'创建平台 AccessKey · AIMS',meta:'mode=direct · AIMS→Labs'},
+  {time:'21-Jul-2026 10:14',actor:'joyce.liu@qima.com',act:'移除用户 New Hire 的 Test-Assignment-Viewer',meta:'new.hire@qima.com'}
  ]
 };
 
-/* Real PAGE/BUTTON resource codes under auth2 module lab-service-cloud */
 const LAB_RESOURCES={
  'report-generation':{
-  web:['REPORTGENERATION:VIEW','REPORTGENERATION:FIRSTPAGE:VIEW','REPORTGENERATION:FIRSTPAGE:EDIT','REPORTGENERATION:FIRSTPAGE:APPROVER','REPORTGENERATION:RESULTTABLE:VIEW','REPORTGENERATION:RESULTTABLE:EDIT','REPORTGENERATION:RESULTTABLE:APPROVER','REPORTGENERATION:RESULTTABLE:UNLOCK','REPORTGENERATION:DEPARTMENT:APPROVER','REPORTGENERATION:ADMIN','INFO:PAGE:VIEW'],
-  api:['GET /lab-service-cloud/v1.0/report/{id}','PUT /lab-service-cloud/v1.0/report/{id}/first-page','POST /lab-service-cloud/v1.0/business-lock/**']
+  web:['REPORTGENERATION:VIEW','REPORTGENERATION:ADMIN','REPORTGENERATION:FIRSTPAGE:VIEW','REPORTGENERATION:FIRSTPAGE:EDIT','REPORTGENERATION:FIRSTPAGE:APPROVER','REPORTGENERATION:RESULTTABLE:VIEW','REPORTGENERATION:RESULTTABLE:EDIT','REPORTGENERATION:RESULTTABLE:APPROVER','REPORTGENERATION:RESULTTABLE:UNLOCK','REPORTGENERATION:DEPARTMENT:APPROVER'],
+  api:['/lab-service-cloud/v1.0/order/list','/lab-service-cloud/v1.0/report-generation/test-result/*','/lab-service-cloud/v1.0/order/*/report-email/send','/lab-service-cloud/v1.0/business-lock/*/actions/unlock-by-admin']
  },
  'test-assignment':{
-  web:['TA:VIEW','TA:PAGE:CONFIRMPARAMETERS:VIEW','TA:PAGE:CONFIRMPARAMETERS:EDIT','TA:PAGE:CONFIRMPARAMETERS:UNLOCK','TA:PAGE:EDITSPECIMEN:VIEW','TA:PAGE:EDITSPECIMEN:EDIT','TA:PAGE:EDITSPECIMEN:ADDSPECIMEN','TA:PAGE:GENERATEBREAKDOWNLIST:VIEW','TA:PAGE:GENERATEBREAKDOWNLIST:EDIT','TA:PAGE:GENERATEBREAKDOWNLIST:EXPORTBREAKDOWNCHECKLIST'],
-  api:['GET /lab-service-cloud/v1.0/todo-task/**','POST /lab-service-cloud/v1.0/business-lock/types/{type}']
+  web:['TA:VIEW','TA:PAGE:CONFIRMPARAMETERS:VIEW','TA:PAGE:CONFIRMPARAMETERS:EDIT','TA:PAGE:CONFIRMPARAMETERS:UNLOCK','TA:PAGE:EDITSPECIMEN:VIEW','TA:PAGE:EDITSPECIMEN:EDIT','TA:PAGE:EDITSPECIMEN:ADDSPECIMEN','TA:PAGE:EDITSPECIMEN:UNLOCK','TA:PAGE:GENERATEBREAKDOWNLIST:VIEW','TA:PAGE:GENERATEBREAKDOWNLIST:EDIT','TA:PAGE:GENERATEBREAKDOWNLIST:EXPORTBREAKDOWNCHECKLIST','INFO:PAGE:VIEW'],
+  api:['/lab-service-cloud/v1.0/test-assignment/list','/lab-service-cloud/v1.0/breakdown/action/ExportBreakdownChecklist','/lab-service-cloud/v1.0/business-lock/*/actions/unlock']
  },
- 'test-set-up':{
+ 'test-setup':{
   web:['TESTSETUP:VIEW','TESTSETUP:PAGE:TEST:VIEW','TESTSETUP:PAGE:TEST:EDIT','TESTSETUP:PAGE:TEST:GENERALINFO:VIEW','TESTSETUP:PAGE:TEST:LABINFO:VIEW','TESTSETUP:PAGE:TEST:PARAMETERINFO:VIEW','TESTSETUP:PAGE:TESTMETHOD:VIEW','TESTSETUP:PAGE:PARAMETERS:VIEW','TESTSETUP:PAGE:MASTERDATA:VIEW','TESTSETUP:PAGE:TEST:AIMSTOLABS:EDIT'],
-  api:['GET /lab-service-cloud/v1.0/test/**','GET /lab-service-cloud/v1.0/lab/list','POST /lab-service-cloud/v1.0/data-config/**']
+  api:['/lab-service-cloud/v1.0/test/**','/lab-service-cloud/v1.0/lab/list','/lab-service-cloud/v1.0/data-config/**']
  },
- template:{web:['TEMPLATE:VIEW','TEMPLATE:EDIT'],api:['GET /lab-service-cloud/v1.0/template/**']},
+ template:{web:['TEMPLATE:VIEW','TEMPLATE:EDIT'],api:['/lab-service-cloud/v1.0/templates','/lab-service-cloud/v1.0/report-template']},
  dashboard:{web:['DASHBOARD:VIEW'],api:[]},
- 'to-do-list':{web:['TODOLIST:VIEW'],api:[]}
+ 'todo-list':{web:['TODOLIST:VIEW'],api:[]}
 };
 
 const CUSTOMERS=[
- {code:'C-10428',name:'Mistress Foods',logins:['mistress.lab.api','mistress.portal']},
- {code:'C-10871',name:'GlobalGourmet',logins:['gg.lab.integration']},
- {code:'C-11294',name:'FreshCo',logins:['freshco.lab','freshco.ops']},
- {code:'C-11530',name:'PureHarvest',logins:['pureharvest.lab']},
- {code:'C-11902',name:'Nordic Seafood',logins:['nordic.lab.api']}
+ {code:'C-LAB-01',name:'Brand LIMS Integrator',logins:['brand.lims.api']},
+ {code:'C-LAB-02',name:'SHEIN Lab Sync',logins:['shein.lab.sync']},
+ {code:'C-LAB-03',name:'Retailer Portal API',logins:['retailer.lab']}
 ];
 const PLATFORMS=[
  {code:'P-01',name:'AIMS',logins:['aims.lab.sync']},
  {code:'P-02',name:'myQIMA',logins:['myqima.lab']},
- {code:'P-03',name:'Public-API',logins:['publicapi.lab']},
- {code:'P-04',name:'NetSuite',logins:['netsuite.fin']}
+ {code:'P-03',name:'Public-API',logins:['publicapi.lab']}
 ];
 
 const VIEWS={
@@ -408,7 +412,7 @@ function kv(k,v){return `<div class="kv-item"><div class="k">${k}</div><div clas
 function field(label,control,hint){return `<div class="field"><label>${label}</label>${control}${hint?`<div class="hint">${hint}</div>`:''}</div>`;}
 function idxOf(view,r){return DATA[view].indexOf(r);}
 
-function isoBadge(v){return v==='None'?'<span class="badge badge-grey">无</span>':`<span class="badge badge-mango">${v}</span>`;}
+function isoBadge(v){return !v||v==='None'?'<span class="badge badge-grey">无</span>':`<span class="badge badge-mango">${v}</span>`;}
 function statusBadge(s){return s==='Active'?'<span class="badge badge-kiwi"><span class="dot"></span>Active</span>':'<span class="badge badge-cherry"><span class="dot"></span>Suspended</span>';}
 function modeBadge(m){return m==='inherit'?'<span class="badge">inherit</span>':'<span class="badge badge-mango">direct</span>';}
 
@@ -489,12 +493,12 @@ function filterCard(view){
  if(!showFilters)return '';
  const sel=(label,opts)=>field(label,`<select>${opts.map(o=>`<option>${o}</option>`).join('')}</select>`);
  let extra='';
- if(view==='role')extra=sel('模块前缀',['全部','Report Generation','Test Assignment','Test Set Up','Template','Dashboard','To-do List'])+sel('数据隔离',['全部','已配置','未配置']);
- if(view==='user')extra=sel('部门',['全部','Lab Testing','Lab Ops','IT'])+sel('角色数',['全部','有角色','无角色']);
+ if(view==='role')extra=sel('功能域',['全部','Test Assignment','Report Generation','Test Setup','Template','Dashboard','To-Do List'])+sel('数据隔离',['全部','已配置','未配置']);
+ if(view==='user')extra=sel('部门',['全部','Lab'])+sel('角色数',['全部','有角色','无角色']);
  if(view==='customer'||view==='platform')extra=sel('状态',['全部','Active','Suspended'])+sel('模式',['全部','inherit','direct']);
- if(view==='module')extra=sel('数据隔离维度',['全部','Lab Code','None']);
+ if(view==='module')extra=sel('数据隔离维度',['全部','Site','Site · labCode','Site · Department','Site · labCode · Department']);
  if(view==='history')extra=field('起始日期',`<input type="date" value="2026-07-17">`)+field('结束日期',`<input type="date" value="2026-07-23">`)
-   +sel('操作人',['全部','ryan.wu@qima.com','stephen.song@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
+   +sel('操作人',['全部','joyce.liu@qima.com','sandy.yu@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
  return `<div class="filterbar"><div class="filters">
    ${field('关键字',`<input id="q" placeholder="Type to search..." oninput="filterList(this.value)">`)}
    ${extra}
@@ -579,7 +583,7 @@ function moduleDetail(r){
      <div class="subpane active" data-p="web"><div class="chips">${webChips}</div></div>
      <div class="subpane" data-p="api"><div class="chips">${apiChips}</div></div>
      <div class="subpane" data-p="data">
-       <div class="kv">${kv('隔离维度',r.isolation==='None'?'未配置':isoBadge(r.isolation))}${kv('说明',r.isolation==='Lab Code'?'按 Lab Code 限制订单 / 报告可见范围（字段 labCodes）':'该功能域未配置行级数据隔离')}</div>
+       <div class="kv">${kv('隔离维度',isoBadge(r.isolation))}${kv('说明','按 Site / labCode / Department 限制订单与报告可见范围（业务字段含 labCodes）')}</div>
        <div style="margin-top:16px">${btn('配置数据隔离','btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
      </div>`},
    subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:'Data'}]))
@@ -603,7 +607,7 @@ function roleDetail(r){
    {html:`
      <div class="subpane active" data-p="web"><div class="chips">${webShow.map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindWeb',${i})">绑定 Web</span></div></div>
      <div class="subpane" data-p="api"><div class="chips">${(apiShow.length?apiShow:['（无独立 API 资源码）']).map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindApi',${i})">绑定 API</span></div></div>
-     <div class="subpane" data-p="data"><div class="chips">${r.data?'<span class="chip">维度：Lab Code</span><span class="chip">值：LAB001 · LAB002</span>':'<span class="muted">该角色无数据隔离</span>'}<span class="chip chip-add" onclick="openModal('bindData',${i})">配置隔离</span></div></div>`},
+     <div class="subpane" data-p="data"><div class="chips">${r.data?'<span class="chip">维度：Site · labCode · Department</span><span class="chip">值：LAB001 · Softlines</span>':'<span class="muted">该角色无数据隔离</span>'}<span class="chip chip-add" onclick="openModal('bindData',${i})">配置隔离</span></div></div>`},
    subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
  + card('已授权用户','',
    {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>用户</th><th>邮箱</th><th>部门</th></tr></thead><tbody>
@@ -694,16 +698,16 @@ const MODALS={
  moduleCreate:{title:'新建功能域',body:()=>`
   <div class="grid-2">${field('功能域 ID',inp('如 report-generation'))}${field('名称',inp('Report Generation'))}</div>
   ${field('描述',`<textarea placeholder="用途…（资源仍归属 auth2 module lab-service-cloud）"></textarea>`)}
-  ${field('数据隔离维度',sel(['None','Lab Code']))}`},
+  ${field('数据隔离维度',sel(['Site','Site · labCode','Site · Department','Site · labCode · Department']))}`},
  moduleEdit:{title:'编辑功能域',body:i=>{const r=DATA.module[i];return `
   <div class="grid-2">${field('功能域 ID',inp('',r.id,true))}${field('名称',inp('',r.name))}</div>
   ${field('auth2 Module',inp('','lab-service-cloud',true))}
   ${field('描述',`<textarea>${r.desc}</textarea>`)}`;}},
- isoConfig:{title:'配置数据隔离',body:i=>{const r=DATA.module[i];return field('隔离维度',sel(['None','Lab Code'].map(v=>({v,sel:v===r.isolation}))));}},
+ isoConfig:{title:'配置数据隔离',body:i=>{const r=DATA.module[i];return field('隔离维度',sel(['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,sel:v===r.isolation}))));}},
  roleCreate:{title:'新建角色',body:()=>`
-  <div class="grid-2">${field('角色 Key',inp('lab-service-cloud:roleName'))}${field('功能域',sel(DATA.module.map(m=>m.name)))}</div>
+  <div class="grid-2">${field('角色 Key',inp('First-Page-Approver'))}${field('功能域',sel(DATA.module.map(m=>m.name)))}</div>
   ${field('描述',inp('角色用途…'))}
-  <div class="note">QIMAlabs FE 只校验资源码；角色名在 auth2 中配置，建议统一 lab-service-cloud: 前缀。</div>`},
+  <div class="note">Permission CSV 使用连字符角色名（如 First-Page-Approver）；FE 只校验资源码。auth2 导出有时写作 lab-service-cloud:First-Page-Viewer。</div>`},
  roleEdit:{title:'编辑角色',body:i=>{const r=DATA.role[i];return `
   <div class="grid-2">${field('角色 Key',inp('',r.name))}${field('功能域',inp('',r.module,true))}</div>
   ${field('描述',inp('',r.desc))}`;}},
@@ -746,8 +750,8 @@ const MODALS={
   ${field('搜索接口',inp('/lab-service-cloud/v1.0/…'))}
   ${field('已选',`<div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list<span class="x">×</span></span></div>`)}`},
  bindData:{title:'配置数据隔离',body:()=>`
-  ${field('隔离维度',sel(['Lab Code']))}
-  ${field('隔离值',inp('如 LAB001, LAB002'))}`},
+  ${field('隔离维度',sel(['Site','labCode','Department']))}
+  ${field('隔离值',inp('如 LAB001 · Softlines'))}`},
  akBind:{title:'绑定资源',body:()=>`
   ${field('资源类型',`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
   ${field('搜索',inp('REPORTGENERATION:… / TA:…'))}`},
@@ -762,7 +766,7 @@ const MODALS={
     </div></div>`)}`},
  roleManage:{title:'管理功能域内角色',body:()=>`
   ${field('角色列表',`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
-  ${field('新建角色',inp('lab-service-cloud:roleName'))}`}
+  ${field('新建角色',inp('First-Page-Approver'))}`}
 };
 
 function openModal(key,arg){
