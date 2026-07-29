@@ -177,6 +177,22 @@ tbody tr:last-child td{border-bottom:0}
 .chip-add{border-style:dashed;border-color:var(--pool-200);background:var(--pool-100);color:var(--pool-500);cursor:pointer}
 .chip-add:hover{background:var(--pool-200)}
 
+/* ===== permission board (page cards · action checks) ===== */
+.perm-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.perm-page{border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--cloud);overflow:hidden;min-width:0}
+.perm-page-head{min-height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--white);box-shadow:inset 0 -1px 0 var(--pearl);font:600 13px/18px var(--font);color:var(--carbon)}
+.perm-page-head .code{margin-left:auto;font:400 11px/14px var(--font);color:var(--smoke);max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.perm-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 8px;padding:8px}
+.perm-act{min-height:34px;display:flex;align-items:flex-start;gap:8px;padding:7px 8px;border-radius:var(--r-nav);color:var(--seal);font:400 13px/18px var(--font);cursor:default}
+.perm-act.interactive{cursor:pointer}
+.perm-act.interactive:hover{background:var(--pool-100);color:var(--pool-900)}
+.perm-act input{width:16px;height:16px;flex:none;margin-top:1px;accent-color:var(--pool-500)}
+.perm-act .act-label{flex:1;min-width:0}
+.perm-act .act-code{display:block;margin-top:2px;font:400 11px/14px var(--font);color:var(--smoke);word-break:break-all}
+.perm-board-empty{padding:24px;text-align:center;color:var(--seal);font:400 13px/18px var(--font)}
+.modal.wide{max-width:880px}
+.modal.wide .modal-body{max-height:70vh}
+
 /* ===== pagination · h56 ===== */
 .pager{display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px;padding:0 24px;box-shadow:inset 0 1px 0 var(--line);font:400 14px/20px var(--font);color:var(--seal)}
 .pager-nav{display:flex;align-items:center;gap:4px}
@@ -424,6 +440,100 @@ const LAB_RESOURCES={
  'todo-list':{web:['TODOLIST:VIEW'],api:[]}
 };
 
+/* Human labels for auth2 resource segments — hide the colon soup in the UI */
+const SEG_LABEL={
+ REPORTGENERATION:'Report Generation',TA:'Test Assignment',TESTSETUP:'Test Setup',
+ TEMPLATE:'Template',DASHBOARD:'Dashboard',TODOLIST:'To-Do List',INFO:'Info',
+ FIRSTPAGE:'First Page',RESULTTABLE:'Result Table',DEPARTMENT:'Department',
+ CONFIRMPARAMETERS:'Confirm Parameters',EDITSPECIMEN:'Edit Specimen',
+ GENERATEBREAKDOWNLIST:'Generate Breakdown List',TEST:'Test',TESTMETHOD:'Test Method',
+ PARAMETERS:'Parameters',MASTERDATA:'Master Data',GENERALINFO:'General Info',
+ LABINFO:'Lab Info',PARAMETERINFO:'Parameter Info',AIMSTOLABS:'AIMS → Labs',PAGE:'Page',
+ VIEW:'view',EDIT:'edit',APPROVER:'approve',UNLOCK:'unlock',ADMIN:'admin',
+ ADDSPECIMEN:'add specimen',EXPORTBREAKDOWNCHECKLIST:'export checklist'
+};
+function prettySeg(s){
+ if(!s)return '';
+ if(SEG_LABEL[s])return SEG_LABEL[s];
+ return s.toLowerCase().replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+}
+/* Split codes like TESTSETUP:PAGE:TEST:GENERALINFO:VIEW → {page, action, code} */
+function parseWebCode(code){
+ const parts=String(code).split(':').filter(Boolean);
+ if(!parts.length)return {page:'Other',action:code,code};
+ const ACTIONS=new Set(['VIEW','EDIT','APPROVER','UNLOCK','ADMIN','ADDSPECIMEN','EXPORTBREAKDOWNCHECKLIST']);
+ let action=parts[parts.length-1];
+ let pageParts=parts.slice(0,-1);
+ if(!ACTIONS.has(action)&&parts.length===1){action='access';pageParts=parts;}
+ /* drop noise tokens that don't help the page title */
+ pageParts=pageParts.filter(p=>p!=='PAGE');
+ if(!pageParts.length)pageParts=[parts[0]];
+ /* Prefer the most specific page segment (e.g. GENERALINFO under TEST) */
+ let page;
+ if(pageParts.length>=3)page=prettySeg(pageParts[pageParts.length-2])+' · '+prettySeg(pageParts[pageParts.length-1]);
+ else if(pageParts.length===2&&pageParts[0]!==pageParts[1])page=prettySeg(pageParts[1]);
+ else page=prettySeg(pageParts[pageParts.length-1]);
+ return {page,action:prettySeg(action),code,root:prettySeg(parts[0])};
+}
+function groupWebCodes(codes){
+ const map=new Map();
+ (codes||[]).forEach(code=>{
+  const p=parseWebCode(code);
+  if(!map.has(p.page))map.set(p.page,{page:p.page,root:p.root,actions:[]});
+  map.get(p.page).actions.push(p);
+ });
+ return [...map.values()];
+}
+function roleBoundCodes(role,all){
+ if(!all||!all.length)return [];
+ const n=(role.name||'').toLowerCase();
+ if(/admin/.test(n))return all.slice();
+ const hits=[];
+ if(/first-?page/.test(n))hits.push('FIRSTPAGE');
+ if(/result.?table|resulttable/.test(n))hits.push('RESULTTABLE');
+ if(/department/.test(n))hits.push('DEPARTMENT');
+ if(/confirm.?param/.test(n))hits.push('CONFIRMPARAMETERS');
+ if(/specimen/.test(n))hits.push('EDITSPECIMEN');
+ if(/breakdown/.test(n))hits.push('GENERATEBREAKDOWNLIST');
+ if(/template/.test(n))hits.push('TEMPLATE');
+ if(/test-?assignment|test assignment/.test(n)&&!hits.length)hits.push('TA','CONFIRMPARAMETERS','EDITSPECIMEN','GENERATEBREAKDOWNLIST');
+ if(/test-?setup|test setup/.test(n))hits.push('TESTSETUP','TEST','TESTMETHOD','PARAMETERS','MASTERDATA');
+ if(/viewer/.test(n)&&!hits.length)return all.filter(c=>/:VIEW$/.test(c)||c.endsWith(':VIEW'));
+ let bound=hits.length?all.filter(c=>hits.some(h=>c.includes(h))):all.slice(0,Math.min(all.length,role.web||4));
+ /* tighten by role verb */
+ if(/approver/.test(n)&&!/editor|admin/.test(n))bound=bound.filter(c=>!/:(EDIT|ADDSPECIMEN)$/.test(c));
+ if(/editor/.test(n)&&!/approver|admin/.test(n))bound=bound.filter(c=>!/:APPROVER$/.test(c));
+ if(/viewer/.test(n)&&!/admin|editor|approver/.test(n))bound=bound.filter(c=>/:VIEW$/.test(c));
+ const rootView=all.find(c=>/^[^:]+:VIEW$/.test(c));
+ if(rootView&&!bound.includes(rootView))bound=[rootView,...bound];
+ return [...new Set(bound)];
+}
+/* Read-only board for detail cards; interactive=true for bind modal */
+function permBoardHtml(codes,opts){
+ opts=opts||{};
+ const selected=new Set(opts.selected||codes||[]);
+ const groups=groupWebCodes(codes||[]);
+ if(!groups.length)return `<div class="perm-board-empty">${opts.empty||t('noWebRes')}</div>`;
+ return `<div class="perm-board">${groups.map(g=>`
+  <div class="perm-page">
+   <div class="perm-page-head"><span>${g.page}</span>${g.root&&g.root!==g.page?`<span class="code">${g.root}</span>`:''}</div>
+   <div class="perm-actions">${g.actions.map(a=>{
+    const on=selected.has(a.code);
+    if(opts.interactive)return `<label class="perm-act interactive"><input type="checkbox"${on?' checked':''} data-code="${a.code}"><span class="act-label">${a.action}<span class="act-code">${a.code}</span></span></label>`;
+    return `<div class="perm-act"><input type="checkbox"${on?' checked':''} disabled><span class="act-label">${a.action}${opts.showCode?`<span class="act-code">${a.code}</span>`:''}</span></div>`;
+   }).join('')}</div>
+  </div>`).join('')}</div>`;
+}
+function apiListHtml(apis,opts){
+ opts=opts||{};
+ if(!apis||!apis.length)return `<div class="perm-board-empty">${opts.empty||t('noApiCodes')}</div>`;
+ return `<div class="perm-board">${apis.map(a=>`
+  <div class="perm-page">
+   <div class="perm-page-head"><span>${a.startsWith('/')?'API':a.split(' ')[0]||'API'}</span></div>
+   <div class="perm-actions"><div class="perm-act"><input type="checkbox" checked disabled><span class="act-label" style="word-break:break-all">${a}</span></div></div>
+  </div>`).join('')}</div>`;
+}
+
 const CUSTOMERS=[
  {code:'C-LAB-01',name:'Brand LIMS Integrator',logins:['brand.lims.api']},
  {code:'C-LAB-02',name:'SHEIN Lab Sync',logins:['shein.lab.sync']},
@@ -543,6 +653,7 @@ const I18N = {
   addApi:'Add API',pageButtonNote:'(mostly PAGE/BUTTON resources in this domain)',
   isoExplain:'Limits order and report visibility by Site / labCode / Department (business fields include labCodes)',
   isoDimLabel:'Isolation dimension',
+  permBoardHint:'Permissions are grouped by page. Check actions to grant; the technical resource code is shown under each action.',
  },
  zh:{
   docTitle:'IT 权限管理平台 · 原型',
@@ -626,6 +737,7 @@ const I18N = {
   addApi:'添加 API',pageButtonNote:'（本域主要为 PAGE/BUTTON 资源）',
   isoExplain:'按 Site / labCode / Department 限制订单与报告可见范围（业务字段含 labCodes）',
   isoDimLabel:'隔离维度',
+  permBoardHint:'权限按页面分组。勾选动作即可授权；技术资源码显示在动作下方。',
  }
 };
 function t(k,p){
@@ -986,17 +1098,13 @@ function moduleDetail(r){
  const i=idxOf('module',r);
  const roleRows=DATA.role.filter(x=>x.module===r.name);
  const res=LAB_RESOURCES[r.id]||{web:[],api:[]};
- const webChips=res.web.slice(0,8).map(c=>`<span class="chip">${c}</span>`).join('')
-  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">${SVG.plus.replace('<svg','<svg style="width:14px;height:14px"')}${t('addResource')}</span>`;
- const apiChips=(res.api.length?res.api:[t('pageButtonNote')]).map(c=>`<span class="chip">${c}</span>`).join('')
-  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">${t('addApi')}</span>`;
  return card(t('card.moduleInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('moduleEdit',${i})`),
    `<div class="kv">${kv(t('domainId'),r.id)}${kv(t('name'),r.name)}${kv(t('auth2Module'),'lab-service-cloud')}${kv(t('desc'),r.desc)}${kv(t('f.isoDim'),isoBadge(r.isolation))}</div>`)
  + card(t('card.moduleResources'),
    btn(t('manageResources'),'btn-secondary',SVG.link,`openModal('resourceManage','module')`),
    {html:`
-     <div class="subpane active" data-p="web"><div class="chips">${webChips}</div></div>
-     <div class="subpane" data-p="api"><div class="chips">${apiChips}</div></div>
+     <div class="subpane active" data-p="web">${permBoardHtml(res.web,{selected:res.web})}<div style="margin-top:12px">${btn(t('addResource'),'btn-tertiary',SVG.plus,`openModal('resourceManage','module')`)}</div></div>
+     <div class="subpane" data-p="api">${apiListHtml(res.api)}<div style="margin-top:12px">${btn(t('addApi'),'btn-tertiary',SVG.plus,`openModal('resourceManage','module')`)}</div></div>
      <div class="subpane" data-p="data">
        <div class="kv">${kv(t('isoDimLabel'),isoBadge(r.isolation))}${kv(t('desc'),t('isoExplain'))}</div>
        <div style="margin-top:16px">${btn(t('configIso'),'btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
@@ -1040,17 +1148,17 @@ function roleDetail(r){
  const i=idxOf('role',r);
  const mod=DATA.module.find(m=>m.name===r.module);
  const res=LAB_RESOURCES[mod?mod.id:'report-generation']||{web:[],api:[]};
- const webShow=res.web.slice(0,4);
- const apiShow=res.api.slice(0,3);
+ const bound=roleBoundCodes(r,res.web);
+ const apiShow=res.api.slice(0,4);
  return card(t('card.roleInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('roleEdit',${i})`),
    `<div class="kv">${kv(t('roleKey'),r.name)}${kv(t('domain'),r.module)}${kv(t('auth2Module'),'lab-service-cloud')}${kv(t('desc'),r.desc)}</div>`)
  + card(t('card.linkedResources'),
    btn(t('bindWeb'),'btn-secondary',SVG.link,`openModal('bindWeb',${i})`)+btn(t('bindApi'),'btn-tertiary',SVG.link,`openModal('bindApi',${i})`)+btn(t('dataIso'),'btn-tertiary',SVG.shield,`openModal('bindData',${i})`),
    {html:`
-     <div class="subpane active" data-p="web"><div class="chips">${webShow.map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindWeb',${i})">${t('bindWeb')}</span></div></div>
-     <div class="subpane" data-p="api"><div class="chips">${(apiShow.length?apiShow:[t('noApiCodes')]).map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindApi',${i})">${t('bindApi')}</span></div></div>
+     <div class="subpane active" data-p="web">${permBoardHtml(bound,{selected:bound})}<div style="margin-top:12px">${btn(t('bindWeb'),'btn-tertiary',SVG.link,`openModal('bindWeb',${i})`)}</div></div>
+     <div class="subpane" data-p="api">${apiListHtml(apiShow.length?apiShow:[], {empty:t('noApiCodes')})}<div style="margin-top:12px">${btn(t('bindApi'),'btn-tertiary',SVG.link,`openModal('bindApi',${i})`)}</div></div>
      <div class="subpane" data-p="data"><div class="chips">${r.data?`<span class="chip">${t('isoDim')}</span><span class="chip">${t('isoVal')}</span>`:`<span class="muted">${t('noDataIso')}</span>`}<span class="chip chip-add" onclick="openModal('bindData',${i})">${t('configIsoChip')}</span></div></div>`},
-   subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
+   subtabs([{p:'web',label:`Web (${bound.length||r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
  + roleUsersCardHtml(r,1);
 }
 
@@ -1193,8 +1301,7 @@ function MODALS(){return {
  isoConfig:{title:()=>t('m.isoConfig'),body:i=>{const r=DATA.module[i];return field(t('isoDimLabel'),sel(['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,sel:v===r.isolation}))));}},
  roleCreate:{title:()=>t('m.roleCreate'),body:()=>`
   <div class="grid-2">${field(t('roleKey'),inp('First-Page-Approver'))}${field(t('domain'),sel(DATA.module.map(m=>m.name)))}</div>
-  ${field(t('desc'),inp(t('rolePurposePh')))}
-  <div class="note">${t('roleCreateNote')}</div>`},
+  ${field(t('desc'),inp(t('rolePurposePh')))}`},
  roleEdit:{title:()=>t('m.roleEdit'),body:i=>{const r=DATA.role[i];return `
   <div class="grid-2">${field(t('roleKey'),inp('',r.name))}${field(t('domain'),inp('',r.module,true))}</div>
   ${field(t('desc'),inp('',r.desc))}`;}},
@@ -1247,27 +1354,39 @@ function MODALS(){return {
   <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /v1/order/list</div><div class="tl-meta">200 OK · 88 ms</div></div>
   <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">403 Forbidden · ${t('missRes')}</div></div>
  </div>`},
- bindWeb:{title:()=>t('m.bindWeb'),body:()=>`
-  ${field(t('searchRes'),inp('REPORTGENERATION:FIRSTPAGE:VIEW…'))}
-  ${field(t('selected'),`<div class="chips"><span class="chip">REPORTGENERATION:VIEW<span class="x">×</span></span><span class="chip">REPORTGENERATION:FIRSTPAGE:VIEW<span class="x">×</span></span></div>`)}`},
- bindApi:{title:()=>t('m.bindApi'),body:()=>`
+ bindWeb:{title:()=>t('m.bindWeb'),wide:true,body:i=>{
+   const role=DATA.role[i]||DATA.role[0];
+   const mod=DATA.module.find(m=>m.name===role.module);
+   const all=(LAB_RESOURCES[mod?mod.id:'report-generation']||{web:[]}).web;
+   const bound=roleBoundCodes(role,all);
+   return `
+  ${field(t('searchRes'),`<input id="perm-q" placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
+  <div id="perm-board-wrap">${permBoardHtml(all,{selected:bound,interactive:true})}</div>
+  <div class="note">${t('permBoardHint')}</div>`;}},
+ bindApi:{title:()=>t('m.bindApi'),body:i=>{
+   const role=DATA.role[i]||DATA.role[0];
+   const mod=DATA.module.find(m=>m.name===role.module);
+   const apis=(LAB_RESOURCES[mod?mod.id:'report-generation']||{api:[]}).api;
+   return `
   ${field(t('searchApi'),inp('/lab-service-cloud/v1.0/…'))}
-  ${field(t('selected'),`<div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list<span class="x">×</span></span></div>`)}`},
+  ${apiListHtml(apis)}`;}},
  bindData:{title:()=>t('m.bindData'),body:()=>`
   ${field(t('isoDimLabel'),sel(['Site','labCode','Department']))}
   ${field(t('isoValue'),inp(t('isoValuePh')))}`},
- akBind:{title:()=>t('m.akBind'),body:()=>`
+ akBind:{title:()=>t('m.akBind'),wide:true,body:()=>{
+   const all=(LAB_RESOURCES['report-generation']||{web:[]}).web;
+   return `
   ${field(t('resType'),`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
-  ${field(t('searchLabel'),inp('REPORTGENERATION:… / TA:…'))}`},
- resourceManage:{title:()=>t('m.resourceManage'),body:()=>`
+  ${field(t('searchLabel'),`<input placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
+  <div id="perm-board-wrap">${permBoardHtml(all,{selected:all.slice(0,3),interactive:true})}</div>`;}},
+ resourceManage:{title:()=>t('m.resourceManage'),wide:true,body:()=>{
+   const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
+   const mid=parts[0]==='module'&&parts[1]?parts[1]:'report-generation';
+   const web=(LAB_RESOURCES[mid]||LAB_RESOURCES['report-generation']).web;
+   return `
   ${field(t('resType'),`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label><input type="radio" name="rt" id="rt3"><label for="rt3">API</label></div>`)}
-  ${field(t('resTree'),`<div class="tree">
-    <div class="row"><span class="caret">▾</span>REPORTGENERATION:VIEW</div>
-    <div class="tree-children">
-      <div class="row"><span class="caret">▸</span>REPORTGENERATION:FIRSTPAGE:VIEW</div>
-      <div class="row"><span class="caret">▸</span>REPORTGENERATION:RESULTTABLE:EDIT</div>
-      <div class="row"><span class="caret">▸</span>REPORTGENERATION:FIRSTPAGE:APPROVER</div>
-    </div></div>`)}`},
+  ${field(t('searchRes'),`<input placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
+  <div id="perm-board-wrap">${permBoardHtml(web,{selected:web,interactive:true})}</div>`;}},
  roleManage:{title:()=>t('m.roleManage'),body:()=>`
   ${field(t('roleList'),`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
   ${field(t('newRole'),inp('First-Page-Approver'))}`},
@@ -1285,7 +1404,7 @@ function openModal(key,arg){
  const foot=m.foot?(typeof m.foot==='function'?m.foot(arg):m.foot)
    :btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('save'),'btn-primary','',`saveModal(${JSON.stringify(title)})`);
  lastFocus=document.activeElement;
- $('#overlay').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="${title}">
+ $('#overlay').innerHTML=`<div class="modal${m.wide?' wide':''}" role="dialog" aria-modal="true" aria-label="${title}">
   <div class="modal-head"><h3>${title}</h3>${iconBtn('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',t('close'),'closeModal()')}</div>
   <div class="modal-body">${body}</div>
   <div class="modal-foot">${foot}</div>
@@ -1328,6 +1447,15 @@ function pickPick(name){
  const s=$('#pk-login');
  s.disabled=false;
  s.innerHTML=c.logins.map(l=>`<option>${l}</option>`).join('');
+}
+
+/* Filter permission cards by page title / action / raw code */
+function filterPermBoard(q){
+ q=(q||'').toLowerCase().trim();
+ document.querySelectorAll('#perm-board-wrap .perm-page').forEach(card=>{
+  const hit=!q||card.textContent.toLowerCase().includes(q);
+  card.style.display=hit?'':'none';
+ });
 }
 
 /* ---- copy roles from another user ---- */
