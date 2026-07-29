@@ -174,6 +174,7 @@ tbody tr:last-child td{border-bottom:0}
 .chip .x{color:var(--seal);cursor:pointer;font-size:14px;line-height:1}
 .chip .x:hover{color:var(--cherry-500)}
 .chip-link{color:var(--pool-500);cursor:pointer;font-weight:600}
+.chip-link:focus-visible,.chip-add:focus-visible{outline:2px solid var(--pool-500);outline-offset:2px}
 .chip-add{border-style:dashed;border-color:var(--pool-200);background:var(--pool-100);color:var(--pool-500);cursor:pointer}
 .chip-add:hover{background:var(--pool-200)}
 
@@ -235,6 +236,53 @@ tbody tr:last-child td{border-bottom:0}
 
 /* ===== empty ===== */
 .empty{padding:48px 24px;text-align:center;color:var(--seal);font:400 14px/20px var(--font)}
+
+/* list table: header sticks under the page bar while scrolling long lists.
+   sticky resolves against the nearest scrollport, so the list table must not
+   create its own overflow container — the page scrolls instead. */
+.content-list .table-wrap{overflow:visible}
+.content-list thead th{position:sticky;z-index:5;top:var(--sticky-top,132px)}
+th.sortable{cursor:pointer;user-select:none;transition:color var(--dur) var(--ease)}
+th.sortable:hover{color:var(--pool-500)}
+th .sort-ind{margin-left:6px;font-size:11px;color:var(--smoke)}
+th.sorted{color:var(--pool-500)}
+th.sorted .sort-ind{color:var(--pool-500)}
+tbody tr.clickable:focus-visible{outline:2px solid var(--pool-500);outline-offset:-2px;background:var(--cloud)}
+
+/* pagination extras */
+.pager-left{display:flex;align-items:center;gap:12px;min-width:0}
+.pg-size{height:32px;padding:0 28px 0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);color:var(--carbon);font:400 14px/20px var(--font);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23191919' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:16px 16px}
+.pager-nav .ellipsis{min-width:24px;text-align:center;color:var(--smoke)}
+
+/* checkbox list (column settings) */
+.checks{display:grid;gap:10px}
+.checks label{display:flex;align-items:center;gap:10px;font:400 14px/20px var(--font);color:var(--carbon);cursor:pointer}
+.checks input{width:16px;height:16px;accent-color:var(--pool-500)}
+
+/* ===== toast ===== */
+.toasts{position:fixed;z-index:1200;bottom:24px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;max-width:560px;padding:10px 16px;border-radius:var(--r-ctl);background:var(--carbon);color:var(--white);font:400 14px/20px var(--font);box-shadow:0 6px 24px rgba(25,25,25,.24);animation:toast-in var(--dur) var(--ease);transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease)}
+.toast .dot{width:6px;height:6px;border-radius:50%;background:var(--pool-500);flex:none}
+.toast.ok .dot{background:var(--kiwi-500)}
+.toast.out{opacity:0;transform:translateY(8px)}
+@keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.modal-open{overflow:hidden}
+
+/* ===== narrow screens ===== */
+@media (max-width:1100px){
+  .layout{grid-template-columns:64px minmax(0,1fr)}
+  .rail-items button{width:48px;gap:0;padding:12px 0;font-size:0}
+  .rail-items button svg{width:20px;height:20px}
+  .grid-2{grid-template-columns:1fr}
+  .env{max-width:220px;overflow:hidden}
+}
+@media (max-width:760px){
+  .appbar{padding:12px 16px}
+  .pagebar,.content{padding-left:16px;padding-right:16px}
+  .table-block{margin:0 -16px}
+  .filters{grid-template-columns:1fr}
+  .pager{padding:0 16px}
+}
 </style>
 </head>
 <body>
@@ -418,19 +466,18 @@ function modeBadge(m){return m==='inherit'?'<span class="badge">inherit</span>':
 
 /* ================= page bar ================= */
 function listPagebar(view){
- const cfg=VIEWS[view];
- const filterCount={role:2,customer:2,platform:2,user:2,module:1,history:4}[view]||0;
+ const cfg=VIEWS[view], n=activeFilterCount(view);
  return `<div class="pagebar">
   <div class="pagebar-row">
     <h1>${cfg.title}</h1>
-    <span class="count">${DATA[view].length}</span>
+    <span class="count" id="list-count">${visibleRows(view).length}</span>
     <div class="grow"></div>
     <div class="tools">
-      ${iconBtn(SVG.search,'搜索',`focusSearch()`)}
+      ${iconBtn(SVG.search,'搜索（/）',`focusSearch()`)}
       ${iconBtn(SVG.erase,'重置筛选',`resetFilters()`)}
-      ${iconBtn(SVG.columns,'列设置')}
-      ${iconBtn(SVG.download,'导出')}
-      <span class="counter"${filterCount?` data-n="${filterCount}"`:''}>${iconBtn(SVG.filter,'筛选',`toggleFilters()`,showFilters?'on':'')}</span>
+      ${iconBtn(SVG.columns,'列设置',`openModal('columns')`)}
+      ${iconBtn(SVG.download,'导出当前结果',`exportList()`)}
+      <span class="counter" id="filter-counter"${n?` data-n="${n}"`:''}>${iconBtn(SVG.filter,'筛选',`toggleFilters()`,showFilters?'on':'')}</span>
       ${listAction(view)}
     </div>
   </div>
@@ -482,47 +529,180 @@ function detailPrimary(view,r){
  return '';
 }
 
+/* ================= list state ================= */
+const LIST_STATE={};
+function st(view){return LIST_STATE[view]||(LIST_STATE[view]={page:1,size:10,q:'',sort:null,filters:{},hidden:[]});}
+
+const MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+/* '23-Jul-2026 14:32' / '12-May-2026' → sortable + comparable number */
+function dnum(s){
+ if(!s)return 0;
+ const [d,t]=String(s).split(' ');
+ const [dd,mm,yy]=d.split('-');
+ const [hh,mi]=(t||'0:0').split(':');
+ return new Date(+yy,MONTHS[mm]||0,+dd,+hh||0,+mi||0).getTime();
+}
+
+/* column order must match listRow() cell order */
+const COLS={
+ module:[{k:'id',label:'功能域 ID'},{k:'name',label:'名称'},{k:'desc',label:'描述',sort:false},{k:'roles',label:'角色'},{k:'resources',label:'资源'},{k:'isolation',label:'数据隔离'}],
+ role:[{k:'name',label:'角色 Key'},{k:'module',label:'功能域'},{k:'desc',label:'描述',sort:false},{k:'web',label:'Web'},{k:'api',label:'API'},{k:'data',label:'数据隔离'}],
+ user:[{k:'id',label:'用户 ID'},{k:'name',label:'姓名'},{k:'email',label:'邮箱'},{k:'dept',label:'部门'},{k:'roles',label:'角色数',get:r=>r.roles.length}],
+ customer:[{k:'id',label:'AccessKey ID'},{k:'client',label:'客户名称'},{k:'login',label:'登录账号'},{k:'mode',label:'模式'},{k:'status',label:'状态'},{k:'created',label:'创建日期',get:r=>dnum(r.created)}],
+ platform:[{k:'id',label:'AccessKey ID'},{k:'client',label:'平台名称'},{k:'login',label:'登录账号'},{k:'mode',label:'模式'},{k:'status',label:'状态'},{k:'created',label:'创建日期',get:r=>dnum(r.created)}],
+ history:[{k:'time',label:'时间',get:r=>dnum(r.time)},{k:'actor',label:'操作人'},{k:'act',label:'操作',sort:false},{k:'meta',label:'对象',sort:false}]
+};
+
+const AK_FILTERS=[
+ {k:'status',label:'状态',opts:['Active','Suspended'],test:(r,v)=>r.status===v},
+ {k:'mode',label:'模式',opts:['inherit','direct'],test:(r,v)=>r.mode===v}
+];
+const HIST_TYPE={'模块':/功能域/,'角色':/角色/,'用户角色':/用户/,'AccessKey':/AccessKey/};
+const FILTERS={
+ module:[{k:'isolation',label:'数据隔离维度',opts:['Site','Site · labCode','Site · Department','Site · labCode · Department'],test:(r,v)=>r.isolation===v}],
+ role:[{k:'module',label:'功能域',opts:DATA.module.map(m=>m.name),test:(r,v)=>r.module===v},
+  {k:'data',label:'数据隔离',opts:['已配置','未配置'],test:(r,v)=>v==='已配置'?!!r.data:!r.data}],
+ user:[{k:'dept',label:'部门',opts:['Lab'],test:(r,v)=>r.dept===v},
+  {k:'hasRole',label:'角色数',opts:['有角色','无角色'],test:(r,v)=>v==='有角色'?r.roles.length>0:r.roles.length===0}],
+ customer:AK_FILTERS,
+ platform:AK_FILTERS,
+ history:[{k:'from',label:'起始日期',type:'date',test:(r,v)=>dnum(r.time)>=new Date(v+'T00:00:00').getTime()},
+  {k:'to',label:'结束日期',type:'date',test:(r,v)=>dnum(r.time)<=new Date(v+'T23:59:59').getTime()},
+  {k:'actor',label:'操作人',opts:[...new Set(DATA.history.map(h=>h.actor))],test:(r,v)=>r.actor===v},
+  {k:'type',label:'对象类型',opts:Object.keys(HIST_TYPE),test:(r,v)=>(HIST_TYPE[v]||/.*/).test(r.act)}]
+};
+
+function visibleRows(view){
+ const s=st(view), defs=FILTERS[view]||[], q=s.q.trim().toLowerCase();
+ let rows=DATA[view].filter(r=>{
+  if(q&&!JSON.stringify(r).toLowerCase().includes(q))return false;
+  return defs.every(d=>{const v=s.filters[d.k];return v?d.test(r,v):true;});
+ });
+ if(s.sort){
+  const c=(COLS[view]||[]).find(x=>x.k===s.sort.k);
+  if(c){
+   const val=r=>c.get?c.get(r):r[c.k];
+   rows=rows.slice().sort((a,b)=>{
+    const x=val(a),y=val(b);
+    const n=typeof x==='number'&&typeof y==='number'?x-y:String(x).localeCompare(String(y),'zh-Hans-CN');
+    return s.sort.dir==='desc'?-n:n;
+   });
+  }
+ }
+ return rows;
+}
+function activeFilterCount(view){
+ const s=st(view);
+ return (s.q.trim()?1:0)+Object.values(s.filters).filter(Boolean).length;
+}
+
 /* ================= list ================= */
 function render(){
  pagebar.innerHTML=listPagebar(currentView);
  content.className='content content-list';
- content.innerHTML=filterCard(currentView)+`<div class="table-block"><div class="table-wrap">${listTable(currentView)}</div>${pager(DATA[currentView].length)}</div>`;
+ content.innerHTML=filterCard(currentView)+colStyle(currentView)+`<div id="list-body">${listBody(currentView)}</div>`;
+ syncSticky();
+}
+/* re-render only the table + pager so filter inputs keep focus and caret */
+function refreshList(){
+ const el=$('#list-body');
+ if(!el)return render();
+ el.innerHTML=listBody(currentView);
+ const c=$('#list-count');if(c)c.textContent=visibleRows(currentView).length;
+ const fc=$('#filter-counter');
+ if(fc){const n=activeFilterCount(currentView);n?fc.dataset.n=n:delete fc.dataset.n;}
+ const cs=$('#col-style');if(cs)cs.outerHTML=colStyle(currentView);
+ syncSticky();
+}
+
+function setQuery(v){const s=st(currentView);s.q=v;s.page=1;refreshList();}
+function setFilter(k,v){const s=st(currentView);s.filters[k]=(v&&v!=='全部')?v:'';if(!s.filters[k])delete s.filters[k];s.page=1;refreshList();}
+function setListPage(p){const s=st(currentView);s.page=p;refreshList();$('#list-body').scrollIntoView({block:'start',behavior:'smooth'});}
+function setListSize(n){const s=st(currentView);s.size=+n;s.page=1;refreshList();}
+function setSort(k){
+ const s=st(currentView);
+ s.sort=(s.sort&&s.sort.k===k)?(s.sort.dir==='asc'?{k,dir:'desc'}:null):{k,dir:'asc'};
+ refreshList();
+}
+function toggleColumn(k,on){
+ const s=st(currentView);
+ s.hidden=on?s.hidden.filter(x=>x!==k):[...new Set([...s.hidden,k])];
+ refreshList();
+}
+function colStyle(view){
+ const s=st(view), cols=COLS[view]||[];
+ const rules=s.hidden.map(k=>cols.findIndex(c=>c.k===k)).filter(n=>n>=0)
+  .map(n=>`#list-body th:nth-child(${n+1}),#list-body td:nth-child(${n+1}){display:none}`).join('');
+ return `<style id="col-style">${rules}</style>`;
 }
 
 function filterCard(view){
  if(!showFilters)return '';
- const sel=(label,opts)=>field(label,`<select>${opts.map(o=>`<option>${o}</option>`).join('')}</select>`);
- let extra='';
- if(view==='role')extra=sel('功能域',['全部','Test Assignment','Report Generation','Test Setup','Template','Dashboard','To-Do List'])+sel('数据隔离',['全部','已配置','未配置']);
- if(view==='user')extra=sel('部门',['全部','Lab'])+sel('角色数',['全部','有角色','无角色']);
- if(view==='customer'||view==='platform')extra=sel('状态',['全部','Active','Suspended'])+sel('模式',['全部','inherit','direct']);
- if(view==='module')extra=sel('数据隔离维度',['全部','Site','Site · labCode','Site · Department','Site · labCode · Department']);
- if(view==='history')extra=field('起始日期',`<input type="date" value="2026-07-17">`)+field('结束日期',`<input type="date" value="2026-07-23">`)
-   +sel('操作人',['全部','joyce.liu@qima.com','sandy.yu@qima.com'])+sel('对象类型',['全部','模块','角色','用户角色','AccessKey']);
+ const s=st(view), defs=FILTERS[view]||[];
+ const ctrl=d=>d.type==='date'
+  ?`<input type="date" value="${s.filters[d.k]||''}" onchange="setFilter('${d.k}',this.value)">`
+  :`<select onchange="setFilter('${d.k}',this.value)">${['全部',...d.opts].map(o=>`<option${(s.filters[d.k]||'全部')===o?' selected':''}>${o}</option>`).join('')}</select>`;
  return `<div class="filterbar"><div class="filters">
-   ${field('关键字',`<input id="q" placeholder="Type to search..." oninput="filterList(this.value)">`)}
-   ${extra}
+   ${field('关键字',`<input id="q" placeholder="Type to search..." value="${s.q}" oninput="setQuery(this.value)">`)}
+   ${defs.map(d=>field(d.label,ctrl(d))).join('')}
  </div></div>`;
 }
 
-function listTable(view){
- const rows=DATA[view].map((r,i)=>listRow(view,r,i)).join('');
- return `<table><thead>${listHead(view)}</thead><tbody id="tbody">${rows}</tbody></table>`;
+function listBody(view){
+ const s=st(view), rows=visibleRows(view);
+ const pages=Math.max(1,Math.ceil(rows.length/s.size));
+ if(s.page>pages)s.page=pages;
+ const slice=rows.slice((s.page-1)*s.size,s.page*s.size);
+ return `<div class="table-block"><div class="table-wrap">${listTable(view,slice)}</div>${listPager(view,rows.length,pages)}</div>`;
+}
+
+function listTable(view,rows){
+ const cols=COLS[view];
+ const body=rows.length
+  ?rows.map(r=>listRow(view,r,DATA[view].indexOf(r))).join('')
+  :`<tr><td colspan="${cols.length}"><div class="empty">未找到匹配记录${activeFilterCount(view)?`<div style="margin-top:16px">${btn('清除筛选条件','btn-secondary',SVG.erase,'resetFilters()')}</div>`:''}</div></td></tr>`;
+ return `<table><thead>${listHead(view)}</thead><tbody id="tbody">${body}</tbody></table>`;
 }
 
 function listHead(view){
- return {
-  module:`<tr><th>功能域 ID</th><th>名称</th><th>描述</th><th>角色</th><th>资源</th><th>数据隔离</th></tr>`,
-  role:`<tr><th>角色 Key</th><th>功能域</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr>`,
-  user:`<tr><th>用户 ID</th><th>姓名</th><th>邮箱</th><th>部门</th><th>角色数</th></tr>`,
-  customer:`<tr><th>AccessKey ID</th><th>客户名称</th><th>登录账号</th><th>模式</th><th>状态</th><th>创建日期</th></tr>`,
-  platform:`<tr><th>AccessKey ID</th><th>平台名称</th><th>登录账号</th><th>模式</th><th>状态</th><th>创建日期</th></tr>`,
-  history:`<tr><th>时间</th><th>操作人</th><th>操作</th><th>对象</th></tr>`
- }[view];
+ const s=st(view);
+ return `<tr>${COLS[view].map(c=>{
+  if(c.sort===false)return `<th>${c.label}</th>`;
+  const on=s.sort&&s.sort.k===c.k;
+  return `<th class="sortable${on?' sorted':''}" onclick="setSort('${c.k}')">${c.label}<span class="sort-ind">${on?(s.sort.dir==='asc'?'↑':'↓'):'↕'}</span></th>`;
+ }).join('')}</tr>`;
+}
+
+function listPager(view,total,pages){
+ const s=st(view);
+ const nums=pageWindow(s.page,pages).map(p=>p==='…'
+  ?'<span class="ellipsis">…</span>'
+  :`<button class="${p===s.page?'active':''}" onclick="setListPage(${p})">${p}</button>`).join('');
+ const from=total?(s.page-1)*s.size+1:0, to=Math.min(total,s.page*s.size);
+ return `<div class="pager">
+  <div class="pager-left">
+   <span>共 ${total} 条${total?` · 显示 ${from}-${to}`:''}</span>
+   <select class="pg-size" onchange="setListSize(this.value)">${[10,20,50].map(n=>`<option value="${n}"${n===s.size?' selected':''}>每页 ${n} 条</option>`).join('')}</select>
+  </div>
+  <div class="pager-nav">
+   <button ${s.page<=1?'disabled':''} onclick="setListPage(${s.page-1})">‹</button>
+   ${nums}
+   <button ${s.page>=pages?'disabled':''} onclick="setListPage(${s.page+1})">›</button>
+  </div>
+ </div>`;
+}
+function pageWindow(cur,pages){
+ if(pages<=7)return Array.from({length:pages},(_,i)=>i+1);
+ const out=[1];
+ if(cur>3)out.push('…');
+ for(let p=Math.max(2,cur-1);p<=Math.min(pages-1,cur+1);p++)out.push(p);
+ if(cur<pages-2)out.push('…');
+ out.push(pages);
+ return out;
 }
 
 function listRow(view,r,i){
- const cl=`class="clickable" data-idx="${i}" onclick="goDetail('${view}',${i})"`;
+ const cl=`class="clickable" tabindex="0" data-idx="${i}" onclick="goDetail('${view}',${i})" onkeydown="rowKey(event,'${view}',${i})"`;
  if(view==='module')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.desc}</td><td><span class="count">${r.roles}</span></td><td><span class="count">${r.resources}</span></td><td>${isoBadge(r.isolation)}</td></tr>`;
  if(view==='role')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td class="strong">${r.module}</td><td>${r.desc}</td><td><span class="count">${r.web}</span></td><td><span class="count">${r.api}</span></td><td>${r.data?'<span class="badge badge-mango"><span class="dot"></span>已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`;
  if(view==='user')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.email}</td><td>${r.dept}</td><td>${r.roles.length?`<span class="count">${r.roles.length}</span>`:'<span class="badge badge-grey">0</span>'}</td></tr>`;
@@ -531,21 +711,55 @@ function listRow(view,r,i){
  return '';
 }
 
-function pager(total){
- return `<div class="pager"><span>共 ${total} 条 · 每页 10 条</span>
-  <div class="pager-nav"><button disabled>‹</button><button class="active">1</button><button disabled>›</button></div></div>`;
+function inlinePager(total,page,pageSize,gotoFn){
+ const pages=Math.max(1,Math.ceil(total/pageSize)||1);
+ page=Math.min(Math.max(1,page),pages);
+ const btns=Array.from({length:pages},(_,n)=>{
+  const p=n+1;
+  return `<button class="${p===page?'active':''}" onclick="${gotoFn}(${p})">${p}</button>`;
+ }).join('');
+ return `<div class="pager"><span>共 ${total} 条 · 每页 ${pageSize} 条</span>
+  <div class="pager-nav">
+   <button ${page<=1?'disabled':''} onclick="${gotoFn}(${page-1})">‹</button>
+   ${btns}
+   <button ${page>=pages?'disabled':''} onclick="${gotoFn}(${page+1})">›</button>
+  </div></div>`;
 }
 
 /* ================= detail ================= */
-function goDetail(view,i){
+function renderDetail(view,i){
  const r=DATA[view][i];
- if(!r||view==='history')return;
+ if(!r||view==='history')return false;
  pagebar.innerHTML=detailPagebar(view,r);
  content.className='content'; /* same white canvas as list — cards separate via Pool-100 heads */
  content.innerHTML=detailBody(view,r);
+ syncSticky();
  window.scrollTo(0,0);
+ return true;
 }
-function backToList(){render();window.scrollTo(0,0);}
+function goDetail(view,i){
+ const r=DATA[view][i];
+ if(!r||view==='history')return;
+ setHash(`#/${view}/${r.id}`);
+ renderDetail(view,i);
+}
+/* prefer real history so Back and the browser button behave the same, but never
+   step outside the prototype when the detail page was opened by a deep link */
+function backToList(){
+ if(navDepth>0){navDepth--;history.back();return;}
+ setHash(`#/${currentView}`);navDepth=0;
+ render();window.scrollTo(0,0);
+}
+function rowKey(e,view,i){
+ if(e.key==='Enter'||e.key===' '){e.preventDefault();goDetail(view,i);}
+}
+
+/* keep the sticky list header parked right under the page bar */
+function syncSticky(){
+ const pb=pagebar.querySelector('.pagebar');
+ document.documentElement.style.setProperty('--sticky-top',`${72+(pb?pb.offsetHeight:60)}px`);
+}
+window.addEventListener('resize',syncSticky);
 
 function card(title,acts,body,subtabs,opt){
  opt=opt||{};
@@ -589,13 +803,41 @@ function moduleDetail(r){
    subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:'Data'}]))
  + card('模块内角色',btn('管理角色','btn-secondary',SVG.edit,`openModal('roleManage')`),
    {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>角色 Key</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr></thead><tbody>
-     ${roleRows.map(x=>`<tr class="clickable" onclick="jumpToRole('${x.id}')"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?'<span class="badge badge-mango">已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">该模块暂无角色</td></tr>'}
+     ${roleRows.map(x=>`<tr class="clickable" tabindex="0" onclick="jumpToRole('${x.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${x.id}')}"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?'<span class="badge badge-mango">已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">该模块暂无角色</td></tr>'}
    </tbody></table></div>`},'',{lazy:true});
+}
+
+const ROLE_USERS_PS=5;
+let roleUsersPageState={idx:0,page:1};
+
+function roleUsersCardHtml(r,page){
+ const i=idxOf('role',r);
+ const users=DATA.user.filter(u=>u.roles.includes(r.name));
+ const ps=ROLE_USERS_PS;
+ const pages=Math.max(1,Math.ceil(users.length/ps)||1);
+ page=Math.min(Math.max(1,page||1),pages);
+ roleUsersPageState={idx:i,page};
+ const slice=users.slice((page-1)*ps,page*ps);
+ const rows=slice.map(u=>`<tr class="clickable" tabindex="0" onclick="jumpToUser('${u.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUser('${u.id}')}"><td><span class="cell-link">${u.name}</span></td><td>${u.email}</td><td>${u.dept}</td></tr>`).join('')
+  ||'<tr><td colspan="3" class="empty">暂无授权用户</td></tr>';
+ return card('已授权用户','',
+  {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>用户</th><th>邮箱</th><th>部门</th></tr></thead><tbody>${rows}</tbody></table></div>${inlinePager(users.length,page,ps,`setRoleUsersPage`)}`});
+}
+
+function setRoleUsersPage(page){
+ const r=DATA.role[roleUsersPageState.idx];
+ if(!r)return;
+ const html=roleUsersCardHtml(r,page);
+ const cards=[...content.querySelectorAll('.card')];
+ const el=cards.find(c=>c.querySelector('.card-title')?.textContent==='已授权用户');
+ if(!el)return;
+ const tmp=document.createElement('div');
+ tmp.innerHTML=html;
+ el.replaceWith(tmp.firstElementChild);
 }
 
 function roleDetail(r){
  const i=idxOf('role',r);
- const users=DATA.user.filter(u=>u.roles.includes(r.name));
  const mod=DATA.module.find(m=>m.name===r.module);
  const res=LAB_RESOURCES[mod?mod.id:'report-generation']||{web:[],api:[]};
  const webShow=res.web.slice(0,4);
@@ -609,10 +851,7 @@ function roleDetail(r){
      <div class="subpane" data-p="api"><div class="chips">${(apiShow.length?apiShow:['（无独立 API 资源码）']).map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindApi',${i})">绑定 API</span></div></div>
      <div class="subpane" data-p="data"><div class="chips">${r.data?'<span class="chip">维度：Site · labCode · Department</span><span class="chip">值：LAB001 · Softlines</span>':'<span class="muted">该角色无数据隔离</span>'}<span class="chip chip-add" onclick="openModal('bindData',${i})">配置隔离</span></div></div>`},
    subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
- + card('已授权用户','',
-   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>用户</th><th>邮箱</th><th>部门</th></tr></thead><tbody>
-     ${users.map(u=>`<tr class="clickable" onclick="jumpToUser('${u.id}')"><td><span class="cell-link">${u.name}</span></td><td>${u.email}</td><td>${u.dept}</td></tr>`).join('')||'<tr><td colspan="3" class="empty">暂无授权用户</td></tr>'}
-   </tbody></table></div>`},'',{lazy:true});
+ + roleUsersCardHtml(r,1);
 }
 
 function userDetail(r){
@@ -620,7 +859,7 @@ function userDetail(r){
  return card('用户信息','',
    `<div class="kv">${kv('用户 ID',r.id)}${kv('姓名',r.name)}${kv('邮箱',r.email)}${kv('部门',r.dept)}${kv('数据来源','User Service · 只读')}</div>`)
  + card('用户角色',btn('编辑角色','btn-secondary',SVG.edit,`openModal('userRole',${i})`),
-   r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" onclick="jumpToRole('${rl}')">${rl}</span>`).join('')}</div>`:'<div class="empty">该用户暂无权限角色</div>');
+   r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" role="button" tabindex="0" onclick="jumpToRole('${rl}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${rl}')}">${rl}</span>`).join('')}</div>`:'<div class="empty">该用户暂无权限角色</div>');
 }
 
 function akDetail(view,r){
@@ -655,8 +894,53 @@ function akResourceCard(view,r,i,inherit){
 /* ================= interactions ================= */
 function switchView(v){
  currentView=v;
- document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+ syncNav(v);
+ setHash(`#/${v}`);
  render();window.scrollTo(0,0);
+}
+function syncNav(v){document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));}
+
+/* ---- hash routing: deep links are shareable and browser back/forward works ---- */
+let routing=false, navDepth=0; /* how many history entries this session pushed */
+function setHash(h){
+ if(location.hash===h)return;
+ routing=true;location.hash=h;navDepth++;
+ requestAnimationFrame(()=>{routing=false;});
+}
+function route(){
+ const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
+ const v=VIEWS[parts[0]]?parts[0]:'module';
+ currentView=v;syncNav(v);
+ if(parts[1]){
+  const i=DATA[v].findIndex(r=>r.id===parts[1]);
+  if(i>=0&&renderDetail(v,i))return;
+ }
+ render();window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',()=>{if(!routing)route();});
+
+/* ---- transient feedback ---- */
+function toast(msg,kind){
+ let wrap=$('#toasts');
+ if(!wrap){wrap=document.createElement('div');wrap.id='toasts';wrap.className='toasts';document.body.appendChild(wrap);}
+ const el=document.createElement('div');
+ el.className=`toast${kind?' '+kind:''}`;
+ el.innerHTML=`<span class="dot"></span><span>${msg}</span>`;
+ wrap.appendChild(el);
+ setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),240);},2200);
+}
+function copyText(el,text){
+ const done=()=>{
+  const label=el.querySelector('span'), old=label?label.textContent:'';
+  if(label){label.textContent='已复制';setTimeout(()=>{label.textContent=old;},1600);}
+  toast('已复制到剪贴板','ok');
+ };
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done,done);
+ else done();
+}
+function exportList(){
+ const n=visibleRows(currentView).length;
+ toast(`已导出当前筛选结果 ${n} 条 · CSV`,'ok');
 }
 function toggleCard(head){
  const c=head.parentElement;
@@ -667,26 +951,27 @@ function toggleCard(head){
  setTimeout(()=>{b.innerHTML=t.innerHTML;},380);
 }
 function toggleFilters(){showFilters=!showFilters;render();}
-function resetFilters(){render();}
-function focusSearch(){if(!showFilters){showFilters=true;render();}const q=$('#q');if(q)q.focus();}
-
-function filterList(q){
- q=(q||'').toLowerCase();
- const tbody=$('#tbody');if(!tbody)return;
- tbody.innerHTML=DATA[currentView].map((r,i)=>JSON.stringify(r).toLowerCase().includes(q)?listRow(currentView,r,i):'').join('')
-  ||`<tr><td colspan="6" class="empty">未找到匹配记录</td></tr>`;
+function resetFilters(){
+ const s=st(currentView);
+ if(!activeFilterCount(currentView)&&!s.sort){toast('当前没有筛选条件');return;}
+ s.q='';s.filters={};s.sort=null;s.page=1;
+ render();toast('已重置筛选与排序','ok');
+}
+function focusSearch(){
+ if(!showFilters){showFilters=true;render();}
+ const q=$('#q');if(q){q.focus();q.select();}
 }
 
 function jumpToRole(key){
  const i=DATA.role.findIndex(x=>x.id===key||x.name===key);
- if(i<0)return;currentView='role';
- document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view==='role'));
+ if(i<0)return;
+ currentView='role';syncNav('role');
  goDetail('role',i);
 }
 function jumpToUser(id){
  const i=DATA.user.findIndex(x=>x.id===id);
- if(i<0)return;currentView='user';
- document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view==='user'));
+ if(i<0)return;
+ currentView='user';syncNav('user');
  goDetail('user',i);
 }
 
@@ -728,9 +1013,9 @@ const MODALS={
  akCreated:{title:'AccessKey 已生成',
   foot:()=>btn('我已保存并复制','btn-primary','','closeModal()'),
   body:t=>`
-  ${field('AccessKey ID',`<div class="secret">${t==='platform'?'ak-p04':'ak-c05'}${btn('复制','btn-tertiary')}</div>`)}
-  ${field('Access Key',`<div class="secret">ak_live_2f7c91be4d0a83e5${btn('复制','btn-tertiary')}</div>`)}
-  ${field('Secret',`<div class="secret">sk_9b41e07c…d82f6a3510${btn('复制','btn-tertiary')}</div>`)}
+  ${field('AccessKey ID',`<div class="secret">${t==='platform'?'ak-p04':'ak-c05'}${btn('复制','btn-tertiary','',`copyText(this,'${t==='platform'?'ak-p04':'ak-c05'}')`)}</div>`)}
+  ${field('Access Key',`<div class="secret">ak_live_2f7c91be4d0a83e5${btn('复制','btn-tertiary','',`copyText(this,'ak_live_2f7c91be4d0a83e5')`)}</div>`)}
+  ${field('Secret',`<div class="secret">sk_9b41e07c…d82f6a3510${btn('复制','btn-tertiary','',`copyText(this,'sk_9b41e07cd82f6a3510')`)}</div>`)}
   <div class="note">Secret 仅在此显示一次，关闭后无法再次查看，需重新生成。请立即复制并交付${t==='platform'?'对接方':'客户'}。</div>`},
  akEdit:{title:'编辑 AccessKey',body:i=>{const r=DATA[currentView][i];return `
   ${field('AccessKey ID',inp('',r.id,true))}
@@ -766,23 +1051,47 @@ const MODALS={
     </div></div>`)}`},
  roleManage:{title:'管理功能域内角色',body:()=>`
   ${field('角色列表',`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
-  ${field('新建角色',inp('First-Page-Approver'))}`}
+  ${field('新建角色',inp('First-Page-Approver'))}`},
+ columns:{title:'列设置',
+  foot:()=>btn('完成','btn-primary','','closeModal()'),
+  body:()=>{const s=st(currentView);return field('显示列',`<div class="checks">${COLS[currentView].map(c=>`
+   <label><input type="checkbox"${s.hidden.includes(c.k)?'':' checked'} onchange="toggleColumn('${c.k}',this.checked)">${c.label}</label>`).join('')}</div>`);}}
 };
 
+let lastFocus=null;
 function openModal(key,arg){
  const m=MODALS[key];if(!m)return;
  const title=typeof m.title==='function'?m.title(arg):m.title;
  const body=typeof m.body==='function'?m.body(arg):m.body;
  const foot=m.foot?(typeof m.foot==='function'?m.foot(arg):m.foot)
-   :btn('取消','btn-tertiary','','closeModal()')+btn('保存','btn-primary','','closeModal()');
- $('#overlay').innerHTML=`<div class="modal">
+   :btn('取消','btn-tertiary','','closeModal()')+btn('保存','btn-primary','',`saveModal('${title}')`);
+ lastFocus=document.activeElement;
+ $('#overlay').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="${title}">
   <div class="modal-head"><h3>${title}</h3>${iconBtn('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>','关闭','closeModal()')}</div>
   <div class="modal-body">${body}</div>
   <div class="modal-foot">${foot}</div>
  </div>`;
  $('#overlay').classList.add('show');
+ document.body.classList.add('modal-open');
+ const first=$('#overlay').querySelector('.modal-body input:not([disabled]),.modal-body select:not([disabled]),.modal-body textarea');
+ if(first){first.focus();if(first.select)first.select();}
 }
-function closeModal(){$('#overlay').classList.remove('show');$('#overlay').innerHTML='';}
+function closeModal(){
+ $('#overlay').classList.remove('show');
+ $('#overlay').innerHTML='';
+ document.body.classList.remove('modal-open');
+ if(lastFocus&&lastFocus.focus)lastFocus.focus();
+ lastFocus=null;
+}
+function saveModal(what){closeModal();toast(`${what} · 已保存`,'ok');}
+
+document.addEventListener('keydown',e=>{
+ const open=$('#overlay').classList.contains('show');
+ if(e.key==='Escape'&&open){closeModal();return;}
+ if(open)return;
+ const t=document.activeElement;
+ if(e.key==='/'&&!/^(INPUT|SELECT|TEXTAREA)$/.test(t?t.tagName:'')){e.preventDefault();focusSearch();}
+});
 
 /* customer / platform picker — master data is searched, not typed */
 function pickSearch(type,q){
@@ -813,7 +1122,7 @@ document.addEventListener('click',e=>{
 });
 
 document.querySelectorAll('#nav button').forEach(b=>{b.onclick=()=>switchView(b.dataset.view);});
-render();
+route();
 </script>
 </body>
 </html>
