@@ -1033,6 +1033,7 @@ function useChipFilter(d){
  const n=filterOpts(d).length;
  return n>0&&n<=5;
 }
+function visibleRows(view){
  const s=st(view), defs=FILTERS[view]||[], q=s.q.trim().toLowerCase();
  let rows=DATA[view].filter(r=>{
   if(q&&!JSON.stringify(r).toLowerCase().includes(q))return false;
