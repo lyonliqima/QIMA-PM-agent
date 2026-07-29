@@ -1517,8 +1517,7 @@ function MODALS(){return {
    const bound=roleBoundCodes(role,all);
    return `
   ${field(t('searchRes'),`<input id="perm-q" placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
-  <div id="perm-board-wrap">${permBoardHtml(all,{selected:bound,interactive:true})}</div>
-  <div class="note">${t('permBoardHint')}</div>`;}},
+  <div id="perm-board-wrap">${permBoardHtml(all,{selected:bound,interactive:true})}</div>`;}},
  bindApi:{title:()=>t('m.bindApi'),body:i=>{
    const role=DATA.role[i]||DATA.role[0];
    const mod=DATA.module.find(m=>m.name===role.module);
