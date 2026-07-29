@@ -1575,10 +1575,13 @@ function MODALS(){return {
  addApi:{title:()=>t('m.addApi'),body:i=>{
    const r=DATA.module[i]||DATA.module[0];
    const apis=(LAB_RESOURCES[r.id]||{api:[]}).api;
-   return `
-  <div class="grid-2">${field(t('apiMethod'),sel(['ANY','GET','POST','PUT','PATCH','DELETE'].map(v=>({v,sel:v==='GET'})))}${field(t('apiPath'),inp(t('apiPathPh')))}</div>
-  <div class="note">${t('apiAddNote')}</div>
-  ${apis.length?`<div style="margin-top:12px"><div class="field"><label>${t('nav.module')} · ${r.name}</label></div>${apiListHtml(apis)}</div>`:''}`;}},
+   const methodSel=sel(['ANY','GET','POST','PUT','PATCH','DELETE'].map(v=>({v:v,sel:v==='GET'})));
+   const pathInp=inp(t('apiPathPh'));
+   const existing=apis.length
+    ?`<div style="margin-top:12px"><div class="field"><label>${escHtml(r.name)} · API</label></div>${apiListHtml(apis)}</div>`
+    :'';
+   return `<div class="grid-2">${field(t('apiMethod'),methodSel)}${field(t('apiPath'),pathInp)}</div>
+  <div class="note">${t('apiAddNote')}</div>${existing}`;}},
  resourceManage:{title:()=>t('m.resourceManage'),wide:true,body:()=>{
    const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
    const mid=parts[0]==='module'&&parts[1]?parts[1]:'report-generation';
