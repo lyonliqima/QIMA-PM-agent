@@ -412,13 +412,12 @@ function listPagebar(view){
 }
 
 function listTabs(view){
+ /* Only customer/platform share one conceptual object (AccessKey) with two
+    subtypes — module and role already have their own rail items, so a second
+    tab row would just repeat the sidebar. */
  if(view==='customer'||view==='platform')return `<div class="tabs">
    <button class="tab ${view==='customer'?'active':''}" onclick="switchView('customer')">客户 AccessKey</button>
    <button class="tab ${view==='platform'?'active':''}" onclick="switchView('platform')">平台 AccessKey</button>
- </div>`;
- if(view==='module'||view==='role')return `<div class="tabs">
-   <button class="tab ${view==='module'?'active':''}" onclick="switchView('module')">模块</button>
-   <button class="tab ${view==='role'?'active':''}" onclick="switchView('role')">角色 &amp; 资源</button>
  </div>`;
  return '';
 }
