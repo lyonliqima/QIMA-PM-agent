@@ -64,7 +64,7 @@ button{cursor:pointer;background:none;border:0}
 .rail-items button:hover{background:var(--mist);color:var(--carbon)}
 .rail-items button.active{background:var(--nav-active);color:var(--carbon)}
 
-.col{min-width:0;display:flex;flex-direction:column}
+.col{min-width:0;display:flex;flex-direction:column;background:var(--white)}
 
 /* ===== page bar (sticky under app header) ===== */
 .pagebar{position:sticky;top:72px;z-index:100;background:var(--white);box-shadow:inset 0 -1px 0 var(--line);padding:12px 24px}
@@ -121,10 +121,9 @@ button{cursor:pointer;background:none;border:0}
 .seg input:checked+label{background:var(--pool-100);color:var(--pool-500)}
 
 /* ===== content ===== */
-.content{flex:1;padding:20px 24px 40px;min-width:0}
-/* list pages sit on white with a full-bleed table; detail pages keep the
-   tinted page background so the white container cards separate */
-.content-list{background:var(--white);padding-bottom:0}
+.content{flex:1;padding:20px 24px 40px;min-width:0;background:var(--white)}
+/* list pages: full-bleed table, no bottom padding so pager sits flush */
+.content-list{padding-bottom:0}
 .table-block{margin:0 -24px}
 
 /* ===== collapsible container card ===== */
@@ -514,7 +513,7 @@ function goDetail(view,i){
  const r=DATA[view][i];
  if(!r||view==='history')return;
  pagebar.innerHTML=detailPagebar(view,r);
- content.className='content';
+ content.className='content'; /* same white canvas as list — cards separate via Pool-100 heads */
  content.innerHTML=detailBody(view,r);
  window.scrollTo(0,0);
 }
