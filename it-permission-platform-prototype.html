@@ -80,8 +80,7 @@ button{cursor:pointer;background:none;border:0}
 .counter{position:relative;display:inline-flex}
 .counter[data-n]::after{content:attr(data-n);position:absolute;z-index:1;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--pool-500);color:var(--white);font:400 11px/18px var(--font);text-align:center;box-shadow:0 0 0 2px var(--white)}
 
-/* ===== tabs ===== */
-.tabs{display:flex;align-items:center;margin-top:8px}
+/* ===== tabs (used by in-card sub tabs) ===== */
 .tab{padding:8px 12px;font:400 14px/20px var(--font);color:var(--seal);border-bottom:2px solid transparent;transition:color var(--dur) var(--ease)}
 .tab:hover{color:var(--carbon)}
 .tab.active{color:var(--carbon);border-bottom-color:var(--pool-500)}
@@ -481,19 +480,7 @@ function listPagebar(view){
       ${listAction(view)}
     </div>
   </div>
-  ${listTabs(view)}
  </div>`;
-}
-
-function listTabs(view){
- /* Only customer/platform share one conceptual object (AccessKey) with two
-    subtypes — module and role already have their own rail items, so a second
-    tab row would just repeat the sidebar. */
- if(view==='customer'||view==='platform')return `<div class="tabs">
-   <button class="tab ${view==='customer'?'active':''}" onclick="switchView('customer')">客户 AccessKey</button>
-   <button class="tab ${view==='platform'?'active':''}" onclick="switchView('platform')">平台 AccessKey</button>
- </div>`;
- return '';
 }
 
 function listAction(view){
