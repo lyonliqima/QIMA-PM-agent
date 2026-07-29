@@ -749,6 +749,8 @@ const I18N = {
   'm.akEdit':'Edit AccessKey','m.rateEdit':'Edit rate limit','m.akLog':'AccessKey access log',
   'm.bindWeb':'Bind Web resources','m.bindApi':'Bind API resources','m.bindData':'Configure data isolation','m.akBind':'Bind resources',
   'm.resourceManage':'Manage domain resources','m.roleManage':'Manage roles in domain','m.columns':'Column settings',
+  'm.addApi':'Add API endpoint',apiMethod:'HTTP method',apiPath:'API path',apiPathPh:'/lab-service-cloud/v1.0/…',
+  apiAddNote:'Adds an API resource to this feature domain catalog. Roles and AccessKeys still need to bind it separately.',
   domainId:'Domain ID',name:'Name',purposePh:'Purpose… (resources still belong to auth2 module lab-service-cloud)',
   isoDimension:'Isolation dimension',rolePurposePh:'Role purpose…',
   roleCreateNote:'Permission CSV uses hyphenated role names (e.g. First-Page-Approver); the FE only checks resource codes. auth2 export may write lab-service-cloud:First-Page-Viewer.',
@@ -835,6 +837,8 @@ const I18N = {
   'm.akEdit':'编辑 AccessKey','m.rateEdit':'编辑限流配置','m.akLog':'AccessKey 访问日志',
   'm.bindWeb':'绑定 Web 资源','m.bindApi':'绑定 API 资源','m.bindData':'配置数据隔离','m.akBind':'绑定资源',
   'm.resourceManage':'管理功能域资源','m.roleManage':'管理功能域内角色','m.columns':'列设置',
+  'm.addApi':'添加 API 接口',apiMethod:'HTTP 方法',apiPath:'API 路径',apiPathPh:'/lab-service-cloud/v1.0/…',
+  apiAddNote:'将 API 资源加入本功能域资源目录。角色与 AccessKey 仍需另行绑定后才会生效。',
   domainId:'功能域 ID',name:'名称',purposePh:'用途…（资源仍归属 auth2 module lab-service-cloud）',
   isoDimension:'隔离维度',rolePurposePh:'角色用途…',
   roleCreateNote:'Permission CSV 使用连字符角色名（如 First-Page-Approver）；FE 只校验资源码。auth2 导出有时写作 lab-service-cloud:First-Page-Viewer。',
@@ -1294,7 +1298,7 @@ function moduleDetail(r){
    btn(t('manageResources'),'btn-secondary',SVG.link,`openModal('resourceManage','module')`),
    {html:`
      <div class="subpane active" data-p="web">${permBoardHtml(res.web,{selected:res.web})}<div style="margin-top:12px">${btn(t('addResource'),'btn-tertiary',SVG.plus,`openModal('resourceManage','module')`)}</div></div>
-     <div class="subpane" data-p="api">${apiListHtml(res.api)}<div style="margin-top:12px">${btn(t('addApi'),'btn-tertiary',SVG.plus,`openModal('resourceManage','module')`)}</div></div>
+     <div class="subpane" data-p="api">${apiListHtml(res.api)}<div style="margin-top:12px">${btn(t('addApi'),'btn-tertiary',SVG.plus,`openModal('addApi',${i})`)}</div></div>
      <div class="subpane" data-p="data">
        <div class="kv">${kv(t('isoDimLabel'),isoBadge(r.isolation))}${kv(t('desc'),t('isoExplain'))}</div>
        <div style="margin-top:16px">${btn(t('configIso'),'btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
@@ -1568,14 +1572,22 @@ function MODALS(){return {
   ${field(t('resType'),`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
   ${field(t('searchLabel'),`<input placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
   <div id="perm-board-wrap">${permBoardHtml(all,{selected:all.slice(0,3),interactive:true})}</div>`;}},
+ addApi:{title:()=>t('m.addApi'),body:i=>{
+   const r=DATA.module[i]||DATA.module[0];
+   const apis=(LAB_RESOURCES[r.id]||{api:[]}).api;
+   return `
+  <div class="grid-2">${field(t('apiMethod'),sel(['ANY','GET','POST','PUT','PATCH','DELETE'].map(v=>({v,sel:v==='GET'})))}${field(t('apiPath'),inp(t('apiPathPh')))}</div>
+  <div class="note">${t('apiAddNote')}</div>
+  ${apis.length?`<div style="margin-top:12px"><div class="field"><label>${t('nav.module')} · ${r.name}</label></div>${apiListHtml(apis)}</div>`:''}`;}},
  resourceManage:{title:()=>t('m.resourceManage'),wide:true,body:()=>{
    const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
    const mid=parts[0]==='module'&&parts[1]?parts[1]:'report-generation';
    const web=(LAB_RESOURCES[mid]||LAB_RESOURCES['report-generation']).web;
    return `
-  ${field(t('resType'),`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label><input type="radio" name="rt" id="rt3"><label for="rt3">API</label></div>`)}
+  ${field(t('resType'),`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label></div>`)}
   ${field(t('searchRes'),`<input placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
-  <div id="perm-board-wrap">${permBoardHtml(web,{selected:web,interactive:true})}</div>`;}},
+  <div id="perm-board-wrap">${permBoardHtml(web,{selected:web,interactive:true})}</div>
+  <div class="note">${t('pageButtonNote')}</div>`;}},
  roleManage:{title:()=>t('m.roleManage'),body:()=>`
   ${field(t('roleList'),`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
   ${field(t('newRole'),inp('First-Page-Approver'))}`},
