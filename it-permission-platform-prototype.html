@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IT 权限管理平台 · 原型</title>
+<title>IT Access Control · Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
@@ -273,6 +273,15 @@ tbody tr.clickable:focus-visible{outline:2px solid var(--pool-500);outline-offse
 @keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 body.modal-open{overflow:hidden}
 
+/* ===== language floater ===== */
+.lang-fab{position:fixed;z-index:1100;right:24px;bottom:24px;display:flex;align-items:center;gap:0;padding:4px;border-radius:999px;background:var(--white);border:1px solid var(--pearl);box-shadow:0 8px 28px rgba(25,25,25,.16)}
+.lang-fab button{min-width:44px;height:32px;padding:0 12px;border-radius:999px;font:600 12px/16px var(--font);color:var(--seal);letter-spacing:.02em;transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+.lang-fab button:hover{color:var(--carbon);background:var(--cloud)}
+.lang-fab button.on{background:var(--pool-500);color:var(--white)}
+.lang-fab button.on:hover{background:var(--pool-600);color:var(--white)}
+@media (max-width:760px){.lang-fab{right:16px;bottom:16px}}
+
+
 /* ===== narrow screens ===== */
 @media (max-width:1100px){
   .layout{grid-template-columns:64px minmax(0,1fr)}
@@ -313,12 +322,12 @@ body.modal-open{overflow:hidden}
 <div class="layout">
   <aside class="rail">
     <div class="rail-items" id="nav">
-      <button data-view="module" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg>模块</button>
-      <button data-view="role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20v-1.5a6.5 6.5 0 0113 0V20"/></svg>角色 &amp; 资源</button>
-      <button data-view="user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20v-1a6 6 0 0112 0v1"/><path d="M16 6.2a3.2 3.2 0 010 6M18 20v-1a5 5 0 00-1.6-3.6"/></svg>内部用户</button>
-      <button data-view="customer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a4 4 0 018 0v2"/><circle cx="12" cy="14" r="1.6"/></svg>客户权限</button>
-      <button data-view="platform"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4"/></svg>平台权限</button>
-      <button data-view="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>历史记录</button>
+      <button data-view="module" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg><span class="nav-label" data-nav="module">模块</span></button>
+      <button data-view="role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20v-1.5a6.5 6.5 0 0113 0V20"/></svg><span class="nav-label" data-nav="role">角色 &amp; 资源</span></button>
+      <button data-view="user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20v-1a6 6 0 0112 0v1"/><path d="M16 6.2a3.2 3.2 0 010 6M18 20v-1a5 5 0 00-1.6-3.6"/></svg><span class="nav-label" data-nav="user">内部用户</span></button>
+      <button data-view="customer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a4 4 0 018 0v2"/><circle cx="12" cy="14" r="1.6"/></svg><span class="nav-label" data-nav="customer">客户权限</span></button>
+      <button data-view="platform"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4"/></svg><span class="nav-label" data-nav="platform">平台权限</span></button>
+      <button data-view="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><span class="nav-label" data-nav="history">历史记录</span></button>
     </div>
   </aside>
 
@@ -326,6 +335,12 @@ body.modal-open{overflow:hidden}
     <div id="pagebar"></div>
     <div class="content" id="content"></div>
   </div>
+</div>
+
+
+<div class="lang-fab" id="lang-fab" role="group" aria-label="Language">
+  <button type="button" data-lang="en" class="on" onclick="setLang('en')">EN</button>
+  <button type="button" data-lang="zh" onclick="setLang('zh')">中文</button>
 </div>
 
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()"></div>
@@ -340,12 +355,12 @@ body.modal-open{overflow:hidden}
  */
 const DATA={
  module:[
-  {id:'test-assignment',name:'Test Assignment',desc:'Report Preparation · 参数 / specimen / breakdown',roles:3,resources:23,isolation:'Site · labCode · Department'},
-  {id:'report-generation',name:'Report Generation',desc:'First Page · Result Table · 审批',roles:8,resources:12,isolation:'Site · Department'},
+  {id:'test-assignment',name:'Test Assignment',desc:'Report Preparation · parameters / specimen / breakdown',roles:3,resources:23,isolation:'Site · labCode · Department'},
+  {id:'report-generation',name:'Report Generation',desc:'First Page · Result Table · approval',roles:8,resources:12,isolation:'Site · Department'},
   {id:'test-setup',name:'Test Setup',desc:'Tests · Master Data · Parameters · AIMS→Labs',roles:4,resources:18,isolation:'Site · labCode'},
-  {id:'template',name:'Template',desc:'结果表模板',roles:2,resources:2,isolation:'Site'},
-  {id:'dashboard',name:'Dashboard',desc:'实验室看板',roles:1,resources:1,isolation:'Site'},
-  {id:'todo-list',name:'To-Do List',desc:'待办菜单可见性',roles:1,resources:1,isolation:'Site'}
+  {id:'template',name:'Template',desc:'Result table templates',roles:2,resources:2,isolation:'Site'},
+  {id:'dashboard',name:'Dashboard',desc:'Lab dashboard',roles:1,resources:1,isolation:'Site'},
+  {id:'todo-list',name:'To-Do List',desc:'To-do menu visibility',roles:1,resources:1,isolation:'Site'}
  ],
  role:[
   {id:'ta-viewer',name:'Test-Assignment-Viewer',module:'Test Assignment',desc:'View Test Assignment',web:8,api:6,data:1},
@@ -387,12 +402,12 @@ const DATA={
   {id:'ak-p03',client:'Public-API',login:'publicapi.lab',key:'ak_plt_7e1b…',status:'Active',mode:'direct',role:'',web:0,api:17,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07'}
  ],
  history:[
-  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',act:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER',meta:'角色 First-Page-Approver'},
-  {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',act:'为用户 Kyle Yao 增加 Department-Approver',meta:'kyle.yao@qima.com · Lab'},
-  {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',act:'创建客户 AccessKey · Brand LIMS Integrator',meta:'mode=inherit · ak_live_lab_…'},
-  {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',act:'更新功能域 Report Generation 隔离为 Site · Department',meta:'原: Site'},
-  {time:'21-Jul-2026 17:03',actor:'joyce.liu@qima.com',act:'创建平台 AccessKey · AIMS',meta:'mode=direct · AIMS→Labs'},
-  {time:'21-Jul-2026 10:14',actor:'joyce.liu@qima.com',act:'移除用户 New Hire 的 Test-Assignment-Viewer',meta:'new.hire@qima.com'}
+  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',type:'role',act:{en:'Bound resource REPORTGENERATION:FIRSTPAGE:APPROVER',zh:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER'},meta:{en:'Role First-Page-Approver',zh:'角色 First-Page-Approver'}},
+  {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',type:'userRole',act:{en:'Added Department-Approver to Kyle Yao',zh:'为用户 Kyle Yao 增加 Department-Approver'},meta:{en:'kyle.yao@qima.com · Lab',zh:'kyle.yao@qima.com · Lab'}},
+  {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',type:'ak',act:{en:'Created customer AccessKey · Brand LIMS Integrator',zh:'创建客户 AccessKey · Brand LIMS Integrator'},meta:{en:'mode=inherit · ak_live_lab_…',zh:'mode=inherit · ak_live_lab_…'}},
+  {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',type:'module',act:{en:'Updated Report Generation isolation to Site · Department',zh:'更新功能域 Report Generation 隔离为 Site · Department'},meta:{en:'Was: Site',zh:'原: Site'}},
+  {time:'21-Jul-2026 17:03',actor:'joyce.liu@qima.com',type:'ak',act:{en:'Created platform AccessKey · AIMS',zh:'创建平台 AccessKey · AIMS'},meta:{en:'mode=direct · AIMS→Labs',zh:'mode=direct · AIMS→Labs'}},
+  {time:'21-Jul-2026 10:14',actor:'joyce.liu@qima.com',type:'userRole',act:{en:'Removed Test-Assignment-Viewer from New Hire',zh:'移除用户 New Hire 的 Test-Assignment-Viewer'},meta:{en:'new.hire@qima.com',zh:'new.hire@qima.com'}}
  ]
 };
 
@@ -425,14 +440,7 @@ const PLATFORMS=[
  {code:'P-03',name:'Public-API',logins:['publicapi.lab']}
 ];
 
-const VIEWS={
- module:{title:'模块'},
- role:{title:'角色 & 资源'},
- user:{title:'内部用户'},
- customer:{title:'客户权限'},
- platform:{title:'平台权限'},
- history:{title:'历史记录'}
-};
+const VIEWS={module:1,role:1,user:1,customer:1,platform:1,history:1};
 
 const SVG={
  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5.5v13M5.5 12h13"/></svg>',
@@ -455,6 +463,205 @@ const $=s=>document.querySelector(s);
 const pagebar=$('#pagebar'), content=$('#content');
 let currentView='module', showFilters=true;
 
+/* ================= i18n ================= */
+let LANG = localStorage.getItem('it-perm-lang') || 'en';
+const I18N = {
+ en:{
+  docTitle:'IT Access Control · Prototype',
+  'nav.module':'Modules','nav.role':'Roles & Resources','nav.user':'Internal Users',
+  'nav.customer':'Customer Access','nav.platform':'Platform Access','nav.history':'Audit Log',
+  search:'Search (/)',resetFilters:'Reset filters',columns:'Column settings',export:'Export current results',filter:'Filters',
+  newDomain:'New feature domain',newRole:'New role',createCustAk:'Create customer AccessKey',createPlatAk:'Create platform AccessKey',
+  back:'Back',copyFrom:'Copy from user',editUserRoles:'Edit user roles',manageResources:'Manage resources',
+  bindResources:'Bind resources',editAk:'Edit AccessKey',
+  'col.domainId':'Domain ID','col.name':'Name','col.desc':'Description','col.roles':'Roles','col.resources':'Resources','col.isolation':'Data isolation',
+  'col.roleKey':'Role key','col.domain':'Feature domain','col.userId':'User ID','col.fullName':'Name','col.email':'Email','col.dept':'Department','col.roleCount':'Role count',
+  'col.akId':'AccessKey ID','col.customer':'Customer','col.platform':'Platform','col.login':'Login','col.mode':'Mode','col.status':'Status','col.created':'Created',
+  'col.time':'Time','col.actor':'Actor','col.action':'Action','col.object':'Object',
+  all:'All',keyword:'Keyword',searchPh:'Type to search...',
+  'f.isoDim':'Isolation dimensions','f.domain':'Feature domain','f.dataIso':'Data isolation','f.dept':'Department','f.roleCount':'Role count',
+  'f.status':'Status','f.mode':'Mode','f.from':'From','f.to':'To','f.actor':'Actor','f.objType':'Object type',
+  configured:'Configured',notConfigured:'Not configured',hasRoles:'Has roles',noRoles:'No roles',
+  'type.module':'Module','type.role':'Role','type.userRole':'User role','type.ak':'AccessKey',
+  none:'None',noMatch:'No matching records',clearFilters:'Clear filters',
+  pagerTotal:(p)=>`Total ${p.n}${p.n?` · Showing ${p.from}–${p.to}`:''}`,
+  perPage:(p)=>`${p.n} / page`,
+  'iso.none':'None','iso.configured':'Configured',
+  noFilter:'No filters applied',filtersReset:'Filters and sort reset',exported:(p)=>`Exported ${p.n} filtered rows · CSV`,
+  copied:'Copied',copiedClip:'Copied to clipboard',saved:(p)=>`${p.what} · Saved`,close:'Close',cancel:'Cancel',save:'Save',done:'Done',
+  'card.moduleInfo':'Module info','card.moduleResources':'Resources','card.moduleRoles':'Roles in module','card.roleInfo':'Role info',
+  'card.linkedResources':'Linked resources','card.authUsers':'Authorized users','card.userInfo':'User info','card.userRoles':'User roles',
+  'card.akInfo':'AccessKey info','card.rateLimit':'Rate limit','card.accessLog':'Access logs',
+  edit:'Edit',bindWeb:'Bind Web',bindApi:'Bind API',dataIso:'Data isolation',manageRoles:'Manage roles',configIso:'Configure isolation',
+  addResource:'Add resource',bind:'Bind',bindApiShort:'Bind API',configIsoChip:'Configure isolation',
+  noApiCodes:'(no dedicated API codes)',noDataIso:'This role has no data isolation',
+  isoDim:'Dimensions: Site · labCode · Department',isoVal:'Values: LAB001 · Softlines',
+  noRolesInModule:'No roles in this module yet',noAuthUsers:'No authorized users',user:'User',email:'Email',dept:'Department',
+  roleKey:'Role key',domain:'Feature domain',desc:'Description',auth2Module:'auth2 Module',
+  userId:'User ID',fullName:'Name',dataSource:'Data source',dataSourceVal:'User Service · read-only',
+  noUserRoles:'This user has no roles yet',copyPerms:'Copy permissions from user',editRoles:'Edit roles',
+  akId:'AccessKey ID',customer:'Customer',platform:'Platform',login:'Login',key:'Key',mode:'Mode',status:'Status',created:'Created',lastUsed:'Last used',
+  modeInherit:'inherit (from role)',modeDirect:'direct (bound resources)',
+  rateCap:'Request cap',rateCapVal:(p)=>`${p.n} / minute`,rateHow:'Counting',rateHowVal:'Redis sliding window · per AccessKey',
+  rateResp:'Over-limit response',ratePeak:'24h peak',ratePeakVal:(p)=>`${p.n} / minute`,capped:'Capped',
+  viewAll:'View all',switchDirect:'Switch to direct',permSource:'Permission source',inheritRole:(p)=>`Inherited from customer role `,
+  effectiveRes:'Effective resources',effectiveResVal:(p)=>`${p.web} Web · ${p.api} API`,
+  inheritNote:'In inherit mode, resources follow the role. Switch to direct to bind resources on this key.',
+  noWebRes:'No Web resources',
+  'm.moduleCreate':'New feature domain','m.moduleEdit':'Edit feature domain','m.isoConfig':'Configure data isolation',
+  'm.roleCreate':'New role','m.roleEdit':'Edit role','m.userRole':'Edit user roles','m.copyRoles':'Copy permissions from user',
+  'm.akCreateCust':'Create customer AccessKey','m.akCreatePlat':'Create platform AccessKey','m.akCreated':'AccessKey created',
+  'm.akEdit':'Edit AccessKey','m.rateEdit':'Edit rate limit','m.akLog':'AccessKey access log',
+  'm.bindWeb':'Bind Web resources','m.bindApi':'Bind API resources','m.bindData':'Configure data isolation','m.akBind':'Bind resources',
+  'm.resourceManage':'Manage domain resources','m.roleManage':'Manage roles in domain','m.columns':'Column settings',
+  domainId:'Domain ID',name:'Name',purposePh:'Purpose… (resources still belong to auth2 module lab-service-cloud)',
+  isoDimension:'Isolation dimension',rolePurposePh:'Role purpose…',
+  roleCreateNote:'Permission CSV uses hyphenated role names (e.g. First-Page-Approver); the FE only checks resource codes. auth2 export may write lab-service-cloud:First-Page-Viewer.',
+  user:'User',assignedRoles:'Assigned roles',noneYet:'None yet',addRole:'Add role',pickRole:'Select a role…',
+  targetUser:'Target user',pickSource:'Select source user',copySearchPh:'Search by name / email / department…',
+  copyMode:'Copy mode',overwrite:'Overwrite',merge:'Merge',
+  copyModeHint:'Overwrite: replace with source roles entirely; Merge: keep existing roles and append source roles',
+  copyNote:'Only role bindings are copied, not personal preferences beyond data isolation. The action is written to the audit log.',
+  confirmCopy:'Confirm copy',pickSourceFirst:'Select a source user first — the preview will appear here.',
+  sourceNoRoles:(p)=>`${p.name} currently has no roles to copy.`,
+  rolesToApply:'Roles that will apply',added:'Added',willRemove:'Will remove',keepExisting:'Keep existing',
+  pickSourceToast:'Please select a source user',sourceEmptyToast:'Source user has no roles to copy',
+  copiedToast:(p)=>`${p.mode} copied ${p.n} roles from ${p.name}`,overwriteWord:'Overwrite',mergeWord:'Merge',
+  nRoles:(p)=>p.n?`${p.n} roles`:'No roles',
+  noCopyUser:'No copyable users found',
+  custName:'Customer name',platName:'Platform name',pickFirst:(p)=>`Select a ${p.who} first`,
+  remark:'Note',remarkPh:'Usage note…',
+  akCreateNotePlat:'Platform name and login are maintained on this platform.',
+  akCreateNoteCust:'Customer master data comes from Customer Service — search and select only; do not create customers here. Originally customers self-serve key creation; this entry lets IT create on their behalf (API pending).',
+  genAk:'Generate AccessKey',savedCopied:'I have saved and copied',copy:'Copy',
+  secretNote:(p)=>`Secret is shown only once. After closing it cannot be viewed again and must be regenerated. Copy and deliver to the ${p.who} now.`,
+  partner:'partner',client:'customer',
+  rateCapLabel:'Request cap (/ minute)',overResp:'Over-limit response',
+  rateNote:'Gateway reads the threshold and counts per AccessKey in Redis. Changes take effect immediately.',
+  searchRes:'Search resources',selected:'Selected',searchApi:'Search APIs',isoValue:'Isolation value',isoValuePh:'e.g. LAB001 · Softlines',
+  resType:'Resource type',searchLabel:'Search',resTree:'Resource tree · lab-service-cloud',roleList:'Role list',showCols:'Visible columns',
+  noMatchWho:(p)=>`No matching ${p.who}`,
+  missRes:'Resource not authorized',missEdit:'Missing REPORTGENERATION:FIRSTPAGE:EDIT',
+  histCopy:(p)=>`Copied permissions from ${p.from} to ${p.to}`,
+  histCopyMeta:(p)=>`${p.mode} · ${p.before} → ${p.after} roles`,
+  noIsolation:'None',
+  addApi:'Add API',pageButtonNote:'(mostly PAGE/BUTTON resources in this domain)',
+  isoExplain:'Limits order and report visibility by Site / labCode / Department (business fields include labCodes)',
+  isoDimLabel:'Isolation dimension',
+ },
+ zh:{
+  docTitle:'IT 权限管理平台 · 原型',
+  'nav.module':'模块','nav.role':'角色 & 资源','nav.user':'内部用户',
+  'nav.customer':'客户权限','nav.platform':'平台权限','nav.history':'历史记录',
+  search:'搜索（/）',resetFilters:'重置筛选',columns:'列设置',export:'导出当前结果',filter:'筛选',
+  newDomain:'新建功能域',newRole:'新建角色',createCustAk:'创建客户 AccessKey',createPlatAk:'创建平台 AccessKey',
+  back:'返回',copyFrom:'从他人复制',editUserRoles:'编辑用户角色',manageResources:'管理资源',
+  bindResources:'绑定资源',editAk:'编辑 AccessKey',
+  'col.domainId':'功能域 ID','col.name':'名称','col.desc':'描述','col.roles':'角色','col.resources':'资源','col.isolation':'数据隔离',
+  'col.roleKey':'角色 Key','col.domain':'功能域','col.userId':'用户 ID','col.fullName':'姓名','col.email':'邮箱','col.dept':'部门','col.roleCount':'角色数',
+  'col.akId':'AccessKey ID','col.customer':'客户名称','col.platform':'平台名称','col.login':'登录账号','col.mode':'模式','col.status':'状态','col.created':'创建日期',
+  'col.time':'时间','col.actor':'操作人','col.action':'操作','col.object':'对象',
+  all:'全部',keyword:'关键字',searchPh:'输入关键字搜索…',
+  'f.isoDim':'数据隔离维度','f.domain':'功能域','f.dataIso':'数据隔离','f.dept':'部门','f.roleCount':'角色数',
+  'f.status':'状态','f.mode':'模式','f.from':'起始日期','f.to':'结束日期','f.actor':'操作人','f.objType':'对象类型',
+  configured:'已配置',notConfigured:'未配置',hasRoles:'有角色',noRoles:'无角色',
+  'type.module':'模块','type.role':'角色','type.userRole':'用户角色','type.ak':'AccessKey',
+  none:'无',noMatch:'未找到匹配记录',clearFilters:'清除筛选条件',
+  pagerTotal:(p)=>`共 ${p.n} 条${p.n?` · 显示 ${p.from}-${p.to}`:''}`,
+  perPage:(p)=>`每页 ${p.n} 条`,
+  'iso.none':'无','iso.configured':'已配置',
+  noFilter:'当前没有筛选条件',filtersReset:'已重置筛选与排序',exported:(p)=>`已导出当前筛选结果 ${p.n} 条 · CSV`,
+  copied:'已复制',copiedClip:'已复制到剪贴板',saved:(p)=>`${p.what} · 已保存`,close:'关闭',cancel:'取消',save:'保存',done:'完成',
+  'card.moduleInfo':'模块信息','card.moduleResources':'关联资源','card.moduleRoles':'模块内角色','card.roleInfo':'角色信息',
+  'card.linkedResources':'关联资源','card.authUsers':'已授权用户','card.userInfo':'用户信息','card.userRoles':'用户角色',
+  'card.akInfo':'AccessKey 信息','card.rateLimit':'限流配置','card.accessLog':'访问日志',
+  edit:'编辑',bindWeb:'绑定 Web',bindApi:'绑定 API',dataIso:'数据隔离',manageRoles:'管理角色',configIso:'配置数据隔离',
+  addResource:'添加资源',bind:'绑定',bindApiShort:'绑定 API',configIsoChip:'配置隔离',
+  noApiCodes:'（无独立 API 资源码）',noDataIso:'该角色无数据隔离',
+  isoDim:'维度：Site · labCode · Department',isoVal:'值：LAB001 · Softlines',
+  noRolesInModule:'该模块暂无角色',noAuthUsers:'暂无授权用户',user:'用户',email:'邮箱',dept:'部门',
+  roleKey:'角色 Key',domain:'功能域',desc:'描述',auth2Module:'auth2 Module',
+  userId:'用户 ID',fullName:'姓名',dataSource:'数据来源',dataSourceVal:'User Service · 只读',
+  noUserRoles:'该用户暂无权限角色',copyPerms:'从他人复制权限',editRoles:'编辑角色',
+  akId:'AccessKey ID',customer:'客户',platform:'平台',login:'登录账号',key:'Key',mode:'模式',status:'状态',created:'创建日期',lastUsed:'最近调用',
+  modeInherit:'inherit（继承角色）',modeDirect:'direct（直接绑资源）',
+  rateCap:'请求上限',rateCapVal:(p)=>`${p.n} 次 / 分钟`,rateHow:'计数方式',rateHowVal:'Redis 滑动窗口 · 按 AccessKey 计数',
+  rateResp:'超限响应',ratePeak:'近 24h 峰值',ratePeakVal:(p)=>`${p.n} 次 / 分钟`,capped:'已触顶',
+  viewAll:'查看全部',switchDirect:'切换为 direct',permSource:'权限来源',inheritRole:(p)=>`继承客户角色 `,
+  effectiveRes:'生效资源',effectiveResVal:(p)=>`${p.web} Web · ${p.api} API`,
+  inheritNote:'inherit 模式下资源随角色变动，需单独授权请先切换为 direct 模式。',
+  noWebRes:'无 Web 资源',
+  'm.moduleCreate':'新建功能域','m.moduleEdit':'编辑功能域','m.isoConfig':'配置数据隔离',
+  'm.roleCreate':'新建角色','m.roleEdit':'编辑角色','m.userRole':'编辑用户角色','m.copyRoles':'从他人复制权限',
+  'm.akCreateCust':'创建客户 AccessKey','m.akCreatePlat':'创建平台 AccessKey','m.akCreated':'AccessKey 已生成',
+  'm.akEdit':'编辑 AccessKey','m.rateEdit':'编辑限流配置','m.akLog':'AccessKey 访问日志',
+  'm.bindWeb':'绑定 Web 资源','m.bindApi':'绑定 API 资源','m.bindData':'配置数据隔离','m.akBind':'绑定资源',
+  'm.resourceManage':'管理功能域资源','m.roleManage':'管理功能域内角色','m.columns':'列设置',
+  domainId:'功能域 ID',name:'名称',purposePh:'用途…（资源仍归属 auth2 module lab-service-cloud）',
+  isoDimension:'隔离维度',rolePurposePh:'角色用途…',
+  roleCreateNote:'Permission CSV 使用连字符角色名（如 First-Page-Approver）；FE 只校验资源码。auth2 导出有时写作 lab-service-cloud:First-Page-Viewer。',
+  user:'用户',assignedRoles:'已分配角色',noneYet:'暂无',addRole:'添加角色',pickRole:'选择角色…',
+  targetUser:'目标用户',pickSource:'选择来源用户',copySearchPh:'按姓名 / 邮箱 / 部门搜索…',
+  copyMode:'复制方式',overwrite:'覆盖',merge:'合并',
+  copyModeHint:'覆盖：以来源用户角色完全替换；合并：保留现有角色并追加来源角色',
+  copyNote:'仅复制角色绑定，不复制数据隔离值以外的个人偏好。操作会写入历史记录。',
+  confirmCopy:'确认复制',pickSourceFirst:'先从来源列表中选择一位用户，预览将显示在此。',
+  sourceNoRoles:(p)=>`${p.name} 当前没有任何角色，无法复制。`,
+  rolesToApply:'将生效的角色',added:'新增',willRemove:'将移除',keepExisting:'保留现有',
+  pickSourceToast:'请先选择来源用户',sourceEmptyToast:'来源用户没有可复制的角色',
+  copiedToast:(p)=>`已${p.mode}复制 ${p.name} 的 ${p.n} 个角色`,overwriteWord:'覆盖',mergeWord:'合并',
+  nRoles:(p)=>p.n?`${p.n} 个角色`:'无角色',
+  noCopyUser:'未找到可复制的用户',
+  custName:'客户名称',platName:'平台名称',pickFirst:(p)=>`先选择${p.who}`,
+  remark:'备注',remarkPh:'用途说明…',
+  akCreateNotePlat:'平台名称与登录账号为本平台维护。',
+  akCreateNoteCust:'客户主数据来自 Customer Service，此处仅搜索选择，不新增客户。原流程需客户自行登录生成，此入口为 IT 代客户创建（待新增接口）。',
+  genAk:'生成 AccessKey',savedCopied:'我已保存并复制',copy:'复制',
+  secretNote:(p)=>`Secret 仅在此显示一次，关闭后无法再次查看，需重新生成。请立即复制并交付${p.who}。`,
+  partner:'对接方',client:'客户',
+  rateCapLabel:'请求上限（次 / 分钟）',overResp:'超限响应',
+  rateNote:'阈值由 Gateway 读取并在 Redis 按 AccessKey 计数，保存后即时生效。',
+  searchRes:'搜索资源',selected:'已选',searchApi:'搜索接口',isoValue:'隔离值',isoValuePh:'如 LAB001 · Softlines',
+  resType:'资源类型',searchLabel:'搜索',resTree:'资源树 · lab-service-cloud',roleList:'角色列表',showCols:'显示列',
+  noMatchWho:(p)=>`未找到匹配${p.who}`,
+  missRes:'资源未授权',missEdit:'缺 REPORTGENERATION:FIRSTPAGE:EDIT',
+  histCopy:(p)=>`从 ${p.from} 复制权限到 ${p.to}`,
+  histCopyMeta:(p)=>`${p.mode} · ${p.before} → ${p.after} 个角色`,
+  noIsolation:'无',
+  addApi:'添加 API',pageButtonNote:'（本域主要为 PAGE/BUTTON 资源）',
+  isoExplain:'按 Site / labCode / Department 限制订单与报告可见范围（业务字段含 labCodes）',
+  isoDimLabel:'隔离维度',
+ }
+};
+function t(k,p){
+ const v=(I18N[LANG]&&I18N[LANG][k])??(I18N.en[k])??k;
+ return typeof v==='function'?v(p||{}):v;
+}
+function setLang(lang){
+ if(lang!=='en'&&lang!=='zh')return;
+ LANG=lang;
+ localStorage.setItem('it-perm-lang',lang);
+ document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+ document.title=t('docTitle');
+ document.querySelectorAll('#lang-fab button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+ document.querySelectorAll('.nav-label').forEach(el=>{el.textContent=t('nav.'+el.dataset.nav);});
+ const open=$('#overlay')?.classList.contains('show');
+ if(open)closeModal();
+ // re-render current route without changing hash
+ const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
+ const v=VIEWS[parts[0]]?parts[0]:currentView;
+ currentView=v;syncNav(v);
+ if(parts[1]){
+  const i=DATA[v].findIndex(r=>r.id===parts[1]);
+  if(i>=0){renderDetail(v,i);return;}
+ }
+ render();
+}
+function viewTitle(view){return t('nav.'+view);}
+function histText(r,field){const v=r[field];return v&&typeof v==='object'?(v[LANG]||v.en||''): (v||'');}
+
+
+
 /* ================= helpers ================= */
 function btn(label,cls,svg,fn){
  return `<button class="btn ${cls||''}"${fn?` onclick="${fn}"`:''}>${svg||''}${label?`<span>${label}</span>`:''}</button>`;
@@ -466,24 +673,24 @@ function kv(k,v){return `<div class="kv-item"><div class="k">${k}</div><div clas
 function field(label,control,hint){return `<div class="field"><label>${label}</label>${control}${hint?`<div class="hint">${hint}</div>`:''}</div>`;}
 function idxOf(view,r){return DATA[view].indexOf(r);}
 
-function isoBadge(v){return !v||v==='None'?'<span class="badge badge-grey">无</span>':`<span class="badge badge-mango">${v}</span>`;}
+function isoBadge(v){return !v||v==='None'?`<span class="badge badge-grey">${t('iso.none')}</span>`:`<span class="badge badge-mango">${v}</span>`;}
 function statusBadge(s){return s==='Active'?'<span class="badge badge-kiwi"><span class="dot"></span>Active</span>':'<span class="badge badge-cherry"><span class="dot"></span>Suspended</span>';}
 function modeBadge(m){return m==='inherit'?'<span class="badge">inherit</span>':'<span class="badge badge-mango">direct</span>';}
 
 /* ================= page bar ================= */
 function listPagebar(view){
- const cfg=VIEWS[view], n=activeFilterCount(view);
+ const n=activeFilterCount(view);
  return `<div class="pagebar">
   <div class="pagebar-row">
-    <h1>${cfg.title}</h1>
+    <h1>${viewTitle(view)}</h1>
     <span class="count" id="list-count">${visibleRows(view).length}</span>
     <div class="grow"></div>
     <div class="tools">
-      ${iconBtn(SVG.search,'搜索（/）',`focusSearch()`)}
-      ${iconBtn(SVG.erase,'重置筛选',`resetFilters()`)}
-      ${iconBtn(SVG.columns,'列设置',`openModal('columns')`)}
-      ${iconBtn(SVG.download,'导出当前结果',`exportList()`)}
-      <span class="counter" id="filter-counter"${n?` data-n="${n}"`:''}>${iconBtn(SVG.filter,'筛选',`toggleFilters()`,showFilters?'on':'')}</span>
+      ${iconBtn(SVG.search,t('search'),`focusSearch()`)}
+      ${iconBtn(SVG.erase,t('resetFilters'),`resetFilters()`)}
+      ${iconBtn(SVG.columns,t('columns'),`openModal('columns')`)}
+      ${iconBtn(SVG.download,t('export'),`exportList()`)}
+      <span class="counter" id="filter-counter"${n?` data-n="${n}"`:''}>${iconBtn(SVG.filter,t('filter'),`toggleFilters()`,showFilters?'on':'')}</span>
       ${listAction(view)}
     </div>
   </div>
@@ -491,19 +698,19 @@ function listPagebar(view){
 }
 
 function listAction(view){
- if(view==='module')return btn('新建功能域','btn-primary',SVG.plus,`openModal('moduleCreate')`);
- if(view==='role')return btn('新建角色','btn-primary',SVG.plus,`openModal('roleCreate')`);
- if(view==='customer')return btn('创建客户 AccessKey','btn-primary',SVG.plus,`openModal('akCreate','customer')`);
- if(view==='platform')return btn('创建平台 AccessKey','btn-primary',SVG.plus,`openModal('akCreate','platform')`);
+ if(view==='module')return btn(t('newDomain'),'btn-primary',SVG.plus,`openModal('moduleCreate')`);
+ if(view==='role')return btn(t('newRole'),'btn-primary',SVG.plus,`openModal('roleCreate')`);
+ if(view==='customer')return btn(t('createCustAk'),'btn-primary',SVG.plus,`openModal('akCreate','customer')`);
+ if(view==='platform')return btn(t('createPlatAk'),'btn-primary',SVG.plus,`openModal('akCreate','platform')`);
  return '';
 }
 
 function detailPagebar(view,r){
  return `<div class="pagebar">
   <div class="pagebar-row">
-    ${btn('Back','btn-tertiary',SVG.back,`backToList()`)}
+    ${btn(t('back'),'btn-tertiary',SVG.back,`backToList()`)}
     <div class="crumbs">
-      <span class="sep">/</span><a onclick="backToList()">${VIEWS[view].title}</a>
+      <span class="sep">/</span><a onclick="backToList()">${viewTitle(view)}</a>
       <span class="sep">/</span><span class="cur">${detailTitle(view,r)}</span>
     </div>
     <div class="grow"></div>
@@ -514,12 +721,12 @@ function detailPagebar(view,r){
 function detailTitle(view,r){return view==='customer'||view==='platform'?r.id:r.name;}
 function detailStatus(view,r){return (view==='customer'||view==='platform')?statusBadge(r.status):'';}
 function detailPrimary(view,r){
- if(view==='user')return btn('从他人复制','btn-secondary',SVG.copy,`openModal('copyRoles',${idxOf(view,r)})`)+btn('编辑用户角色','btn-primary',SVG.edit,`openModal('userRole',${idxOf(view,r)})`);
- if(view==='module')return btn('管理资源','btn-primary',SVG.link,`openModal('resourceManage','module')`);
- if(view==='role')return btn('绑定资源','btn-primary',SVG.link,`openModal('bindWeb',${idxOf(view,r)})`);
+ if(view==='user')return btn(t('copyFrom'),'btn-secondary',SVG.copy,`openModal('copyRoles',${idxOf(view,r)})`)+btn(t('editUserRoles'),'btn-primary',SVG.edit,`openModal('userRole',${idxOf(view,r)})`);
+ if(view==='module')return btn(t('manageResources'),'btn-primary',SVG.link,`openModal('resourceManage','module')`);
+ if(view==='role')return btn(t('bindResources'),'btn-primary',SVG.link,`openModal('bindWeb',${idxOf(view,r)})`);
  if(view==='customer'||view==='platform')return r.mode==='inherit'
-   ?btn('编辑 AccessKey','btn-primary',SVG.edit,`openModal('akEdit',${idxOf(view,r)})`)
-   :btn('绑定资源','btn-primary',SVG.link,`openModal('akBind',${idxOf(view,r)})`);
+   ?btn(t('editAk'),'btn-primary',SVG.edit,`openModal('akEdit',${idxOf(view,r)})`)
+   :btn(t('bindResources'),'btn-primary',SVG.link,`openModal('akBind',${idxOf(view,r)})`);
  return '';
 }
 
@@ -538,33 +745,35 @@ function dnum(s){
 }
 
 /* column order must match listRow() cell order */
-const COLS={
- module:[{k:'id',label:'功能域 ID'},{k:'name',label:'名称'},{k:'desc',label:'描述',sort:false},{k:'roles',label:'角色'},{k:'resources',label:'资源'},{k:'isolation',label:'数据隔离'}],
- role:[{k:'name',label:'角色 Key'},{k:'module',label:'功能域'},{k:'desc',label:'描述',sort:false},{k:'web',label:'Web'},{k:'api',label:'API'},{k:'data',label:'数据隔离'}],
- user:[{k:'id',label:'用户 ID'},{k:'name',label:'姓名'},{k:'email',label:'邮箱'},{k:'dept',label:'部门'},{k:'roles',label:'角色数',get:r=>r.roles.length}],
- customer:[{k:'id',label:'AccessKey ID'},{k:'client',label:'客户名称'},{k:'login',label:'登录账号'},{k:'mode',label:'模式'},{k:'status',label:'状态'},{k:'created',label:'创建日期',get:r=>dnum(r.created)}],
- platform:[{k:'id',label:'AccessKey ID'},{k:'client',label:'平台名称'},{k:'login',label:'登录账号'},{k:'mode',label:'模式'},{k:'status',label:'状态'},{k:'created',label:'创建日期',get:r=>dnum(r.created)}],
- history:[{k:'time',label:'时间',get:r=>dnum(r.time)},{k:'actor',label:'操作人'},{k:'act',label:'操作',sort:false},{k:'meta',label:'对象',sort:false}]
+const COL_DEFS={
+ module:[{k:'id',lk:'col.domainId'},{k:'name',lk:'col.name'},{k:'desc',lk:'col.desc',sort:false},{k:'roles',lk:'col.roles'},{k:'resources',lk:'col.resources'},{k:'isolation',lk:'col.isolation'}],
+ role:[{k:'name',lk:'col.roleKey'},{k:'module',lk:'col.domain'},{k:'desc',lk:'col.desc',sort:false},{k:'web',lk:'col.web',label:'Web'},{k:'api',lk:'col.api',label:'API'},{k:'data',lk:'col.isolation'}],
+ user:[{k:'id',lk:'col.userId'},{k:'name',lk:'col.fullName'},{k:'email',lk:'col.email'},{k:'dept',lk:'col.dept'},{k:'roles',lk:'col.roleCount',get:r=>r.roles.length}],
+ customer:[{k:'id',lk:'col.akId'},{k:'client',lk:'col.customer'},{k:'login',lk:'col.login'},{k:'mode',lk:'col.mode'},{k:'status',lk:'col.status'},{k:'created',lk:'col.created',get:r=>dnum(r.created)}],
+ platform:[{k:'id',lk:'col.akId'},{k:'client',lk:'col.platform'},{k:'login',lk:'col.login'},{k:'mode',lk:'col.mode'},{k:'status',lk:'col.status'},{k:'created',lk:'col.created',get:r=>dnum(r.created)}],
+ history:[{k:'time',lk:'col.time',get:r=>dnum(r.time)},{k:'actor',lk:'col.actor'},{k:'act',lk:'col.action',sort:false,get:r=>histText(r,'act')},{k:'meta',lk:'col.object',sort:false,get:r=>histText(r,'meta')}]
 };
+function COLS(view){return (COL_DEFS[view]||[]).map(c=>({...c,label:c.label||t(c.lk)}));}
 
 const AK_FILTERS=[
- {k:'status',label:'状态',opts:['Active','Suspended'],test:(r,v)=>r.status===v},
- {k:'mode',label:'模式',opts:['inherit','direct'],test:(r,v)=>r.mode===v}
+ {k:'status',lk:'f.status',opts:[{v:'Active',l:'Active'},{v:'Suspended',l:'Suspended'}],test:(r,v)=>r.status===v},
+ {k:'mode',lk:'f.mode',opts:[{v:'inherit',l:'inherit'},{v:'direct',l:'direct'}],test:(r,v)=>r.mode===v}
 ];
-const HIST_TYPE={'模块':/功能域/,'角色':/角色/,'用户角色':/用户/,'AccessKey':/AccessKey/};
 const FILTERS={
- module:[{k:'isolation',label:'数据隔离维度',opts:['Site','Site · labCode','Site · Department','Site · labCode · Department'],test:(r,v)=>r.isolation===v}],
- role:[{k:'module',label:'功能域',opts:DATA.module.map(m=>m.name),test:(r,v)=>r.module===v},
-  {k:'data',label:'数据隔离',opts:['已配置','未配置'],test:(r,v)=>v==='已配置'?!!r.data:!r.data}],
- user:[{k:'dept',label:'部门',opts:['Lab'],test:(r,v)=>r.dept===v},
-  {k:'hasRole',label:'角色数',opts:['有角色','无角色'],test:(r,v)=>v==='有角色'?r.roles.length>0:r.roles.length===0}],
+ module:[{k:'isolation',lk:'f.isoDim',opts:['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,l:v})),test:(r,v)=>r.isolation===v}],
+ role:[{k:'module',lk:'f.domain',opts:()=>DATA.module.map(m=>({v:m.name,l:m.name})),test:(r,v)=>r.module===v},
+  {k:'data',lk:'f.dataIso',opts:[{v:'yes',lk:'configured'},{v:'no',lk:'notConfigured'}],test:(r,v)=>v==='yes'?!!r.data:!r.data}],
+ user:[{k:'dept',lk:'f.dept',opts:[{v:'Lab',l:'Lab'}],test:(r,v)=>r.dept===v},
+  {k:'hasRole',lk:'f.roleCount',opts:[{v:'yes',lk:'hasRoles'},{v:'no',lk:'noRoles'}],test:(r,v)=>v==='yes'?r.roles.length>0:r.roles.length===0}],
  customer:AK_FILTERS,
  platform:AK_FILTERS,
- history:[{k:'from',label:'起始日期',type:'date',test:(r,v)=>dnum(r.time)>=new Date(v+'T00:00:00').getTime()},
-  {k:'to',label:'结束日期',type:'date',test:(r,v)=>dnum(r.time)<=new Date(v+'T23:59:59').getTime()},
-  {k:'actor',label:'操作人',opts:[...new Set(DATA.history.map(h=>h.actor))],test:(r,v)=>r.actor===v},
-  {k:'type',label:'对象类型',opts:Object.keys(HIST_TYPE),test:(r,v)=>(HIST_TYPE[v]||/.*/).test(r.act)}]
+ history:[{k:'from',lk:'f.from',type:'date',test:(r,v)=>dnum(r.time)>=new Date(v+'T00:00:00').getTime()},
+  {k:'to',lk:'f.to',type:'date',test:(r,v)=>dnum(r.time)<=new Date(v+'T23:59:59').getTime()},
+  {k:'actor',lk:'f.actor',opts:()=>[...new Set(DATA.history.map(h=>h.actor))].map(v=>({v,l:v})),test:(r,v)=>r.actor===v},
+  {k:'type',lk:'f.objType',opts:[{v:'module',lk:'type.module'},{v:'role',lk:'type.role'},{v:'userRole',lk:'type.userRole'},{v:'ak',lk:'type.ak'}],test:(r,v)=>r.type===v}]
 };
+function filterOpts(d){const o=typeof d.opts==='function'?d.opts():(d.opts||[]);return o.map(x=>typeof x==='string'?{v:x,l:x}:{v:x.v,l:x.lk?t(x.lk):(x.l||x.v)});}
+
 
 function visibleRows(view){
  const s=st(view), defs=FILTERS[view]||[], q=s.q.trim().toLowerCase();
@@ -573,7 +782,7 @@ function visibleRows(view){
   return defs.every(d=>{const v=s.filters[d.k];return v?d.test(r,v):true;});
  });
  if(s.sort){
-  const c=(COLS[view]||[]).find(x=>x.k===s.sort.k);
+  const c=COLS(view).find(x=>x.k===s.sort.k);
   if(c){
    const val=r=>c.get?c.get(r):r[c.k];
    rows=rows.slice().sort((a,b)=>{
@@ -610,7 +819,7 @@ function refreshList(){
 }
 
 function setQuery(v){const s=st(currentView);s.q=v;s.page=1;refreshList();}
-function setFilter(k,v){const s=st(currentView);s.filters[k]=(v&&v!=='全部')?v:'';if(!s.filters[k])delete s.filters[k];s.page=1;refreshList();}
+function setFilter(k,v){const s=st(currentView);s.filters[k]=v||'';if(!s.filters[k])delete s.filters[k];s.page=1;refreshList();}
 function setListPage(p){const s=st(currentView);s.page=p;refreshList();$('#list-body').scrollIntoView({block:'start',behavior:'smooth'});}
 function setListSize(n){const s=st(currentView);s.size=+n;s.page=1;refreshList();}
 function setSort(k){
@@ -624,7 +833,7 @@ function toggleColumn(k,on){
  refreshList();
 }
 function colStyle(view){
- const s=st(view), cols=COLS[view]||[];
+ const s=st(view), cols=COLS(view)||[];
  const rules=s.hidden.map(k=>cols.findIndex(c=>c.k===k)).filter(n=>n>=0)
   .map(n=>`#list-body th:nth-child(${n+1}),#list-body td:nth-child(${n+1}){display:none}`).join('');
  return `<style id="col-style">${rules}</style>`;
@@ -633,12 +842,15 @@ function colStyle(view){
 function filterCard(view){
  if(!showFilters)return '';
  const s=st(view), defs=FILTERS[view]||[];
- const ctrl=d=>d.type==='date'
-  ?`<input type="date" value="${s.filters[d.k]||''}" onchange="setFilter('${d.k}',this.value)">`
-  :`<select onchange="setFilter('${d.k}',this.value)">${['全部',...d.opts].map(o=>`<option${(s.filters[d.k]||'全部')===o?' selected':''}>${o}</option>`).join('')}</select>`;
+ const ctrl=d=>{
+  if(d.type==='date')return `<input type="date" value="${s.filters[d.k]||''}" onchange="setFilter('${d.k}',this.value)">`;
+  const opts=[{v:'',l:t('all')},...filterOpts(d)];
+  const cur=s.filters[d.k]||'';
+  return `<select onchange="setFilter('${d.k}',this.value)">${opts.map(o=>`<option value="${o.v}"${cur===o.v?' selected':''}>${o.l}</option>`).join('')}</select>`;
+ };
  return `<div class="filterbar"><div class="filters">
-   ${field('关键字',`<input id="q" placeholder="Type to search..." value="${s.q}" oninput="setQuery(this.value)">`)}
-   ${defs.map(d=>field(d.label,ctrl(d))).join('')}
+   ${field(t('keyword'),`<input id="q" placeholder="${t('searchPh')}" value="${s.q}" oninput="setQuery(this.value)">`)}
+   ${defs.map(d=>field(t(d.lk),ctrl(d))).join('')}
  </div></div>`;
 }
 
@@ -651,16 +863,16 @@ function listBody(view){
 }
 
 function listTable(view,rows){
- const cols=COLS[view];
+ const cols=COLS(view);
  const body=rows.length
   ?rows.map(r=>listRow(view,r,DATA[view].indexOf(r))).join('')
-  :`<tr><td colspan="${cols.length}"><div class="empty">未找到匹配记录${activeFilterCount(view)?`<div style="margin-top:16px">${btn('清除筛选条件','btn-secondary',SVG.erase,'resetFilters()')}</div>`:''}</div></td></tr>`;
+  :`<tr><td colspan="${cols.length}"><div class="empty">${t('noMatch')}${activeFilterCount(view)?`<div style="margin-top:16px">${btn(t('clearFilters'),'btn-secondary',SVG.erase,'resetFilters()')}</div>`:''}</div></td></tr>`;
  return `<table><thead>${listHead(view)}</thead><tbody id="tbody">${body}</tbody></table>`;
 }
 
 function listHead(view){
  const s=st(view);
- return `<tr>${COLS[view].map(c=>{
+ return `<tr>${COLS(view).map(c=>{
   if(c.sort===false)return `<th>${c.label}</th>`;
   const on=s.sort&&s.sort.k===c.k;
   return `<th class="sortable${on?' sorted':''}" onclick="setSort('${c.k}')">${c.label}<span class="sort-ind">${on?(s.sort.dir==='asc'?'↑':'↓'):'↕'}</span></th>`;
@@ -675,8 +887,8 @@ function listPager(view,total,pages){
  const from=total?(s.page-1)*s.size+1:0, to=Math.min(total,s.page*s.size);
  return `<div class="pager">
   <div class="pager-left">
-   <span>共 ${total} 条${total?` · 显示 ${from}-${to}`:''}</span>
-   <select class="pg-size" onchange="setListSize(this.value)">${[10,20,50].map(n=>`<option value="${n}"${n===s.size?' selected':''}>每页 ${n} 条</option>`).join('')}</select>
+   <span>${t('pagerTotal',{n:total,from,to})}</span>
+   <select class="pg-size" onchange="setListSize(this.value)">${[10,20,50].map(n=>`<option value="${n}"${n===s.size?' selected':''}>${t('perPage',{n})}</option>`).join('')}</select>
   </div>
   <div class="pager-nav">
    <button ${s.page<=1?'disabled':''} onclick="setListPage(${s.page-1})">‹</button>
@@ -698,10 +910,10 @@ function pageWindow(cur,pages){
 function listRow(view,r,i){
  const cl=`class="clickable" tabindex="0" data-idx="${i}" onclick="goDetail('${view}',${i})" onkeydown="rowKey(event,'${view}',${i})"`;
  if(view==='module')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.desc}</td><td><span class="count">${r.roles}</span></td><td><span class="count">${r.resources}</span></td><td>${isoBadge(r.isolation)}</td></tr>`;
- if(view==='role')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td class="strong">${r.module}</td><td>${r.desc}</td><td><span class="count">${r.web}</span></td><td><span class="count">${r.api}</span></td><td>${r.data?'<span class="badge badge-mango"><span class="dot"></span>已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`;
+ if(view==='role')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td class="strong">${r.module}</td><td>${r.desc}</td><td><span class="count">${r.web}</span></td><td><span class="count">${r.api}</span></td><td>${r.data?`<span class="badge badge-mango"><span class="dot"></span>${t('iso.configured')}</span>`:`<span class="badge badge-grey">${t('iso.none')}</span>`}</td></tr>`;
  if(view==='user')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.email}</td><td>${r.dept}</td><td>${r.roles.length?`<span class="count">${r.roles.length}</span>`:'<span class="badge badge-grey">0</span>'}</td></tr>`;
  if(view==='customer'||view==='platform')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.client}</td><td>${r.login}</td><td>${modeBadge(r.mode)}</td><td>${statusBadge(r.status)}</td><td>${r.created}</td></tr>`;
- if(view==='history')return `<tr><td>${r.time}</td><td>${r.actor}</td><td class="strong">${r.act}</td><td>${r.meta}</td></tr>`;
+ if(view==='history')return `<tr><td>${r.time}</td><td>${r.actor}</td><td class="strong">${histText(r,'act')}</td><td>${histText(r,'meta')}</td></tr>`;
  return '';
 }
 
@@ -712,7 +924,7 @@ function inlinePager(total,page,pageSize,gotoFn){
   const p=n+1;
   return `<button class="${p===page?'active':''}" onclick="${gotoFn}(${p})">${p}</button>`;
  }).join('');
- return `<div class="pager"><span>共 ${total} 条 · 每页 ${pageSize} 条</span>
+ return `<div class="pager"><span>${t('pagerTotal',{n:total,from:total?(page-1)*pageSize+1:0,to:Math.min(total,page*pageSize)})} · ${t('perPage',{n:pageSize})}</span>
   <div class="pager-nav">
    <button ${page<=1?'disabled':''} onclick="${gotoFn}(${page-1})">‹</button>
    ${btns}
@@ -758,14 +970,14 @@ window.addEventListener('resize',syncSticky);
 function card(title,acts,body,subtabs,opt){
  opt=opt||{};
  const html=body.html!==undefined?body.html:body;
- return `<div class="card${opt.lazy?' collapsed':''}"${opt.lazy?' data-lazy="1"':''}>
-  <div class="card-head" onclick="toggleCard(this)">${SVG.chev}<h3>${title}</h3>${acts?`<div class="acts" onclick="event.stopPropagation()">${acts}</div>`:''}</div>
+ return `<div class="card${opt.lazy?' collapsed':''}"${opt.lazy?' data-lazy="1"':''}${opt.id?` data-card="${opt.id}"`:''}>
+  <div class="card-head" onclick="toggleCard(this)">${SVG.chev}<h3 class="card-title">${title}</h3>${acts?`<div class="acts" onclick="event.stopPropagation()">${acts}</div>`:''}</div>
   ${subtabs||''}
   <div class="card-body${body.flush?' flush':''}">${opt.lazy?`<div class="skel"><i></i><i></i><i></i></div><template>${html}</template>`:html}</div>
  </div>`;
 }
 function subtabs(items){
- return `<div class="subtabs">${items.map((t,i)=>`<button class="tab${i===0?' active':''}" data-p="${t.p}">${t.label}</button>`).join('')}</div>`;
+ return `<div class="subtabs">${items.map((it,i)=>`<button class="tab${i===0?' active':''}" data-p="${it.p}">${it.label}</button>`).join('')}</div>`;
 }
 
 function detailBody(view,r){
@@ -780,24 +992,24 @@ function moduleDetail(r){
  const roleRows=DATA.role.filter(x=>x.module===r.name);
  const res=LAB_RESOURCES[r.id]||{web:[],api:[]};
  const webChips=res.web.slice(0,8).map(c=>`<span class="chip">${c}</span>`).join('')
-  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">${SVG.plus.replace('<svg','<svg style="width:14px;height:14px"')}添加资源</span>`;
- const apiChips=(res.api.length?res.api:['（本域主要为 PAGE/BUTTON 资源）']).map(c=>`<span class="chip">${c}</span>`).join('')
-  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">添加 API</span>`;
- return card('模块信息',btn('编辑','btn-secondary',SVG.edit,`openModal('moduleEdit',${i})`),
-   `<div class="kv">${kv('功能域 ID',r.id)}${kv('名称',r.name)}${kv('auth2 Module','lab-service-cloud')}${kv('描述',r.desc)}${kv('数据隔离维度',isoBadge(r.isolation))}</div>`)
- + card('关联资源',
-   btn('管理资源','btn-secondary',SVG.link,`openModal('resourceManage','module')`),
+  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">${SVG.plus.replace('<svg','<svg style="width:14px;height:14px"')}${t('addResource')}</span>`;
+ const apiChips=(res.api.length?res.api:[t('pageButtonNote')]).map(c=>`<span class="chip">${c}</span>`).join('')
+  +`<span class="chip chip-add" onclick="openModal('resourceManage','module')">${t('addApi')}</span>`;
+ return card(t('card.moduleInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('moduleEdit',${i})`),
+   `<div class="kv">${kv(t('domainId'),r.id)}${kv(t('name'),r.name)}${kv(t('auth2Module'),'lab-service-cloud')}${kv(t('desc'),r.desc)}${kv(t('f.isoDim'),isoBadge(r.isolation))}</div>`)
+ + card(t('card.moduleResources'),
+   btn(t('manageResources'),'btn-secondary',SVG.link,`openModal('resourceManage','module')`),
    {html:`
      <div class="subpane active" data-p="web"><div class="chips">${webChips}</div></div>
      <div class="subpane" data-p="api"><div class="chips">${apiChips}</div></div>
      <div class="subpane" data-p="data">
-       <div class="kv">${kv('隔离维度',isoBadge(r.isolation))}${kv('说明','按 Site / labCode / Department 限制订单与报告可见范围（业务字段含 labCodes）')}</div>
-       <div style="margin-top:16px">${btn('配置数据隔离','btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
+       <div class="kv">${kv(t('isoDimLabel'),isoBadge(r.isolation))}${kv(t('desc'),t('isoExplain'))}</div>
+       <div style="margin-top:16px">${btn(t('configIso'),'btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
      </div>`},
    subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:'Data'}]))
- + card('模块内角色',btn('管理角色','btn-secondary',SVG.edit,`openModal('roleManage')`),
-   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>角色 Key</th><th>描述</th><th>Web</th><th>API</th><th>数据隔离</th></tr></thead><tbody>
-     ${roleRows.map(x=>`<tr class="clickable" tabindex="0" onclick="jumpToRole('${x.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${x.id}')}"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?'<span class="badge badge-mango">已配置</span>':'<span class="badge badge-grey">无</span>'}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">该模块暂无角色</td></tr>'}
+ + card(t('card.moduleRoles'),btn(t('manageRoles'),'btn-secondary',SVG.edit,`openModal('roleManage')`),
+   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>${t('roleKey')}</th><th>${t('desc')}</th><th>Web</th><th>API</th><th>${t('col.isolation')}</th></tr></thead><tbody>
+     ${roleRows.map(x=>`<tr class="clickable" tabindex="0" onclick="jumpToRole('${x.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${x.id}')}"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?`<span class="badge badge-mango">${t('iso.configured')}</span>`:`<span class="badge badge-grey">${t('iso.none')}</span>`}</td></tr>`).join('')||`<tr><td colspan="5" class="empty">${t('noRolesInModule')}</td></tr>`}
    </tbody></table></div>`},'',{lazy:true});
 }
 
@@ -813,17 +1025,16 @@ function roleUsersCardHtml(r,page){
  roleUsersPageState={idx:i,page};
  const slice=users.slice((page-1)*ps,page*ps);
  const rows=slice.map(u=>`<tr class="clickable" tabindex="0" onclick="jumpToUser('${u.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUser('${u.id}')}"><td><span class="cell-link">${u.name}</span></td><td>${u.email}</td><td>${u.dept}</td></tr>`).join('')
-  ||'<tr><td colspan="3" class="empty">暂无授权用户</td></tr>';
- return card('已授权用户','',
-  {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>用户</th><th>邮箱</th><th>部门</th></tr></thead><tbody>${rows}</tbody></table></div>${inlinePager(users.length,page,ps,`setRoleUsersPage`)}`});
+  ||`<tr><td colspan="3" class="empty">${t('noAuthUsers')}</td></tr>`;
+ return card(t('card.authUsers'),'',
+  {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>${t('user')}</th><th>${t('email')}</th><th>${t('dept')}</th></tr></thead><tbody>${rows}</tbody></table></div>${inlinePager(users.length,page,ps,`setRoleUsersPage`)}`},'',{id:'role-users'});
 }
 
 function setRoleUsersPage(page){
  const r=DATA.role[roleUsersPageState.idx];
  if(!r)return;
  const html=roleUsersCardHtml(r,page);
- const cards=[...content.querySelectorAll('.card')];
- const el=cards.find(c=>c.querySelector('.card-title')?.textContent==='已授权用户');
+ const el=content.querySelector('.card[data-card="role-users"]');
  if(!el)return;
  const tmp=document.createElement('div');
  tmp.innerHTML=html;
@@ -836,54 +1047,54 @@ function roleDetail(r){
  const res=LAB_RESOURCES[mod?mod.id:'report-generation']||{web:[],api:[]};
  const webShow=res.web.slice(0,4);
  const apiShow=res.api.slice(0,3);
- return card('角色信息',btn('编辑','btn-secondary',SVG.edit,`openModal('roleEdit',${i})`),
-   `<div class="kv">${kv('角色 Key',r.name)}${kv('功能域',r.module)}${kv('auth2 Module','lab-service-cloud')}${kv('描述',r.desc)}</div>`)
- + card('关联资源',
-   btn('绑定 Web','btn-secondary',SVG.link,`openModal('bindWeb',${i})`)+btn('绑定 API','btn-tertiary',SVG.link,`openModal('bindApi',${i})`)+btn('数据隔离','btn-tertiary',SVG.shield,`openModal('bindData',${i})`),
+ return card(t('card.roleInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('roleEdit',${i})`),
+   `<div class="kv">${kv(t('roleKey'),r.name)}${kv(t('domain'),r.module)}${kv(t('auth2Module'),'lab-service-cloud')}${kv(t('desc'),r.desc)}</div>`)
+ + card(t('card.linkedResources'),
+   btn(t('bindWeb'),'btn-secondary',SVG.link,`openModal('bindWeb',${i})`)+btn(t('bindApi'),'btn-tertiary',SVG.link,`openModal('bindApi',${i})`)+btn(t('dataIso'),'btn-tertiary',SVG.shield,`openModal('bindData',${i})`),
    {html:`
-     <div class="subpane active" data-p="web"><div class="chips">${webShow.map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindWeb',${i})">绑定 Web</span></div></div>
-     <div class="subpane" data-p="api"><div class="chips">${(apiShow.length?apiShow:['（无独立 API 资源码）']).map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindApi',${i})">绑定 API</span></div></div>
-     <div class="subpane" data-p="data"><div class="chips">${r.data?'<span class="chip">维度：Site · labCode · Department</span><span class="chip">值：LAB001 · Softlines</span>':'<span class="muted">该角色无数据隔离</span>'}<span class="chip chip-add" onclick="openModal('bindData',${i})">配置隔离</span></div></div>`},
+     <div class="subpane active" data-p="web"><div class="chips">${webShow.map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindWeb',${i})">${t('bindWeb')}</span></div></div>
+     <div class="subpane" data-p="api"><div class="chips">${(apiShow.length?apiShow:[t('noApiCodes')]).map(c=>`<span class="chip">${c}</span>`).join('')}<span class="chip chip-add" onclick="openModal('bindApi',${i})">${t('bindApi')}</span></div></div>
+     <div class="subpane" data-p="data"><div class="chips">${r.data?`<span class="chip">${t('isoDim')}</span><span class="chip">${t('isoVal')}</span>`:`<span class="muted">${t('noDataIso')}</span>`}<span class="chip chip-add" onclick="openModal('bindData',${i})">${t('configIsoChip')}</span></div></div>`},
    subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
  + roleUsersCardHtml(r,1);
 }
 
 function userDetail(r){
  const i=idxOf('user',r);
- const empty=`<div class="empty">该用户暂无权限角色<div style="margin-top:16px">${btn('从他人复制权限','btn-secondary',SVG.copy,"openModal('copyRoles',"+i+")")}</div></div>`;
- return card('用户信息','',
-   `<div class="kv">${kv('用户 ID',r.id)}${kv('姓名',r.name)}${kv('邮箱',r.email)}${kv('部门',r.dept)}${kv('数据来源','User Service · 只读')}</div>`)
- + card('用户角色',
-   btn('从他人复制','btn-secondary',SVG.copy,`openModal('copyRoles',${i})`)+btn('编辑角色','btn-tertiary',SVG.edit,`openModal('userRole',${i})`),
+ const empty=`<div class="empty">${t('noUserRoles')}<div style="margin-top:16px">${btn(t('copyPerms'),'btn-secondary',SVG.copy,"openModal('copyRoles',"+i+")")}</div></div>`;
+ return card(t('card.userInfo'),'',
+   `<div class="kv">${kv(t('userId'),r.id)}${kv(t('fullName'),r.name)}${kv(t('email'),r.email)}${kv(t('dept'),r.dept)}${kv(t('dataSource'),t('dataSourceVal'))}</div>`)
+ + card(t('card.userRoles'),
+   btn(t('copyFrom'),'btn-secondary',SVG.copy,`openModal('copyRoles',${i})`)+btn(t('editRoles'),'btn-tertiary',SVG.edit,`openModal('userRole',${i})`),
    r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" role="button" tabindex="0" onclick="jumpToRole('${rl}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${rl}')}">${rl}</span>`).join('')}</div>`:empty);
 }
 
 function akDetail(view,r){
  const i=idxOf(view,r), isPlat=view==='platform', inherit=r.mode==='inherit';
- return card('AccessKey 信息',btn('编辑','btn-secondary',SVG.edit,`openModal('akEdit',${i})`),
-   `<div class="kv">${kv('AccessKey ID',r.id)}${kv(isPlat?'平台':'客户',r.client)}${kv('登录账号',r.login)}${kv('Key',r.key)}${kv('模式',r.mode==='inherit'?'inherit（继承角色）':'direct（直接绑资源）')}${kv('状态',statusBadge(r.status))}${kv('创建日期',r.created)}${kv('最近调用',r.lastUsed)}</div>`)
+ return card(t('card.akInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('akEdit',${i})`),
+   `<div class="kv">${kv(t('akId'),r.id)}${kv(isPlat?t('platform'):t('customer'),r.client)}${kv(t('login'),r.login)}${kv(t('key'),r.key)}${kv(t('mode'),r.mode==='inherit'?t('modeInherit'):t('modeDirect'))}${kv(t('status'),statusBadge(r.status))}${kv(t('created'),r.created)}${kv(t('lastUsed'),r.lastUsed)}</div>`)
  + akResourceCard(view,r,i,inherit)
- + card('限流配置',btn('编辑','btn-secondary',SVG.edit,`openModal('rateEdit',${i})`),
-   `<div class="kv">${kv('请求上限',`${r.rate} 次 / 分钟`)}${kv('计数方式','Redis 滑动窗口 · 按 AccessKey 计数')}${kv('超限响应','429 Too Many Requests')}${kv('近 24h 峰值',`${r.peak} 次 / 分钟${r.peak>=r.rate?' <span class="badge badge-cherry">已触顶</span>':''}`)}</div>`)
- + card('访问日志',btn('查看全部','btn-tertiary',SVG.log,`openModal('akLog',${i})`),
+ + card(t('card.rateLimit'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('rateEdit',${i})`),
+   `<div class="kv">${kv(t('rateCap'),t('rateCapVal',{n:r.rate}))}${kv(t('rateHow'),t('rateHowVal'))}${kv(t('rateResp'),'429 Too Many Requests')}${kv(t('ratePeak'),`${t('ratePeakVal',{n:r.peak})}${r.peak>=r.rate?` <span class="badge badge-cherry">${t('capped')}</span>`:''}`)}</div>`)
+ + card(t('card.accessLog'),btn(t('viewAll'),'btn-tertiary',SVG.log,`openModal('akLog',${i})`),
    `<div class="timeline">
      <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">GET /lab-service-cloud/v1.0/report/{id}</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 142 ms</div></div>
      <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /lab-service-cloud/v1.0/lab/list</div><div class="tl-meta">IP 10.2.4.8 · 200 OK · 88 ms</div></div>
-     <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">PUT /lab-service-cloud/v1.0/report/{id}/first-page</div><div class="tl-meta">IP 10.2.4.8 · 403 Forbidden · 缺 REPORTGENERATION:FIRSTPAGE:EDIT</div></div>
+     <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">PUT /lab-service-cloud/v1.0/report/{id}/first-page</div><div class="tl-meta">IP 10.2.4.8 · 403 Forbidden · ${t('missEdit')}</div></div>
    </div>`,'',{lazy:true});
 }
 
 /* inherit mode reads permissions off the customer role, so resources are not
    bindable on the key itself — only direct mode owns its own resource list */
 function akResourceCard(view,r,i,inherit){
- if(inherit)return card('关联资源',btn('切换为 direct','btn-tertiary',SVG.sync,`openModal('akEdit',${i})`),
-   `<div class="kv">${kv('权限来源',`继承客户角色 <span class="cell-link" onclick="jumpToRole('${r.role}')">${r.role}</span>`)}${kv('生效资源',`${r.web} Web · ${r.api} API`)}</div>
-    <div class="note" style="margin-top:16px">inherit 模式下资源随角色变动，需单独授权请先切换为 direct 模式。</div>`);
- return card('关联资源',
-   btn('绑定资源','btn-secondary',SVG.link,`openModal('akBind',${i})`),
+ if(inherit)return card(t('card.linkedResources'),btn(t('switchDirect'),'btn-tertiary',SVG.sync,`openModal('akEdit',${i})`),
+   `<div class="kv">${kv(t('permSource'),`${t('inheritRole')}<span class="cell-link" onclick="jumpToRole('${r.role}')">${r.role}</span>`)}${kv(t('effectiveRes'),t('effectiveResVal',{web:r.web,api:r.api}))}</div>
+    <div class="note" style="margin-top:16px">${t('inheritNote')}</div>`);
+ return card(t('card.linkedResources'),
+   btn(t('bindResources'),'btn-secondary',SVG.link,`openModal('akBind',${i})`),
    {html:`
-     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">REPORTGENERATION:VIEW</span><span class="chip">INFO:PAGE:VIEW</span>':'<span class="muted">无 Web 资源</span>'}<span class="chip chip-add" onclick="openModal('akBind',${i})">绑定</span></div></div>
-     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list</span><span class="chip">GET /lab-service-cloud/v1.0/report/{id}</span><span class="chip chip-add" onclick="openModal('akBind',${i})">绑定 API</span></div></div>`},
+     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">REPORTGENERATION:VIEW</span><span class="chip">INFO:PAGE:VIEW</span>':`<span class="muted">${t('noWebRes')}</span>`}<span class="chip chip-add" onclick="openModal('akBind',${i})">${t('bind')}</span></div></div>
+     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list</span><span class="chip">GET /lab-service-cloud/v1.0/report/{id}</span><span class="chip chip-add" onclick="openModal('akBind',${i})">${t('bindApiShort')}</span></div></div>`},
    subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`}]));
 }
 
@@ -928,15 +1139,15 @@ function toast(msg,kind){
 function copyText(el,text){
  const done=()=>{
   const label=el.querySelector('span'), old=label?label.textContent:'';
-  if(label){label.textContent='已复制';setTimeout(()=>{label.textContent=old;},1600);}
-  toast('已复制到剪贴板','ok');
+  if(label){label.textContent=t('copied');setTimeout(()=>{label.textContent=old;},1600);}
+  toast(t('copiedClip'),'ok');
  };
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done,done);
  else done();
 }
 function exportList(){
  const n=visibleRows(currentView).length;
- toast(`已导出当前筛选结果 ${n} 条 · CSV`,'ok');
+ toast(t('exported',{n}),'ok');
 }
 function toggleCard(head){
  const c=head.parentElement;
@@ -949,9 +1160,9 @@ function toggleCard(head){
 function toggleFilters(){showFilters=!showFilters;render();}
 function resetFilters(){
  const s=st(currentView);
- if(!activeFilterCount(currentView)&&!s.sort){toast('当前没有筛选条件');return;}
+ if(!activeFilterCount(currentView)&&!s.sort){toast(t('noFilter'));return;}
  s.q='';s.filters={};s.sort=null;s.page=1;
- render();toast('已重置筛选与排序','ok');
+ render();toast(t('filtersReset'),'ok');
 }
 function focusSearch(){
  if(!showFilters){showFilters=true;render();}
@@ -975,112 +1186,112 @@ function jumpToUser(id){
 const inp=(ph,val,dis)=>`<input placeholder="${ph||''}"${val!==undefined?` value="${val}"`:''}${dis?' disabled':''}>`;
 const sel=opts=>`<select>${opts.map(o=>`<option${o.sel?' selected':''}>${o.v!==undefined?o.v:o}</option>`).join('')}</select>`;
 
-const MODALS={
- moduleCreate:{title:'新建功能域',body:()=>`
-  <div class="grid-2">${field('功能域 ID',inp('如 report-generation'))}${field('名称',inp('Report Generation'))}</div>
-  ${field('描述',`<textarea placeholder="用途…（资源仍归属 auth2 module lab-service-cloud）"></textarea>`)}
-  ${field('数据隔离维度',sel(['Site','Site · labCode','Site · Department','Site · labCode · Department']))}`},
- moduleEdit:{title:'编辑功能域',body:i=>{const r=DATA.module[i];return `
-  <div class="grid-2">${field('功能域 ID',inp('',r.id,true))}${field('名称',inp('',r.name))}</div>
-  ${field('auth2 Module',inp('','lab-service-cloud',true))}
-  ${field('描述',`<textarea>${r.desc}</textarea>`)}`;}},
- isoConfig:{title:'配置数据隔离',body:i=>{const r=DATA.module[i];return field('隔离维度',sel(['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,sel:v===r.isolation}))));}},
- roleCreate:{title:'新建角色',body:()=>`
-  <div class="grid-2">${field('角色 Key',inp('First-Page-Approver'))}${field('功能域',sel(DATA.module.map(m=>m.name)))}</div>
-  ${field('描述',inp('角色用途…'))}
-  <div class="note">Permission CSV 使用连字符角色名（如 First-Page-Approver）；FE 只校验资源码。auth2 导出有时写作 lab-service-cloud:First-Page-Viewer。</div>`},
- roleEdit:{title:'编辑角色',body:i=>{const r=DATA.role[i];return `
-  <div class="grid-2">${field('角色 Key',inp('',r.name))}${field('功能域',inp('',r.module,true))}</div>
-  ${field('描述',inp('',r.desc))}`;}},
- userRole:{title:'编辑用户角色',body:i=>{const r=DATA.user[i];return `
-  ${field('用户',inp('',`${r.name} · ${r.email}`,true))}
-  ${field('已分配角色',`<div class="chips">${r.roles.map(rl=>`<span class="chip">${rl}<span class="x" onclick="this.parentElement.remove()">×</span></span>`).join('')||'<span class="muted">暂无</span>'}</div>`)}
-  ${field('添加角色',sel(['选择角色…',...DATA.role.map(x=>x.name)]))}`;}},
- copyRoles:{title:'从他人复制权限',
-  foot:()=>btn('取消','btn-tertiary','','closeModal()')+btn('确认复制','btn-primary','','applyCopyRoles()'),
+function MODALS(){return {
+ moduleCreate:{title:()=>t('m.moduleCreate'),body:()=>`
+  <div class="grid-2">${field(t('domainId'),inp('e.g. report-generation'))}${field(t('name'),inp('Report Generation'))}</div>
+  ${field(t('desc'),`<textarea placeholder="${t('purposePh')}"></textarea>`)}
+  ${field(t('f.isoDim'),sel(['Site','Site · labCode','Site · Department','Site · labCode · Department']))}`},
+ moduleEdit:{title:()=>t('m.moduleEdit'),body:i=>{const r=DATA.module[i];return `
+  <div class="grid-2">${field(t('domainId'),inp('',r.id,true))}${field(t('name'),inp('',r.name))}</div>
+  ${field(t('auth2Module'),inp('','lab-service-cloud',true))}
+  ${field(t('desc'),`<textarea>${r.desc}</textarea>`)}`;}},
+ isoConfig:{title:()=>t('m.isoConfig'),body:i=>{const r=DATA.module[i];return field(t('isoDimLabel'),sel(['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,sel:v===r.isolation}))));}},
+ roleCreate:{title:()=>t('m.roleCreate'),body:()=>`
+  <div class="grid-2">${field(t('roleKey'),inp('First-Page-Approver'))}${field(t('domain'),sel(DATA.module.map(m=>m.name)))}</div>
+  ${field(t('desc'),inp(t('rolePurposePh')))}
+  <div class="note">${t('roleCreateNote')}</div>`},
+ roleEdit:{title:()=>t('m.roleEdit'),body:i=>{const r=DATA.role[i];return `
+  <div class="grid-2">${field(t('roleKey'),inp('',r.name))}${field(t('domain'),inp('',r.module,true))}</div>
+  ${field(t('desc'),inp('',r.desc))}`;}},
+ userRole:{title:()=>t('m.userRole'),body:i=>{const r=DATA.user[i];return `
+  ${field(t('user'),inp('',`${r.name} · ${r.email}`,true))}
+  ${field(t('assignedRoles'),`<div class="chips">${r.roles.map(rl=>`<span class="chip">${rl}<span class="x" onclick="this.parentElement.remove()">×</span></span>`).join('')||`<span class="muted">${t('noneYet')}</span>`}</div>`)}
+  ${field(t('addRole'),sel([t('pickRole'),...DATA.role.map(x=>x.name)]))}`;}},
+ copyRoles:{title:()=>t('m.copyRoles'),
+  foot:()=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('confirmCopy'),'btn-primary','','applyCopyRoles()'),
   body:i=>{
    copyState={target:i,source:null,mode:'replace'};
-   const t=DATA.user[i];
+   const u=DATA.user[i];
    return `
-  ${field('目标用户',inp('',`${t.name} · ${t.email}`,true))}
-  ${field('选择来源用户',`<div class="picker">
-    <input id="cp-q" placeholder="按姓名 / 邮箱 / 部门搜索…" oninput="copyUserSearch(this.value)">
+  ${field(t('targetUser'),inp('',`${u.name} · ${u.email}`,true))}
+  ${field(t('pickSource'),`<div class="picker">
+    <input id="cp-q" placeholder="${t('copySearchPh')}" oninput="copyUserSearch(this.value)">
     <div class="picker-list" id="cp-list">${copyUserRows('')}</div>
   </div>`)}
-  ${field('复制方式',`<div class="seg">
-    <input type="radio" name="cp-mode" id="cpr" checked onchange="setCopyMode('replace')"><label for="cpr">覆盖</label>
-    <input type="radio" name="cp-mode" id="cpm" onchange="setCopyMode('merge')"><label for="cpm">合并</label>
-  </div>`,'覆盖：以来源用户角色完全替换；合并：保留现有角色并追加来源角色')}
+  ${field(t('copyMode'),`<div class="seg">
+    <input type="radio" name="cp-mode" id="cpr" checked onchange="setCopyMode('replace')"><label for="cpr">${t('overwrite')}</label>
+    <input type="radio" name="cp-mode" id="cpm" onchange="setCopyMode('merge')"><label for="cpm">${t('merge')}</label>
+  </div>`,t('copyModeHint'))}
   <div id="cp-preview">${copyPreviewHtml()}</div>
-  <div class="note">仅复制角色绑定，不复制数据隔离值以外的个人偏好。操作会写入历史记录。</div>`;}},
- akCreate:{title:t=>t==='platform'?'创建平台 AccessKey':'创建客户 AccessKey',
-  foot:t=>btn('取消','btn-tertiary','','closeModal()')+btn('生成 AccessKey','btn-primary','',`openModal('akCreated','${t||'customer'}')`),
-  body:t=>{const src=t==='platform'?PLATFORMS:CUSTOMERS;return `
-  ${field(`${t==='platform'?'平台':'客户'}名称`,`<div class="picker">
-    <input id="pk-q" placeholder="Type to search..." oninput="pickSearch('${t||'customer'}',this.value)">
+  <div class="note">${t('copyNote')}</div>`;}},
+ akCreate:{title:kind=>t(kind==='platform'?'m.akCreatePlat':'m.akCreateCust'),
+  foot:kind=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('genAk'),'btn-primary','',`openModal('akCreated','${kind||'customer'}')`),
+  body:kind=>{const src=kind==='platform'?PLATFORMS:CUSTOMERS;const who=kind==='platform'?t('platform'):t('customer');return `
+  ${field(kind==='platform'?t('platName'):t('custName'),`<div class="picker">
+    <input id="pk-q" placeholder="${t('searchPh')}" oninput="pickSearch('${kind||'customer'}',this.value)">
     <div class="picker-list" id="pk-list">${src.slice(0,4).map(c=>`<button onclick="pickPick('${c.name}')">${c.name}<span>${c.code}</span></button>`).join('')}</div>
   </div>`)}
-  <div class="grid-2">${field('登录账号',`<select id="pk-login" disabled><option>先选择${t==='platform'?'平台':'客户'}</option></select>`)}${field('模式',`<div class="seg"><input type="radio" name="m" id="m1"${t==='platform'?'':' checked'}><label for="m1">inherit</label><input type="radio" name="m" id="m2"${t==='platform'?' checked':''}><label for="m2">direct</label></div>`)}</div>
-  ${field('备注',inp('用途说明…'))}
-  <div class="note">${t==='platform'?'平台名称与登录账号为本平台维护。':'客户主数据来自 Customer Service，此处仅搜索选择，不新增客户。原流程需客户自行登录生成，此入口为 IT 代客户创建（待新增接口）。'}</div>`;}},
- akCreated:{title:'AccessKey 已生成',
-  foot:()=>btn('我已保存并复制','btn-primary','','closeModal()'),
-  body:t=>`
-  ${field('AccessKey ID',`<div class="secret">${t==='platform'?'ak-p04':'ak-c05'}${btn('复制','btn-tertiary','',`copyText(this,'${t==='platform'?'ak-p04':'ak-c05'}')`)}</div>`)}
-  ${field('Access Key',`<div class="secret">ak_live_2f7c91be4d0a83e5${btn('复制','btn-tertiary','',`copyText(this,'ak_live_2f7c91be4d0a83e5')`)}</div>`)}
-  ${field('Secret',`<div class="secret">sk_9b41e07c…d82f6a3510${btn('复制','btn-tertiary','',`copyText(this,'sk_9b41e07cd82f6a3510')`)}</div>`)}
-  <div class="note">Secret 仅在此显示一次，关闭后无法再次查看，需重新生成。请立即复制并交付${t==='platform'?'对接方':'客户'}。</div>`},
- akEdit:{title:'编辑 AccessKey',body:i=>{const r=DATA[currentView][i];return `
-  ${field('AccessKey ID',inp('',r.id,true))}
-  <div class="grid-2">${field('登录账号',inp('',r.login))}${field('状态',sel(['Active','Suspended'].map(v=>({v,sel:v===r.status}))))}</div>`;}},
- rateEdit:{title:'编辑限流配置',body:i=>{const r=DATA[currentView][i];return `
-  <div class="grid-2">${field('请求上限（次 / 分钟）',inp('',r.rate))}${field('超限响应',sel(['429 Too Many Requests','503 Service Unavailable']))}</div>
-  <div class="note">阈值由 Gateway 读取并在 Redis 按 AccessKey 计数，保存后即时生效。</div>`;}},
- akLog:{title:'AccessKey 访问日志',body:()=>`<div class="timeline">
+  <div class="grid-2">${field(t('login'),`<select id="pk-login" disabled><option>${t('pickFirst',{who})}</option></select>`)}${field(t('mode'),`<div class="seg"><input type="radio" name="m" id="m1"${kind==='platform'?'':' checked'}><label for="m1">inherit</label><input type="radio" name="m" id="m2"${kind==='platform'?' checked':''}><label for="m2">direct</label></div>`)}</div>
+  ${field(t('remark'),inp(t('remarkPh')))}
+  <div class="note">${kind==='platform'?t('akCreateNotePlat'):t('akCreateNoteCust')}</div>`;}},
+ akCreated:{title:()=>t('m.akCreated'),
+  foot:()=>btn(t('savedCopied'),'btn-primary','','closeModal()'),
+  body:kind=>`
+  ${field(t('akId'),`<div class="secret">${kind==='platform'?'ak-p04':'ak-c05'}${btn(t('copy'),'btn-tertiary','',`copyText(this,'${kind==='platform'?'ak-p04':'ak-c05'}')`)}</div>`)}
+  ${field('Access Key',`<div class="secret">ak_live_2f7c91be4d0a83e5${btn(t('copy'),'btn-tertiary','',`copyText(this,'ak_live_2f7c91be4d0a83e5')`)}</div>`)}
+  ${field('Secret',`<div class="secret">sk_9b41e07c…d82f6a3510${btn(t('copy'),'btn-tertiary','',`copyText(this,'sk_9b41e07cd82f6a3510')`)}</div>`)}
+  <div class="note">${t('secretNote',{who:kind==='platform'?t('partner'):t('client')})}</div>`},
+ akEdit:{title:()=>t('m.akEdit'),body:i=>{const r=DATA[currentView][i];return `
+  ${field(t('akId'),inp('',r.id,true))}
+  <div class="grid-2">${field(t('login'),inp('',r.login))}${field(t('status'),sel(['Active','Suspended'].map(v=>({v,sel:v===r.status}))))}</div>`;}},
+ rateEdit:{title:()=>t('m.rateEdit'),body:i=>{const r=DATA[currentView][i];return `
+  <div class="grid-2">${field(t('rateCapLabel'),inp('',r.rate))}${field(t('overResp'),sel(['429 Too Many Requests','503 Service Unavailable']))}</div>
+  <div class="note">${t('rateNote')}</div>`;}},
+ akLog:{title:()=>t('m.akLog'),body:()=>`<div class="timeline">
   <div class="tl-item"><div class="tl-time">23-Jul-2026 13:55</div><div class="tl-act">POST /v1/order/create</div><div class="tl-meta">200 OK · 142 ms</div></div>
   <div class="tl-item"><div class="tl-time">23-Jul-2026 13:12</div><div class="tl-act">GET /v1/order/list</div><div class="tl-meta">200 OK · 88 ms</div></div>
-  <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">403 Forbidden · 资源未授权</div></div>
+  <div class="tl-item"><div class="tl-time">23-Jul-2026 09:40</div><div class="tl-act">GET /v1/report</div><div class="tl-meta">403 Forbidden · ${t('missRes')}</div></div>
  </div>`},
- bindWeb:{title:'绑定 Web 资源',body:()=>`
-  ${field('搜索资源',inp('REPORTGENERATION:FIRSTPAGE:VIEW…'))}
-  ${field('已选',`<div class="chips"><span class="chip">REPORTGENERATION:VIEW<span class="x">×</span></span><span class="chip">REPORTGENERATION:FIRSTPAGE:VIEW<span class="x">×</span></span></div>`)}`},
- bindApi:{title:'绑定 API 资源',body:()=>`
-  ${field('搜索接口',inp('/lab-service-cloud/v1.0/…'))}
-  ${field('已选',`<div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list<span class="x">×</span></span></div>`)}`},
- bindData:{title:'配置数据隔离',body:()=>`
-  ${field('隔离维度',sel(['Site','labCode','Department']))}
-  ${field('隔离值',inp('如 LAB001 · Softlines'))}`},
- akBind:{title:'绑定资源',body:()=>`
-  ${field('资源类型',`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
-  ${field('搜索',inp('REPORTGENERATION:… / TA:…'))}`},
- resourceManage:{title:'管理功能域资源',body:()=>`
-  ${field('资源类型',`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label><input type="radio" name="rt" id="rt3"><label for="rt3">API</label></div>`)}
-  ${field('资源树 · lab-service-cloud',`<div class="tree">
+ bindWeb:{title:()=>t('m.bindWeb'),body:()=>`
+  ${field(t('searchRes'),inp('REPORTGENERATION:FIRSTPAGE:VIEW…'))}
+  ${field(t('selected'),`<div class="chips"><span class="chip">REPORTGENERATION:VIEW<span class="x">×</span></span><span class="chip">REPORTGENERATION:FIRSTPAGE:VIEW<span class="x">×</span></span></div>`)}`},
+ bindApi:{title:()=>t('m.bindApi'),body:()=>`
+  ${field(t('searchApi'),inp('/lab-service-cloud/v1.0/…'))}
+  ${field(t('selected'),`<div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list<span class="x">×</span></span></div>`)}`},
+ bindData:{title:()=>t('m.bindData'),body:()=>`
+  ${field(t('isoDimLabel'),sel(['Site','labCode','Department']))}
+  ${field(t('isoValue'),inp(t('isoValuePh')))}`},
+ akBind:{title:()=>t('m.akBind'),body:()=>`
+  ${field(t('resType'),`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
+  ${field(t('searchLabel'),inp('REPORTGENERATION:… / TA:…'))}`},
+ resourceManage:{title:()=>t('m.resourceManage'),body:()=>`
+  ${field(t('resType'),`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label><input type="radio" name="rt" id="rt3"><label for="rt3">API</label></div>`)}
+  ${field(t('resTree'),`<div class="tree">
     <div class="row"><span class="caret">▾</span>REPORTGENERATION:VIEW</div>
     <div class="tree-children">
       <div class="row"><span class="caret">▸</span>REPORTGENERATION:FIRSTPAGE:VIEW</div>
       <div class="row"><span class="caret">▸</span>REPORTGENERATION:RESULTTABLE:EDIT</div>
       <div class="row"><span class="caret">▸</span>REPORTGENERATION:FIRSTPAGE:APPROVER</div>
     </div></div>`)}`},
- roleManage:{title:'管理功能域内角色',body:()=>`
-  ${field('角色列表',`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
-  ${field('新建角色',inp('First-Page-Approver'))}`},
- columns:{title:'列设置',
-  foot:()=>btn('完成','btn-primary','','closeModal()'),
-  body:()=>{const s=st(currentView);return field('显示列',`<div class="checks">${COLS[currentView].map(c=>`
+ roleManage:{title:()=>t('m.roleManage'),body:()=>`
+  ${field(t('roleList'),`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
+  ${field(t('newRole'),inp('First-Page-Approver'))}`},
+ columns:{title:()=>t('m.columns'),
+  foot:()=>btn(t('done'),'btn-primary','','closeModal()'),
+  body:()=>{const s=st(currentView);return field(t('showCols'),`<div class="checks">${COLS(currentView).map(c=>`
    <label><input type="checkbox"${s.hidden.includes(c.k)?'':' checked'} onchange="toggleColumn('${c.k}',this.checked)">${c.label}</label>`).join('')}</div>`);}}
-};
+};}
 
 let lastFocus=null;
 function openModal(key,arg){
- const m=MODALS[key];if(!m)return;
+ const m=MODALS()[key];if(!m)return;
  const title=typeof m.title==='function'?m.title(arg):m.title;
  const body=typeof m.body==='function'?m.body(arg):m.body;
  const foot=m.foot?(typeof m.foot==='function'?m.foot(arg):m.foot)
-   :btn('取消','btn-tertiary','','closeModal()')+btn('保存','btn-primary','',`saveModal('${title}')`);
+   :btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('save'),'btn-primary','',`saveModal(${JSON.stringify(title)})`);
  lastFocus=document.activeElement;
  $('#overlay').innerHTML=`<div class="modal" role="dialog" aria-modal="true" aria-label="${title}">
-  <div class="modal-head"><h3>${title}</h3>${iconBtn('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>','关闭','closeModal()')}</div>
+  <div class="modal-head"><h3>${title}</h3>${iconBtn('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',t('close'),'closeModal()')}</div>
   <div class="modal-body">${body}</div>
   <div class="modal-foot">${foot}</div>
  </div>`;
@@ -1096,14 +1307,14 @@ function closeModal(){
  if(lastFocus&&lastFocus.focus)lastFocus.focus();
  lastFocus=null;
 }
-function saveModal(what){closeModal();toast(`${what} · 已保存`,'ok');}
+function saveModal(what){closeModal();toast(t('saved',{what}),'ok');}
 
 document.addEventListener('keydown',e=>{
  const open=$('#overlay').classList.contains('show');
  if(e.key==='Escape'&&open){closeModal();return;}
  if(open)return;
- const t=document.activeElement;
- if(e.key==='/'&&!/^(INPUT|SELECT|TEXTAREA)$/.test(t?t.tagName:'')){e.preventDefault();focusSearch();}
+ const el=document.activeElement;
+ if(e.key==='/'&&!/^(INPUT|SELECT|TEXTAREA)$/.test(el?el.tagName:'')){e.preventDefault();focusSearch();}
 });
 
 /* customer / platform picker — master data is searched, not typed */
@@ -1111,8 +1322,9 @@ function pickSearch(type,q){
  const src=type==='platform'?PLATFORMS:CUSTOMERS;
  q=(q||'').toLowerCase();
  const hits=src.filter(c=>c.name.toLowerCase().includes(q)||c.code.toLowerCase().includes(q)).slice(0,4);
+ const who=type==='platform'?t('platform'):t('customer');
  $('#pk-list').innerHTML=hits.map(c=>`<button onclick="pickPick('${c.name}')">${c.name}<span>${c.code}</span></button>`).join('')
-  ||`<button disabled><span>未找到匹配${type==='platform'?'平台':'客户'}</span></button>`;
+  ||`<button disabled><span>${t('noMatchWho',{who})}</span></button>`;
 }
 function pickPick(name){
  const c=CUSTOMERS.concat(PLATFORMS).find(x=>x.name===name);if(!c)return;
@@ -1137,12 +1349,13 @@ function copyCandidates(q){
 }
 function copyUserRows(q){
  const hits=copyCandidates(q);
- if(!hits.length)return `<div class="picker-empty">未找到可复制的用户</div>`;
+ if(!hits.length)return `<div class="picker-empty">${t('noCopyUser')}</div>`;
  return hits.map(u=>{
   const on=copyState.source===u.id?' on':'';
-  const roles=u.roles.length?`${u.roles.length} 个角色`:'无角色';
+  const roles=t('nRoles',{n:u.roles.length});
+  const tip=u.roles.length?` · ${u.roles.slice(0,2).join(LANG==='zh'?'、':', ')}${u.roles.length>2?'…':''}`:'';
   return `<button type="button" class="${on.trim()}" onclick="pickCopyUser('${u.id}')">
-   <div class="meta"><b>${u.name}</b><em>${u.email} · ${u.dept}</em><em class="roles">${roles}${u.roles.length?` · ${u.roles.slice(0,2).join('、')}${u.roles.length>2?'…':''}`:''}</em></div>
+   <div class="meta"><b>${u.name}</b><em>${u.email} · ${u.dept}</em><em class="roles">${roles}${tip}</em></div>
    <span>${u.id}</span>
   </button>`;
  }).join('');
@@ -1152,59 +1365,68 @@ function pickCopyUser(id){
  copyState.source=id;
  const u=DATA.user.find(x=>x.id===id);
  if(u&&$('#cp-q'))$('#cp-q').value=`${u.name} · ${u.email}`;
- /* re-render full candidate list so the selection stays visible (the display
-    string contains "·" which would otherwise match nobody) */
  const list=$('#cp-list');if(list)list.innerHTML=copyUserRows('');
  const p=$('#cp-preview');if(p)p.innerHTML=copyPreviewHtml();
 }
 function setCopyMode(m){copyState.mode=m;const p=$('#cp-preview');if(p)p.innerHTML=copyPreviewHtml();}
 function copyPreviewHtml(){
- const t=DATA.user[copyState.target];
- const s=DATA.user.find(x=>x.id===copyState.source);
- if(!s)return `<div class="note" style="background:var(--mist);color:var(--seal)">先从来源列表中选择一位用户，预览将显示在此。</div>`;
- if(!s.roles.length)return `<div class="note" style="background:var(--cherry-050);color:var(--cherry-900)">${s.name} 当前没有任何角色，无法复制。</div>`;
- const keep=copyState.mode==='merge'?t.roles:[];
- const next=[...new Set([...keep,...s.roles])];
- const added=next.filter(r=>!t.roles.includes(r));
- const removed=copyState.mode==='replace'?t.roles.filter(r=>!s.roles.includes(r)):[];
+ const target=DATA.user[copyState.target];
+ const source=DATA.user.find(x=>x.id===copyState.source);
+ if(!source)return `<div class="note" style="background:var(--mist);color:var(--seal)">${t('pickSourceFirst')}</div>`;
+ if(!source.roles.length)return `<div class="note" style="background:var(--cherry-050);color:var(--cherry-900)">${t('sourceNoRoles',{name:source.name})}</div>`;
+ const keep=copyState.mode==='merge'?target.roles:[];
+ const next=[...new Set([...keep,...source.roles])];
+ const added=next.filter(r=>!target.roles.includes(r));
+ const removed=copyState.mode==='replace'?target.roles.filter(r=>!source.roles.includes(r)):[];
+ const none=t('none');
  return `
-  ${field('将生效的角色',`<div class="chips">${next.map(r=>`<span class="chip">${r}</span>`).join('')}</div>`)}
+  ${field(t('rolesToApply'),`<div class="chips">${next.map(r=>`<span class="chip">${r}</span>`).join('')}</div>`)}
   <div class="kv" style="margin-top:12px">
-   ${kv('新增',added.length?added.map(r=>`<span class="badge badge-kiwi">${r}</span>`).join(' ')||'—':'无')}
-   ${kv(copyState.mode==='replace'?'将移除':`保留现有`,removed.length?removed.map(r=>`<span class="badge badge-cherry">${r}</span>`).join(' '):(copyState.mode==='merge'?(t.roles.length?t.roles.map(r=>`<span class="badge">${r}</span>`).join(' '):'无'):'无'))}
+   ${kv(t('added'),added.length?added.map(r=>`<span class="badge badge-kiwi">${r}</span>`).join(' '):none)}
+   ${kv(copyState.mode==='replace'?t('willRemove'):t('keepExisting'),removed.length?removed.map(r=>`<span class="badge badge-cherry">${r}</span>`).join(' '):(copyState.mode==='merge'?(target.roles.length?target.roles.map(r=>`<span class="badge">${r}</span>`).join(' '):none):none))}
   </div>`;
 }
 function applyCopyRoles(){
- const t=DATA.user[copyState.target];
- const s=DATA.user.find(x=>x.id===copyState.source);
- if(!t||!s){toast('请先选择来源用户');return;}
- if(!s.roles.length){toast('来源用户没有可复制的角色');return;}
- const before=t.roles.slice();
- t.roles=copyState.mode==='merge'
-  ?[...new Set([...t.roles,...s.roles])]
-  :s.roles.slice();
+ const target=DATA.user[copyState.target];
+ const source=DATA.user.find(x=>x.id===copyState.source);
+ if(!target||!source){toast(t('pickSourceToast'));return;}
+ if(!source.roles.length){toast(t('sourceEmptyToast'));return;}
+ const before=target.roles.slice();
+ target.roles=copyState.mode==='merge'
+  ?[...new Set([...target.roles,...source.roles])]
+  :source.roles.slice();
  const now=new Date();
  const pad=n=>String(n).padStart(2,'0');
  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
  const stamp=`${pad(now.getDate())}-${months[now.getMonth()]}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
- DATA.history.unshift({time:stamp,actor:'it@qima.com',act:`从 ${s.name} 复制权限到 ${t.name}`,meta:`${copyState.mode==='replace'?'覆盖':'合并'} · ${before.length} → ${t.roles.length} 个角色`});
+ const modeWord=copyState.mode==='replace'?t('overwriteWord'):t('mergeWord');
+ DATA.history.unshift({
+  time:stamp,actor:'it@qima.com',type:'userRole',
+  act:{en:`Copied permissions from ${source.name} to ${target.name}`,zh:`从 ${source.name} 复制权限到 ${target.name}`},
+  meta:{en:`${copyState.mode==='replace'?'Overwrite':'Merge'} · ${before.length} → ${target.roles.length} roles`,zh:`${modeWord} · ${before.length} → ${target.roles.length} 个角色`}
+ });
  closeModal();
  renderDetail('user',copyState.target);
- toast(`已${copyState.mode==='replace'?'覆盖':'合并'}复制 ${s.name} 的 ${s.roles.length} 个角色`,'ok');
+ toast(t('copiedToast',{mode:modeWord,name:source.name,n:source.roles.length}),'ok');
 }
 
 /* sub tabs inside cards */
 document.addEventListener('click',e=>{
- const st=e.target.closest('.subtabs .tab');
- if(!st)return;
- const wrap=st.parentElement;
+ const tab=e.target.closest('.subtabs .tab');
+ if(!tab)return;
+ const wrap=tab.parentElement;
  wrap.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
- st.classList.add('active');
+ tab.classList.add('active');
  const body=wrap.parentElement.querySelector('.card-body');
- if(body)body.querySelectorAll('.subpane').forEach(x=>x.classList.toggle('active',x.dataset.p===st.dataset.p));
+ if(body)body.querySelectorAll('.subpane').forEach(x=>x.classList.toggle('active',x.dataset.p===tab.dataset.p));
 });
 
 document.querySelectorAll('#nav button').forEach(b=>{b.onclick=()=>switchView(b.dataset.view);});
+/* apply saved language (default EN) then route */
+document.querySelectorAll('#lang-fab button').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
+document.documentElement.lang=LANG==='zh'?'zh-CN':'en';
+document.title=t('docTitle');
+document.querySelectorAll('.nav-label').forEach(el=>{el.textContent=t('nav.'+el.dataset.nav);});
 route();
 </script>
 </body>
