@@ -231,6 +231,17 @@ tbody tr:last-child td{border-bottom:0}
 .perm-act .act-code{display:block;margin-top:2px;font:400 11px/14px var(--font);color:var(--smoke);word-break:break-all}
 .perm-board-empty{padding:24px;text-align:center;color:var(--seal);font:400 13px/18px var(--font)}
 .perm-col[hidden],.perm-page[hidden]{display:none!important}
+
+/* ===== API resources · flat endpoint list ===== */
+.api-list{border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);overflow:hidden}
+.api-row{display:flex;align-items:center;gap:10px;min-height:40px;padding:8px 12px;box-shadow:inset 0 -1px 0 var(--pearl)}
+.api-row:last-child{box-shadow:none}
+.api-row.interactive{cursor:pointer}
+.api-row.interactive:hover{background:var(--pool-100)}
+.api-row input{width:16px;height:16px;flex:none;accent-color:var(--pool-500)}
+.api-method{flex:none;min-width:44px;height:20px;padding:0 6px;border-radius:var(--r-chip);background:var(--mist);font:600 11px/20px var(--font);color:var(--seal);text-align:center;letter-spacing:.02em}
+.api-path{flex:1;min-width:0;font:400 13px/18px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--carbon);word-break:break-all}
+.api-row[hidden]{display:none!important}
 .modal.wide{max-width:960px}
 .modal.wide .modal-body{max-height:70vh}
 
@@ -620,12 +631,37 @@ function permBoardHtml(codes,opts){
   </div>`;
  }).join('')}</div>`;
 }
+const API_METHODS=new Set(['GET','POST','PUT','PATCH','DELETE']);
+/* Split "GET /path" or bare "/path" into method + path */
+function parseApiCode(code){
+ const parts=String(code).trim().split(/\s+/);
+ if(parts.length>1&&API_METHODS.has(parts[0].toUpperCase()))
+  return {method:parts[0].toUpperCase(),path:parts.slice(1).join(' '),code};
+ return {method:'ANY',path:String(code).trim(),code};
+}
+/* Flat endpoint list — API resources are paths, not pages with actions */
 function apiListHtml(apis,opts){
  opts=opts||{};
  if(!apis||!apis.length)return `<div class="perm-board-empty">${opts.empty||t('noApiCodes')}</div>`;
- return `<div class="perm-board"><div class="perm-col"><div class="perm-col-head"><span>API</span></div><div class="perm-tree">${apis.map(a=>`
-  <div class="perm-page"><div class="perm-page-head"><span>${a.startsWith('/')?'Endpoint':(a.split(' ')[0]||'API')}</span></div>
-  <div class="perm-actions"><div class="perm-act"><input type="checkbox" checked disabled><span class="act-label" style="word-break:break-all">${a}</span></div></div></div>`).join('')}</div></div></div>`;
+ const selected=new Set(opts.selected||apis);
+ return `<div class="api-list">${apis.map(a=>{
+  const p=parseApiCode(a);
+  const on=selected.has(a);
+  const box=opts.interactive
+   ?`<input type="checkbox"${on?' checked':''} data-code="${escAttr(a)}">`
+   :`<input type="checkbox"${on?' checked':''} disabled>`;
+  const row=`${box}<span class="api-method">${p.method}</span><span class="api-path">${escHtml(p.path)}</span>`;
+  return opts.interactive
+   ?`<label class="api-row interactive">${row}</label>`
+   :`<div class="api-row">${row}</div>`;
+ }).join('')}</div>`;
+}
+/* Filter endpoint rows by method or path */
+function filterApiList(q){
+ q=(q||'').toLowerCase().trim();
+ document.querySelectorAll('#api-list-wrap .api-row').forEach(row=>{
+  row.hidden=!!q&&!row.textContent.toLowerCase().includes(q);
+ });
 }
 
 const CUSTOMERS=[
@@ -1351,7 +1387,7 @@ function akResourceCard(view,r,i,inherit){
    btn(t('bindResources'),'btn-secondary',SVG.link,`openModal('akBind',${i})`),
    {html:`
      <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">REPORTGENERATION:VIEW</span><span class="chip">INFO:PAGE:VIEW</span>':`<span class="muted">${t('noWebRes')}</span>`}<span class="chip chip-add" onclick="openModal('akBind',${i})">${t('bind')}</span></div></div>
-     <div class="subpane" data-p="api"><div class="chips"><span class="chip">GET /lab-service-cloud/v1.0/lab/list</span><span class="chip">GET /lab-service-cloud/v1.0/report/{id}</span><span class="chip chip-add" onclick="openModal('akBind',${i})">${t('bindApiShort')}</span></div></div>`},
+     <div class="subpane" data-p="api">${apiListHtml(['GET /lab-service-cloud/v1.0/lab/list','GET /lab-service-cloud/v1.0/report/{id}'])}<div style="margin-top:12px">${btn(t('bindApiShort'),'btn-tertiary',SVG.link,`openModal('akBind',${i})`)}</div></div>`},
    subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`}]));
 }
 
@@ -1521,8 +1557,8 @@ function MODALS(){return {
    const mod=DATA.module.find(m=>m.name===role.module);
    const apis=(LAB_RESOURCES[mod?mod.id:'report-generation']||{api:[]}).api;
    return `
-  ${field(t('searchApi'),inp('/lab-service-cloud/v1.0/…'))}
-  ${apiListHtml(apis)}`;}},
+  ${field(t('searchApi'),`<input placeholder="/lab-service-cloud/v1.0/…" oninput="filterApiList(this.value)">`)}
+  <div id="api-list-wrap">${apiListHtml(apis,{interactive:true})}</div>`;}},
  bindData:{title:()=>t('m.bindData'),body:()=>`
   ${field(t('isoDimLabel'),sel(['Site','labCode','Department']))}
   ${field(t('isoValue'),inp(t('isoValuePh')))}`},
