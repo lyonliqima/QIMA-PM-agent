@@ -224,12 +224,18 @@ tbody tr:last-child td{border-bottom:0}
 @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
 /* search-select: master data lives in another service, so pick, never type freely */
 .picker{position:relative}
-.picker-list{margin-top:6px;border:1px solid var(--smoke);border-radius:var(--r-ctl);overflow:hidden;max-height:148px;overflow-y:auto}
-.picker-list button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 16px;background:var(--white);border:0;cursor:pointer;text-align:left;font:400 14px/20px var(--font);color:var(--carbon)}
+.picker-list{margin-top:6px;border:1px solid var(--smoke);border-radius:var(--r-ctl);overflow:hidden;max-height:200px;overflow-y:auto}
+.picker-list button{display:flex;align-items:center;gap:8px;width:100%;padding:10px 16px;background:var(--white);border:0;cursor:pointer;text-align:left;font:400 14px/20px var(--font);color:var(--carbon)}
 .picker-list button+button{box-shadow:inset 0 1px 0 var(--line)}
 .picker-list button:hover{background:var(--pool-050,#F5F8FF)}
-.picker-list button span{color:var(--seal);font:400 12px/16px var(--font)}
+.picker-list button span{color:var(--seal);font:400 12px/16px var(--font);margin-left:auto}
 .picker-list button.on{background:var(--pool-100);color:var(--pool-900)}
+.picker-list button .meta{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.picker-list button .meta b{font:600 14px/20px var(--font);color:inherit}
+.picker-list button .meta em{font:400 12px/16px var(--font);color:var(--seal);font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.picker-list button .meta .roles{color:var(--pool-500)}
+.picker-empty{padding:16px;text-align:center;color:var(--seal);font:400 13px/18px var(--font)}
+#cp-preview{min-height:28px}
 .secret{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--smoke);border-radius:var(--r-ctl);background:var(--cloud);font:400 13px/20px var(--mono,var(--font));color:var(--carbon);word-break:break-all}
 .secret button{margin-left:auto;flex:none}
 
@@ -440,6 +446,7 @@ const SVG={
  filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4.5 6.5h15M7 12h10M10 17.5h4"/></svg>',
  chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9.5l6 6 6-6"/></svg>',
  sync:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 0113.7-5.6M20 12a8 8 0 01-13.7 5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>',
+ copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="8" width="11" height="11" rx="1.5"/><path d="M5 15.5V5.5A1.5 1.5 0 016.5 4H16"/></svg>',
  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3.5l7 2.5v5.5c0 4.3-2.9 7.5-7 9-4.1-1.5-7-4.7-7-9V6l7-2.5z"/></svg>',
  log:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3.5h9l4 4v13H6z"/><path d="M9 11h7M9 15h5"/></svg>'
 };
@@ -507,7 +514,7 @@ function detailPagebar(view,r){
 function detailTitle(view,r){return view==='customer'||view==='platform'?r.id:r.name;}
 function detailStatus(view,r){return (view==='customer'||view==='platform')?statusBadge(r.status):'';}
 function detailPrimary(view,r){
- if(view==='user')return btn('编辑用户角色','btn-primary',SVG.edit,`openModal('userRole',${idxOf(view,r)})`);
+ if(view==='user')return btn('从他人复制','btn-secondary',SVG.copy,`openModal('copyRoles',${idxOf(view,r)})`)+btn('编辑用户角色','btn-primary',SVG.edit,`openModal('userRole',${idxOf(view,r)})`);
  if(view==='module')return btn('管理资源','btn-primary',SVG.link,`openModal('resourceManage','module')`);
  if(view==='role')return btn('绑定资源','btn-primary',SVG.link,`openModal('bindWeb',${idxOf(view,r)})`);
  if(view==='customer'||view==='platform')return r.mode==='inherit'
@@ -843,10 +850,12 @@ function roleDetail(r){
 
 function userDetail(r){
  const i=idxOf('user',r);
+ const empty=`<div class="empty">该用户暂无权限角色<div style="margin-top:16px">${btn('从他人复制权限','btn-secondary',SVG.copy,"openModal('copyRoles',"+i+")")}</div></div>`;
  return card('用户信息','',
    `<div class="kv">${kv('用户 ID',r.id)}${kv('姓名',r.name)}${kv('邮箱',r.email)}${kv('部门',r.dept)}${kv('数据来源','User Service · 只读')}</div>`)
- + card('用户角色',btn('编辑角色','btn-secondary',SVG.edit,`openModal('userRole',${i})`),
-   r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" role="button" tabindex="0" onclick="jumpToRole('${rl}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${rl}')}">${rl}</span>`).join('')}</div>`:'<div class="empty">该用户暂无权限角色</div>');
+ + card('用户角色',
+   btn('从他人复制','btn-secondary',SVG.copy,`openModal('copyRoles',${i})`)+btn('编辑角色','btn-tertiary',SVG.edit,`openModal('userRole',${i})`),
+   r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" role="button" tabindex="0" onclick="jumpToRole('${rl}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${rl}')}">${rl}</span>`).join('')}</div>`:empty);
 }
 
 function akDetail(view,r){
@@ -987,6 +996,23 @@ const MODALS={
   ${field('用户',inp('',`${r.name} · ${r.email}`,true))}
   ${field('已分配角色',`<div class="chips">${r.roles.map(rl=>`<span class="chip">${rl}<span class="x" onclick="this.parentElement.remove()">×</span></span>`).join('')||'<span class="muted">暂无</span>'}</div>`)}
   ${field('添加角色',sel(['选择角色…',...DATA.role.map(x=>x.name)]))}`;}},
+ copyRoles:{title:'从他人复制权限',
+  foot:()=>btn('取消','btn-tertiary','','closeModal()')+btn('确认复制','btn-primary','','applyCopyRoles()'),
+  body:i=>{
+   copyState={target:i,source:null,mode:'replace'};
+   const t=DATA.user[i];
+   return `
+  ${field('目标用户',inp('',`${t.name} · ${t.email}`,true))}
+  ${field('选择来源用户',`<div class="picker">
+    <input id="cp-q" placeholder="按姓名 / 邮箱 / 部门搜索…" oninput="copyUserSearch(this.value)">
+    <div class="picker-list" id="cp-list">${copyUserRows('')}</div>
+  </div>`)}
+  ${field('复制方式',`<div class="seg">
+    <input type="radio" name="cp-mode" id="cpr" checked onchange="setCopyMode('replace')"><label for="cpr">覆盖</label>
+    <input type="radio" name="cp-mode" id="cpm" onchange="setCopyMode('merge')"><label for="cpm">合并</label>
+  </div>`,'覆盖：以来源用户角色完全替换；合并：保留现有角色并追加来源角色')}
+  <div id="cp-preview">${copyPreviewHtml()}</div>
+  <div class="note">仅复制角色绑定，不复制数据隔离值以外的个人偏好。操作会写入历史记录。</div>`;}},
  akCreate:{title:t=>t==='platform'?'创建平台 AccessKey':'创建客户 AccessKey',
   foot:t=>btn('取消','btn-tertiary','','closeModal()')+btn('生成 AccessKey','btn-primary','',`openModal('akCreated','${t||'customer'}')`),
   body:t=>{const src=t==='platform'?PLATFORMS:CUSTOMERS;return `
@@ -1095,6 +1121,75 @@ function pickPick(name){
  const s=$('#pk-login');
  s.disabled=false;
  s.innerHTML=c.logins.map(l=>`<option>${l}</option>`).join('');
+}
+
+/* ---- copy roles from another user ---- */
+let copyState={target:0,source:null,mode:'replace'};
+function copyCandidates(q){
+ const tid=DATA.user[copyState.target]?.id;
+ q=(q||'').toLowerCase().trim();
+ return DATA.user.filter(u=>{
+  if(u.id===tid)return false;
+  if(!q)return true;
+  return [u.name,u.email,u.dept,u.id,...u.roles].join(' ').toLowerCase().includes(q);
+ }).slice(0,8);
+}
+function copyUserRows(q){
+ const hits=copyCandidates(q);
+ if(!hits.length)return `<div class="picker-empty">未找到可复制的用户</div>`;
+ return hits.map(u=>{
+  const on=copyState.source===u.id?' on':'';
+  const roles=u.roles.length?`${u.roles.length} 个角色`:'无角色';
+  return `<button type="button" class="${on.trim()}" onclick="pickCopyUser('${u.id}')">
+   <div class="meta"><b>${u.name}</b><em>${u.email} · ${u.dept}</em><em class="roles">${roles}${u.roles.length?` · ${u.roles.slice(0,2).join('、')}${u.roles.length>2?'…':''}`:''}</em></div>
+   <span>${u.id}</span>
+  </button>`;
+ }).join('');
+}
+function copyUserSearch(q){const list=$('#cp-list');if(list)list.innerHTML=copyUserRows(q);}
+function pickCopyUser(id){
+ copyState.source=id;
+ const u=DATA.user.find(x=>x.id===id);
+ if(u&&$('#cp-q'))$('#cp-q').value=`${u.name} · ${u.email}`;
+ /* re-render full candidate list so the selection stays visible (the display
+    string contains "·" which would otherwise match nobody) */
+ const list=$('#cp-list');if(list)list.innerHTML=copyUserRows('');
+ const p=$('#cp-preview');if(p)p.innerHTML=copyPreviewHtml();
+}
+function setCopyMode(m){copyState.mode=m;const p=$('#cp-preview');if(p)p.innerHTML=copyPreviewHtml();}
+function copyPreviewHtml(){
+ const t=DATA.user[copyState.target];
+ const s=DATA.user.find(x=>x.id===copyState.source);
+ if(!s)return `<div class="note" style="background:var(--mist);color:var(--seal)">先从来源列表中选择一位用户，预览将显示在此。</div>`;
+ if(!s.roles.length)return `<div class="note" style="background:var(--cherry-050);color:var(--cherry-900)">${s.name} 当前没有任何角色，无法复制。</div>`;
+ const keep=copyState.mode==='merge'?t.roles:[];
+ const next=[...new Set([...keep,...s.roles])];
+ const added=next.filter(r=>!t.roles.includes(r));
+ const removed=copyState.mode==='replace'?t.roles.filter(r=>!s.roles.includes(r)):[];
+ return `
+  ${field('将生效的角色',`<div class="chips">${next.map(r=>`<span class="chip">${r}</span>`).join('')}</div>`)}
+  <div class="kv" style="margin-top:12px">
+   ${kv('新增',added.length?added.map(r=>`<span class="badge badge-kiwi">${r}</span>`).join(' ')||'—':'无')}
+   ${kv(copyState.mode==='replace'?'将移除':`保留现有`,removed.length?removed.map(r=>`<span class="badge badge-cherry">${r}</span>`).join(' '):(copyState.mode==='merge'?(t.roles.length?t.roles.map(r=>`<span class="badge">${r}</span>`).join(' '):'无'):'无'))}
+  </div>`;
+}
+function applyCopyRoles(){
+ const t=DATA.user[copyState.target];
+ const s=DATA.user.find(x=>x.id===copyState.source);
+ if(!t||!s){toast('请先选择来源用户');return;}
+ if(!s.roles.length){toast('来源用户没有可复制的角色');return;}
+ const before=t.roles.slice();
+ t.roles=copyState.mode==='merge'
+  ?[...new Set([...t.roles,...s.roles])]
+  :s.roles.slice();
+ const now=new Date();
+ const pad=n=>String(n).padStart(2,'0');
+ const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ const stamp=`${pad(now.getDate())}-${months[now.getMonth()]}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+ DATA.history.unshift({time:stamp,actor:'it@qima.com',act:`从 ${s.name} 复制权限到 ${t.name}`,meta:`${copyState.mode==='replace'?'覆盖':'合并'} · ${before.length} → ${t.roles.length} 个角色`});
+ closeModal();
+ renderDetail('user',copyState.target);
+ toast(`已${copyState.mode==='replace'?'覆盖':'合并'}复制 ${s.name} 的 ${s.roles.length} 个角色`,'ok');
 }
 
 /* sub tabs inside cards */
