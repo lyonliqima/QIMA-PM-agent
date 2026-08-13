@@ -6,7 +6,7 @@
 <title>IT Access Control · Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ===== QSP / ACA design tokens (Figma: QSP Sandbox 2025) ===== */
 :root{
@@ -24,7 +24,7 @@
   --qima-red:#E4002B;--peach:#FF8261;
   /* Radii · per DS: 4 chip / 6 nav / 8 control / 16 container */
   --r-chip:4px;--r-nav:6px;--r-ctl:8px;--r-card:16px;
-  --font:'Inter','Noto Sans SC',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --ease:cubic-bezier(.2,0,0,1);--dur:200ms;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -63,6 +63,7 @@ button{cursor:pointer;background:none;border:0}
 .rail-items button svg{width:16px;height:16px;flex:none}
 .rail-items button:hover{background:var(--mist);color:var(--carbon)}
 .rail-items button.active{background:var(--nav-active);color:var(--carbon)}
+.rail-group{display:flex;flex-direction:column;gap:12px;align-items:center;width:100%}
 
 .col{min-width:0;display:flex;flex-direction:column;background:var(--white)}
 
@@ -175,6 +176,15 @@ button{cursor:pointer;background:none;border:0}
 .kv-item{display:flex;flex-direction:column;gap:4px;min-width:0}
 .kv-item .k{font:400 12px/16px var(--font);color:var(--seal)}
 .kv-item .v{font:400 14px/20px var(--font);color:var(--carbon);word-break:break-word}
+.kv-item .v:has(.keyfield){min-width:0;overflow:hidden}
+/* secret-ish value: masked by default, reveal + copy inline — keep value + actions on one row */
+.keyfield{display:flex;align-items:center;flex-wrap:nowrap;gap:4px;min-width:0;max-width:100%}
+.keyfield code{flex:1 1 auto;min-width:0;font:400 13px/20px var(--mono,var(--font));color:var(--carbon);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal}
+.keyfield code.masked{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kbtn{flex:0 0 24px;width:24px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:4px;background:transparent;color:var(--seal);cursor:pointer;transition:background .12s,color .12s}
+.kbtn:hover{background:var(--cloud);color:var(--carbon)}
+.kbtn:focus-visible{outline:2px solid var(--focus,var(--kiwi-500));outline-offset:1px}
+.kbtn svg{width:15px;height:15px}
 
 /* ===== table · header 48 / row 52 ===== */
 .table-wrap{overflow-x:auto}
@@ -320,6 +330,7 @@ th.sortable:hover{color:var(--pool-500)}
 th .sort-ind{margin-left:6px;font-size:11px;color:var(--smoke)}
 th.sorted{color:var(--pool-500)}
 th.sorted .sort-ind{color:var(--pool-500)}
+table.tbl-history th:last-child,table.tbl-history td.col-action{min-width:240px;width:34%;white-space:normal}
 tbody tr.clickable:focus-visible{outline:2px solid var(--pool-500);outline-offset:-2px;background:var(--cloud)}
 
 /* pagination extras */
@@ -327,10 +338,39 @@ tbody tr.clickable:focus-visible{outline:2px solid var(--pool-500);outline-offse
 .pg-size{height:32px;padding:0 28px 0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);color:var(--carbon);font:400 14px/20px var(--font);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23191919' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:16px 16px}
 .pager-nav .ellipsis{min-width:24px;text-align:center;color:var(--smoke)}
 
-/* checkbox list (column settings) */
+/* checkbox list */
 .checks{display:grid;gap:10px}
 .checks label{display:flex;align-items:center;gap:10px;font:400 14px/20px var(--font);color:var(--carbon);cursor:pointer}
 .checks input{width:16px;height:16px;accent-color:var(--pool-500)}
+
+.subpane-toolbar{margin-bottom:12px}
+code.res-code{font:400 12px/16px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--seal);word-break:break-all}
+.iso-tree{display:flex;flex-direction:column;gap:8px}
+.iso-dim{border:1px solid var(--pearl);border-radius:var(--r-ctl);overflow:hidden}
+.iso-dim-head{min-height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--cloud);font:600 13px/18px var(--font);color:var(--carbon)}
+.iso-dim-head .count{margin-left:auto}
+.iso-opt{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px 0 28px;box-shadow:inset 0 1px 0 var(--pearl);font:400 14px/20px var(--font);color:var(--carbon)}
+.iso-opt input[type=checkbox]{width:16px;height:16px;accent-color:var(--pool-500)}
+.iso-edit{display:flex;flex-direction:column;gap:12px}
+.iso-dim-head input.iso-dim-name{flex:1;min-width:0;height:32px;padding:0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:600 13px/18px var(--font);color:var(--carbon)}
+.iso-opt input.iso-opt-name{flex:1;min-width:0;height:32px;padding:0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:400 14px/20px var(--font);color:var(--carbon)}
+.iso-dim-foot{padding:8px 12px;box-shadow:inset 0 1px 0 var(--pearl)}
+.iso-edit-actions{padding-top:4px}
+.iconbtn.iso-rm{width:28px;height:28px;flex:none;color:var(--seal);font-size:18px;line-height:1}
+.iconbtn.iso-rm:hover{color:var(--cherry-900);background:var(--cherry-050)}
+.role-pick{display:flex;flex-direction:column;gap:12px}
+#role-pick-list{display:flex;flex-direction:column;gap:12px}
+.role-mod{border:1px solid var(--pearl);border-radius:var(--r-ctl);overflow:hidden}
+.role-mod-head{min-height:36px;display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--cloud);font:600 13px/18px var(--font);color:var(--carbon)}
+.role-mod-head .count{margin-left:auto}
+.role-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;box-shadow:inset 0 1px 0 var(--pearl);cursor:pointer}
+.role-opt:hover{background:var(--pool-100)}
+.role-opt input{width:16px;height:16px;margin-top:2px;accent-color:var(--pool-500);flex:none}
+.role-opt .meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.role-opt .meta b{font:600 14px/20px var(--font);color:var(--carbon)}
+.role-opt .meta em{font:400 12px/16px var(--font);color:var(--seal);font-style:normal}
+.sel-bar{padding:12px;border:1px dashed var(--pearl);border-radius:var(--r-ctl);background:var(--cloud)}
+.sel-bar .k{font:400 12px/16px var(--font);color:var(--seal);margin-bottom:8px}
 
 /* ===== toast ===== */
 .toasts{position:fixed;z-index:1200;bottom:24px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
@@ -340,15 +380,6 @@ tbody tr.clickable:focus-visible{outline:2px solid var(--pool-500);outline-offse
 .toast.out{opacity:0;transform:translateY(8px)}
 @keyframes toast-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 body.modal-open{overflow:hidden}
-
-/* ===== language floater ===== */
-.lang-fab{position:fixed;z-index:1100;right:24px;bottom:24px;display:flex;align-items:center;gap:0;padding:4px;border-radius:999px;background:var(--white);border:1px solid var(--pearl);box-shadow:0 8px 28px rgba(25,25,25,.16)}
-.lang-fab button{min-width:44px;height:32px;padding:0 12px;border-radius:999px;font:600 12px/16px var(--font);color:var(--seal);letter-spacing:.02em;transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
-.lang-fab button:hover{color:var(--carbon);background:var(--cloud)}
-.lang-fab button.on{background:var(--pool-500);color:var(--white)}
-.lang-fab button.on:hover{background:var(--pool-600);color:var(--white)}
-@media (max-width:760px){.lang-fab{right:16px;bottom:16px}}
-
 
 /* ===== narrow screens ===== */
 @media (max-width:1100px){
@@ -385,12 +416,14 @@ body.modal-open{overflow:hidden}
 <div class="layout">
   <aside class="rail">
     <div class="rail-items" id="nav">
-      <button data-view="module" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg><span class="nav-label" data-nav="module">模块</span></button>
-      <button data-view="role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20v-1.5a6.5 6.5 0 0113 0V20"/></svg><span class="nav-label" data-nav="role">角色 &amp; 资源</span></button>
-      <button data-view="user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20v-1a6 6 0 0112 0v1"/><path d="M16 6.2a3.2 3.2 0 010 6M18 20v-1a5 5 0 00-1.6-3.6"/></svg><span class="nav-label" data-nav="user">内部用户</span></button>
-      <button data-view="customer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a4 4 0 018 0v2"/><circle cx="12" cy="14" r="1.6"/></svg><span class="nav-label" data-nav="customer">客户权限</span></button>
-      <button data-view="platform"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4"/></svg><span class="nav-label" data-nav="platform">平台权限</span></button>
-      <button data-view="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><span class="nav-label" data-nav="history">历史记录</span></button>
+      <div class="rail-group">
+        <button data-view="module" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="5" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/></svg><span class="nav-label">Modules</span></button>
+        <button data-view="role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20v-1.5a6.5 6.5 0 0113 0V20"/></svg><span class="nav-label">Roles &amp; Resources</span></button>
+        <button data-view="user"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20v-1a6 6 0 0112 0v1"/><path d="M16 6.2a3.2 3.2 0 010 6M18 20v-1a5 5 0 00-1.6-3.6"/></svg><span class="nav-label">Internal Users</span></button>
+        <button data-view="customer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a4 4 0 018 0v2"/><circle cx="12" cy="14" r="1.6"/></svg><span class="nav-label">Customer Access</span></button>
+        <button data-view="platform"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 12l8 4 8-4M4 17l8 4 8-4"/></svg><span class="nav-label">Platform Access</span></button>
+        <button data-view="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><span class="nav-label">Audit Log</span></button>
+      </div>
     </div>
   </aside>
 
@@ -400,11 +433,6 @@ body.modal-open{overflow:hidden}
   </div>
 </div>
 
-
-<div class="lang-fab" id="lang-fab" role="group" aria-label="Language">
-  <button type="button" data-lang="en" class="on" onclick="setLang('en')">EN</button>
-  <button type="button" data-lang="zh" onclick="setLang('zh')">中文</button>
-</div>
 
 <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()"></div>
 
@@ -416,90 +444,92 @@ body.modal-open{overflow:hidden}
  * - Isolation: Site · labCode · Department (not BU)
  * - Resource codes: REPORTGENERATION:… / TA:… / TESTSETUP:…
  */
+const ISO={
+ 'test-assignment':[{id:'bu',name:'Business Unit',options:['QIMA','QIMA One']},{id:'dept',name:'Department',options:['Chemical','Physical','Softlines']}],
+ 'report-generation':[{id:'site',name:'Site',options:['HKG','SHA']},{id:'dept',name:'Department',options:['Chemical','Physical']}],
+ 'test-setup':[{id:'site',name:'Site',options:['HKG','SHA']},{id:'labCode',name:'labCode',options:['LAB001','LAB002']}],
+ template:[{id:'site',name:'Site',options:['HKG']}],
+ dashboard:[{id:'site',name:'Site',options:['HKG']}],
+ 'todo-list':[{id:'site',name:'Site',options:['HKG']}]
+};
 const DATA={
  module:[
-  {id:'test-assignment',name:'Test Assignment',desc:'Report Preparation · parameters / specimen / breakdown',roles:3,resources:23,isolation:'Site · labCode · Department'},
-  {id:'report-generation',name:'Report Generation',desc:'First Page · Result Table · approval',roles:8,resources:12,isolation:'Site · Department'},
-  {id:'test-setup',name:'Test Setup',desc:'Tests · Master Data · Parameters · AIMS→Labs',roles:4,resources:18,isolation:'Site · labCode'},
-  {id:'template',name:'Template',desc:'Result table templates',roles:2,resources:2,isolation:'Site'},
-  {id:'dashboard',name:'Dashboard',desc:'Lab dashboard',roles:1,resources:1,isolation:'Site'},
-  {id:'todo-list',name:'To-Do List',desc:'To-do menu visibility',roles:1,resources:1,isolation:'Site'}
+  {id:'09f2c947-8b5a-4c2e-9f1a-1a2b3c4d5e6f',name:'file-service-cloud',desc:'',updateTime:'2025-02-18 12:25:27.112'},
+  {id:'dd43b36f-1c2a-4b8e-9d3e-2f1a0b9c8d7e',name:'customer-service',desc:'',updateTime:'2025-02-18 12:25:27.456'},
+  {id:'b8e4f1a2-3c5d-6e7f-8a9b-0c1d2e3f4a5b',name:'order-service-cloud',desc:'',updateTime:'2025-02-20 08:11:03.221'},
+  {id:'c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f',name:'user-service',desc:'',updateTime:'2025-03-01 14:02:18.904'},
+  {id:'d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a',name:'auth2-service-cloud',desc:'Permission master · module / role / resource SoR',updateTime:'2025-03-05 10:44:55.118'},
+  {id:'e5f6a7b8-9c0d-1e2f-3a4b-5c6d7e8f9a0b',name:'inspection-service-cloud',desc:'',updateTime:'2025-04-12 16:30:41.672'},
+  {id:'f6a7b8c9-0d1e-2f3a-4b5c-6d7e8f9a0b1c',name:'parameter-service-cloud',desc:'',updateTime:'2025-05-08 09:18:26.337'},
+  {id:'a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d',name:'mail-service-cloud',desc:'',updateTime:'2025-05-22 11:55:09.804'},
+  {id:'b8c9d0e1-2f3a-4b5c-6d7e-8f9a0b1c2d3e',name:'CUSTOMER',desc:'Customer management module with BU-based data isolation',updateTime:'2025-06-10 09:14:02.331'},
+  {id:'7c8d9e0f-1a2b-3c4d-5e6f-7890abcdef12',name:'lab-service-cloud',desc:'QIMAlabs lab business APIs and permission resources',updateTime:'2026-07-22 16:45:11.208'},
+  {id:'c9d0e1f2-3a4b-5c6d-7e8f-9a0b1c2d3e4f',name:'finance-service-cloud',desc:'',updateTime:'2026-01-15 13:22:47.559'},
+  {id:'d0e1f2a3-4b5c-6d7e-8f9a-0b1c2d3e4f5a',name:'report-service-cloud',desc:'',updateTime:'2026-02-28 07:40:12.883'}
  ],
  role:[
-  {id:'ta-viewer',name:'Test-Assignment-Viewer',module:'Test Assignment',desc:'View Test Assignment',web:8,api:6,data:1},
-  {id:'ta-editor',name:'Test-Assignment-Editor',module:'Test Assignment',desc:'Edit parameters / specimen / breakdown',web:16,api:12,data:1},
-  {id:'ta-admin',name:'Test-Assignment-Admin',module:'Test Assignment',desc:'Unlock + admin on Test Assignment',web:20,api:14,data:1},
-  {id:'fp-viewer',name:'First-Page-Viewer',module:'Report Generation',desc:'View First Page',web:4,api:4,data:1},
-  {id:'fp-editor',name:'First-Page-Editor',module:'Report Generation',desc:'Edit First Page',web:6,api:6,data:1},
-  {id:'fp-approver',name:'First-Page-Approver',module:'Report Generation',desc:'Approve First Page',web:6,api:6,data:1},
-  {id:'rt-viewer',name:'ResultTable-Viewer',module:'Report Generation',desc:'View Result Table',web:4,api:5,data:1},
-  {id:'rt-editor',name:'ResultTable-Editor',module:'Report Generation',desc:'Edit Result Table',web:6,api:8,data:1},
-  {id:'rt-approver',name:'ResultTable-Approver',module:'Report Generation',desc:'Approve / unlock Result Table',web:7,api:8,data:1},
-  {id:'dept-approver',name:'Department-Approver',module:'Report Generation',desc:'Department-level approval',web:5,api:5,data:1},
-  {id:'rg-admin',name:'Report-Generation-Admin',module:'Report Generation',desc:'Report Generation admin',web:12,api:14,data:1},
-  {id:'tpl-viewer',name:'Template-Viewer',module:'Template',desc:'View templates',web:1,api:2,data:0},
-  {id:'rt-tpl-editor',name:'ResultTable-Template-Editor',module:'Template',desc:'Edit result-table templates',web:2,api:4,data:0},
-  {id:'ts-viewer',name:'Test-Setup-Viewer',module:'Test Setup',desc:'View Test Setup',web:10,api:6,data:1},
-  {id:'ts-editor',name:'Test-Setup-Editor',module:'Test Setup',desc:'Edit tests / master data / parameters',web:16,api:10,data:1},
-  {id:'ts-admin',name:'Test-Setup-Admin',module:'Test Setup',desc:'Test Setup admin',web:18,api:12,data:1},
-  {id:'ql-admin',name:'Qimalabs-Admin',module:'Test Setup',desc:'Cross-area QIMAlabs admin',web:18,api:14,data:1}
+  {id:'ta-viewer',name:'Test-Assignment-Viewer',module:'lab-service-cloud',desc:'View Test Assignment',dataOpts:[{dim:'Business Unit',opt:'QIMA'}]},
+  {id:'ta-editor',name:'Test-Assignment-Editor',module:'lab-service-cloud',desc:'Edit parameters / specimen / breakdown',dataOpts:[{dim:'Business Unit',opt:'QIMA'},{dim:'Department',opt:'Chemical'}]},
+  {id:'ta-admin',name:'Test-Assignment-Admin',module:'lab-service-cloud',desc:'Unlock + admin on Test Assignment',dataOpts:[{dim:'Business Unit',opt:'QIMA'},{dim:'Business Unit',opt:'QIMA One'},{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'},{dim:'Department',opt:'Softlines'}]},
+  {id:'fp-viewer',name:'First-Page-Viewer',module:'lab-service-cloud',desc:'View First Page',dataOpts:[{dim:'Site',opt:'HKG'}]},
+  {id:'fp-editor',name:'First-Page-Editor',module:'lab-service-cloud',desc:'Edit First Page',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Chemical'}]},
+  {id:'fp-approver',name:'First-Page-Approver',module:'lab-service-cloud',desc:'Approve First Page',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Chemical'}]},
+  {id:'rt-viewer',name:'ResultTable-Viewer',module:'lab-service-cloud',desc:'View Result Table',dataOpts:[{dim:'Site',opt:'HKG'}]},
+  {id:'rt-editor',name:'ResultTable-Editor',module:'lab-service-cloud',desc:'Edit Result Table',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Physical'}]},
+  {id:'rt-approver',name:'ResultTable-Approver',module:'lab-service-cloud',desc:'Approve / unlock Result Table',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Physical'}]},
+  {id:'dept-approver',name:'Department-Approver',module:'lab-service-cloud',desc:'Department-level approval',dataOpts:[{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'}]},
+  {id:'rg-admin',name:'Report-Generation-Admin',module:'lab-service-cloud',desc:'Report Generation admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'}]},
+  {id:'tpl-viewer',name:'Template-Viewer',module:'lab-service-cloud',desc:'View templates',dataOpts:[]},
+  {id:'rt-tpl-editor',name:'ResultTable-Template-Editor',module:'lab-service-cloud',desc:'Edit result-table templates',dataOpts:[]},
+  {id:'ts-viewer',name:'Test-Setup-Viewer',module:'lab-service-cloud',desc:'View Test Setup',dataOpts:[{dim:'Site',opt:'HKG'}]},
+  {id:'ts-editor',name:'Test-Setup-Editor',module:'lab-service-cloud',desc:'Edit tests / master data / parameters',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'labCode',opt:'LAB001'}]},
+  {id:'ts-admin',name:'Test-Setup-Admin',module:'lab-service-cloud',desc:'Test Setup admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'labCode',opt:'LAB001'},{dim:'labCode',opt:'LAB002'}]},
+  {id:'ql-admin',name:'Qimalabs-Admin',module:'lab-service-cloud',desc:'Cross-area QIMAlabs admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'labCode',opt:'LAB001'},{dim:'labCode',opt:'LAB002'}]}
  ],
  user:[
-  {id:'u-kyle',email:'kyle.yao@qima.com',name:'Kyle Yao',dept:'Lab',roles:['First-Page-Approver','Department-Approver']},
-  {id:'u-pearl',email:'pearl.tse@qima.com',name:'Pearl Tse',dept:'Lab',roles:['First-Page-Approver','Department-Approver']},
-  {id:'u-sandy',email:'sandy.yu@qima.com',name:'Sandy Yu',dept:'Lab',roles:['First-Page-Editor','ResultTable-Editor']},
-  {id:'u-joyce',email:'joyce.liu@qima.com',name:'Joyce Liu',dept:'Lab',roles:['Test-Assignment-Admin','First-Page-Approver','Department-Approver']},
-  {id:'u-emma-f',email:'emma.fang@qima.com',name:'Emma Fang',dept:'Lab',roles:['ResultTable-Template-Editor','First-Page-Approver']},
-  {id:'u-kenny',email:'kenny.wang@qima.com',name:'Kenny Wang',dept:'Lab',roles:['Test-Assignment-Viewer','First-Page-Viewer','ResultTable-Viewer']},
-  {id:'u-andreu',email:'andreu.criquet@qima.com',name:'Andreu Criquet',dept:'Lab',roles:['ResultTable-Viewer','First-Page-Viewer']},
-  {id:'u-empty',email:'new.hire@qima.com',name:'New Hire',dept:'Lab',roles:[]}
+  {id:'a1f2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c',login:'kyle.yao',firstName:'Kyle',lastName:'Yao',email:'kyle.yao@qima.com',dept:'Lab',office:'Hong Kong',roles:['First-Page-Approver','Department-Approver']},
+  {id:'b2c3d4e5-6f7a-8b9c-0d1e-2f3a4b5c6d7e',login:'pearl.tse',firstName:'Pearl',lastName:'Tse',email:'pearl.tse@qima.com',dept:'Lab',office:'Hong Kong',roles:['First-Page-Approver','Department-Approver']},
+  {id:'c3d4e5f6-7a8b-9c0d-1e2f-3a4b5c6d7e8f',login:'sandy.yu',firstName:'Sandy',lastName:'Yu',email:'sandy.yu@qima.com',dept:'Lab',office:'Shanghai',roles:['First-Page-Editor','ResultTable-Editor']},
+  {id:'d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a',login:'joyce.liu',firstName:'Joyce',lastName:'Liu',email:'joyce.liu@qima.com',dept:'Lab',office:'Shanghai',roles:['Test-Assignment-Admin','First-Page-Approver','Department-Approver']},
+  {id:'e5f6a7b8-9c0d-1e2f-3a4b-5c6d7e8f9a0b',login:'emma.fang',firstName:'Emma',lastName:'Fang',email:'emma.fang@qima.com',dept:'Lab',office:'Shenzhen',roles:['ResultTable-Template-Editor','First-Page-Approver']},
+  {id:'f6a7b8c9-0d1e-2f3a-4b5c-6d7e8f9a0b1c',login:'kenny.wang',firstName:'Kenny',lastName:'Wang',email:'kenny.wang@qima.com',dept:'Lab',office:'Hong Kong',roles:['Test-Assignment-Viewer','First-Page-Viewer','ResultTable-Viewer']},
+  {id:'a7b8c9d0-1e2f-3a4b-5c6d-7e8f9a0b1c2d',login:'andreu.criquet',firstName:'Andreu',lastName:'Criquet',email:'andreu.criquet@qima.com',dept:'Lab',office:'Hong Kong',roles:['ResultTable-Viewer','First-Page-Viewer']},
+  {id:'b8c9d0e1-2f3a-4b5c-6d7e-8f9a0b1c2d3e',login:'new.hire',firstName:'New',lastName:'Hire',email:'new.hire@qima.com',dept:'Lab',office:'Shanghai',roles:[]}
  ],
  customer:[
-  {id:'ak-c-lab-01',client:'Brand LIMS Integrator',login:'brand.lims.api',key:'ak_live_lab_…',status:'Active',mode:'inherit',role:'ResultTable-Viewer',web:0,api:12,created:'12-May-2026',rate:600,peak:412,lastUsed:'23-Jul-2026 13:55'},
-  {id:'ak-c-lab-02',client:'SHEIN Lab Sync',login:'shein.lab.sync',key:'ak_live_shn_…',status:'Active',mode:'direct',role:'',web:0,api:8,created:'01-Jun-2026',rate:300,peak:96,lastUsed:'23-Jul-2026 10:02'},
-  {id:'ak-c-lab-03',client:'Retailer Portal API',login:'retailer.lab',key:'ak_test_rtl_…',status:'Suspended',mode:'inherit',role:'First-Page-Viewer',web:2,api:4,created:'20-Jun-2026',rate:120,peak:120,lastUsed:'18-Jul-2026 22:31'}
+  {id:'ak-c-lab-01',client:'Brand LIMS Integrator',login:'brand.lims.api',key:'ak_live_lab_7f2c91be4d0a83e5',status:'Active',mode:'inherit',role:'ResultTable-Viewer',web:0,api:12,created:'12-May-2026',rate:600,peak:412,lastUsed:'23-Jul-2026 13:55'},
+  {id:'ak-c-lab-02',client:'SHEIN Lab Sync',login:'shein.lab.sync',key:'ak_live_shn_3b8d47a1c6e05f92',status:'Active',mode:'direct',role:'',web:0,api:8,created:'01-Jun-2026',rate:300,peak:96,lastUsed:'23-Jul-2026 10:02'},
+  {id:'ak-c-lab-03',client:'Retailer Portal API',login:'retailer.lab',key:'ak_test_rtl_5d1a08c73f9b264e',status:'Suspended',mode:'inherit',role:'First-Page-Viewer',web:2,api:4,created:'20-Jun-2026',rate:120,peak:120,lastUsed:'18-Jul-2026 22:31'}
  ],
  platform:[
-  {id:'ak-p01',client:'AIMS',login:'aims.lab.sync',key:'ak_plt_9d2f…',status:'Active',mode:'direct',role:'',web:0,api:14,created:'10-Apr-2026',rate:3000,peak:1840,lastUsed:'23-Jul-2026 14:20'},
-  {id:'ak-p02',client:'myQIMA',login:'myqima.lab',key:'ak_plt_4a8c…',status:'Active',mode:'direct',role:'',web:0,api:22,created:'22-May-2026',rate:6000,peak:5210,lastUsed:'23-Jul-2026 14:22'},
-  {id:'ak-p03',client:'Public-API',login:'publicapi.lab',key:'ak_plt_7e1b…',status:'Active',mode:'direct',role:'',web:0,api:17,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07'}
+  {id:'pu-netsuite',name:'NetSuite',desc:'ERP integration · finance and order sync',created:'10-Apr-2026',keys:[
+   {id:'ak-p01',key:'ak_plt_9d2f6c30ab74e158',status:'Active',encryption:true,created:'10-Apr-2026',rate:3000,peak:1840,lastUsed:'23-Jul-2026 14:20',apis:['GET /lab-service-cloud/v1.0/order/list','POST /lab-service-cloud/v1.0/order/sync']},
+   {id:'ak-p01b',key:'ak_plt_c41e08a7b93d6521',status:'Active',encryption:false,created:'02-Jun-2026',rate:1200,peak:410,lastUsed:'22-Jul-2026 09:11',apis:['GET /lab-service-cloud/v1.0/order/list']}
+  ]},
+  {id:'pu-exchange',name:'Exchange',desc:'Guest order relay · no customer login',created:'22-May-2026',keys:[
+   {id:'ak-p02',key:'ak_plt_4a8c15e9d270b63f',status:'Active',encryption:true,created:'22-May-2026',rate:6000,peak:5210,lastUsed:'23-Jul-2026 14:22',apis:['POST /lab-service-cloud/v1.0/order/create','GET /lab-service-cloud/v1.0/order/list']}
+  ]},
+  {id:'pu-mesa',name:'Mesa',desc:'Lab MES integration',created:'15-Jun-2026',keys:[
+   {id:'ak-p03',key:'ak_plt_7e1b83f04c6a29d5',status:'Active',encryption:false,created:'15-Jun-2026',rate:1200,peak:640,lastUsed:'23-Jul-2026 12:07',apis:['GET /lab-service-cloud/v1.0/lab/list','GET /lab-service-cloud/v1.0/test/**']}
+  ]}
  ],
  history:[
-  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',type:'role',verb:'bind',
-   title:{en:'Bound resource to role',zh:'绑定资源到角色'},
-   code:'REPORTGENERATION:FIRSTPAGE:APPROVER',
-   object:{en:'First-Page-Approver',zh:'First-Page-Approver'},
-   act:{en:'Bound resource REPORTGENERATION:FIRSTPAGE:APPROVER',zh:'绑定资源 REPORTGENERATION:FIRSTPAGE:APPROVER'},
-   meta:{en:'Role First-Page-Approver',zh:'角色 First-Page-Approver'}},
-  {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',type:'userRole',verb:'add',
-   title:{en:'Added role to user',zh:'为用户增加角色'},
-   code:'Department-Approver',
-   object:{en:'Kyle Yao',zh:'Kyle Yao'},
-   act:{en:'Added Department-Approver to Kyle Yao',zh:'为用户 Kyle Yao 增加 Department-Approver'},
-   meta:{en:'kyle.yao@qima.com · Lab',zh:'kyle.yao@qima.com · Lab'}},
-  {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',type:'ak',verb:'create',
-   title:{en:'Created customer AccessKey',zh:'创建客户 AccessKey'},
-   object:{en:'Brand LIMS Integrator',zh:'Brand LIMS Integrator'},
-   act:{en:'Created customer AccessKey · Brand LIMS Integrator',zh:'创建客户 AccessKey · Brand LIMS Integrator'},
-   meta:{en:'mode=inherit · ak_live_lab_…',zh:'mode=inherit · ak_live_lab_…'}},
-  {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',type:'module',verb:'update',
-   title:{en:'Updated data isolation',zh:'更新数据隔离'},
-   object:{en:'Report Generation',zh:'Report Generation'},
-   act:{en:'Updated Report Generation isolation to Site · Department',zh:'更新功能域 Report Generation 隔离为 Site · Department'},
-   meta:{en:'Was: Site → Site · Department',zh:'原: Site → Site · Department'}},
-  {time:'21-Jul-2026 17:03',actor:'joyce.liu@qima.com',type:'ak',verb:'create',
-   title:{en:'Created platform AccessKey',zh:'创建平台 AccessKey'},
-   object:{en:'AIMS',zh:'AIMS'},
-   act:{en:'Created platform AccessKey · AIMS',zh:'创建平台 AccessKey · AIMS'},
-   meta:{en:'mode=direct · AIMS→Labs',zh:'mode=direct · AIMS→Labs'}},
-  {time:'21-Jul-2026 10:14',actor:'joyce.liu@qima.com',type:'userRole',verb:'remove',
-   title:{en:'Removed role from user',zh:'移除用户角色'},
-   code:'Test-Assignment-Viewer',
-   object:{en:'New Hire',zh:'New Hire'},
-   act:{en:'Removed Test-Assignment-Viewer from New Hire',zh:'移除用户 New Hire 的 Test-Assignment-Viewer'},
-   meta:{en:'new.hire@qima.com',zh:'new.hire@qima.com'}}
+  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',type:'role',action:'Bound resource to role',object:'First-Page-Approver',sourceId:'fp-approver'},
+  {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',type:'userRole',action:'Added role to user',object:'Kyle Yao',sourceId:'a1f2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c'},
+  {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',type:'ak',action:'Created customer AccessKey',object:'Brand LIMS Integrator',sourceId:'ak-c-lab-01'},
+  {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',type:'module',action:'Updated data isolation options',object:'lab-service-cloud',sourceId:'7c8d9e0f-1a2b-3c4d-5e6f-7890abcdef12'},
+  {time:'21-Jul-2026 17:03',actor:'joyce.liu@qima.com',type:'ak',action:'Created platform AccessKey',object:'NetSuite',sourceId:'ak-p01'},
+  {time:'21-Jul-2026 10:14',actor:'joyce.liu@qima.com',type:'userRole',action:'Removed role from user',object:'New Hire',sourceId:'b8c9d0e1-2f3a-4b5c-6d7e-8f9a0b1c2d3e'}
  ]
 };
+
+/* Roles belong to permission_master.module.name (e.g. lab-service-cloud), not FE nav labels */
+(function normalizeRoleModules(){
+ const legacy={'Test Assignment':'lab-service-cloud','Report Generation':'lab-service-cloud','Test Setup':'lab-service-cloud','Template':'lab-service-cloud','Dashboard':'lab-service-cloud','To-Do List':'lab-service-cloud'};
+ DATA.role.forEach(r=>{if(legacy[r.module])r.module=legacy[r.module];});
+})();
+
+function userName(u){return u?`${u.firstName||''} ${u.lastName||''}`.trim():'';}
 
 const LAB_RESOURCES={
  'report-generation':{
@@ -659,7 +689,228 @@ function apiListHtml(apis,opts){
 /* Filter endpoint rows by method or path */
 function filterApiList(q){
  q=(q||'').toLowerCase().trim();
- document.querySelectorAll('#api-list-wrap .api-row').forEach(row=>{
+ const root=$('#overlay')?.classList.contains('show')?$('#overlay'):document;
+ root.querySelectorAll('.api-list-wrap tbody tr, #api-list-wrap tbody tr, #api-list-wrap .api-row').forEach(row=>{
+  row.hidden=!!q&&!row.textContent.toLowerCase().includes(q);
+ });
+}
+function webDesc(p){
+ if(p.moduleLevel)return `Module-level ${p.action||'access'} for ${p.root}`;
+ if(p.page)return `${p.action} permission for ${p.page}`;
+ return '';
+}
+function webRow(code){
+ const p=parseWebCode(code);
+ const isPage=/:VIEW$/.test(code)||p.moduleLevel||p.action==='access';
+ const desc=webDesc(p);
+ return {
+  name:p.moduleLevel?p.root:(p.page?`${p.page} · ${p.action}`:prettySeg(code)),
+  type:isPage?'Page':'Button',
+  parent:p.moduleLevel?'—':(p.root||'—'),
+  desc,
+  code
+ };
+}
+function resourceTableHtml(codes,opts){
+ opts=opts||{};
+ const rows=(codes||[]).map(webRow);
+ if(!rows.length)return `<div class="perm-board-empty">${opts.empty||t('noWebRes')}</div>`;
+ const selected=new Set(opts.selected||codes||[]);
+ const head=`<tr>${opts.interactive?'<th></th>':''}<th>Resource</th><th>Type</th><th>Parent</th><th>${t('desc')}</th><th>Code</th></tr>`;
+ const body=rows.map(r=>{
+  const on=selected.has(r.code);
+  const box=opts.interactive?`<td><input type="checkbox"${on?' checked':''} data-code="${escAttr(r.code)}"></td>`:'';
+  return `<tr${opts.interactive?' class="clickable"':''}>${box}<td class="strong">${escHtml(r.name)}</td><td><span class="badge">${r.type}</span></td><td>${escHtml(r.parent)}</td><td>${r.desc?escHtml(r.desc):'<span class="muted">—</span>'}</td><td><code class="res-code">${escHtml(r.code)}</code></td></tr>`;
+ }).join('');
+ return `<div class="table-wrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+function apiTableHtml(apis,opts){
+ opts=opts||{};
+ if(!apis||!apis.length)return `<div class="perm-board-empty">${opts.empty||t('noApiCodes')}</div>`;
+ const selected=new Set(opts.selected||apis);
+ const head=`<tr>${opts.interactive?'<th></th>':''}<th>Method</th><th>Path</th></tr>`;
+ const body=apis.map(a=>{
+  const p=parseApiCode(a);
+  const on=selected.has(a);
+  const box=opts.interactive?`<td><input type="checkbox"${on?' checked':''} data-code="${escAttr(a)}"></td>`:'';
+  return `<tr${opts.interactive?' class="clickable"':''}>${box}<td><span class="api-method">${p.method}</span></td><td><code class="res-code">${escHtml(p.path)}</code></td></tr>`;
+ }).join('');
+ return `<div class="table-wrap api-list-wrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+function isoDims(modOrKey){
+ const key=typeof modOrKey==='string'?modOrKey:(modOrKey&&(modOrKey.name||modOrKey.id))||'';
+ if(key==='lab-service-cloud')return [].concat(...Object.values(ISO));
+ return ISO[key]||[];
+}
+function moduleResources(mod){
+ if(!mod)return {web:[],api:[]};
+ if(mod.name==='lab-service-cloud'){
+  const web=[],api=[];
+  Object.values(LAB_RESOURCES).forEach(r=>{web.push(...(r.web||[]));api.push(...(r.api||[]));});
+  return {web,api};
+ }
+ return LAB_RESOURCES[mod.name]||{web:[],api:[]};
+}
+function isoLabel(mod){
+ const dims=isoDims(mod);
+ return dims.length?dims.map(d=>d.name).join(' · '):t('iso.none');
+}
+function isoTreeHtml(dims,opts){
+ opts=opts||{};
+ if(!dims||!dims.length)return `<div class="perm-board-empty">${opts.empty||t('noDataIso')}</div>`;
+ const selected=new Set((opts.selected||[]).map(x=>`${x.dim}::${x.opt}`));
+ return `<div class="iso-tree">${dims.map(d=>`
+  <div class="iso-dim">
+   <div class="iso-dim-head">${escHtml(d.name)}<span class="count">${d.options.length}</span></div>
+   ${(d.options||[]).map(opt=>{
+     const key=`${d.name}::${opt}`;
+     const box=opts.interactive?`<input type="checkbox"${selected.has(key)?' checked':''} data-dim="${escAttr(d.name)}" data-opt="${escAttr(opt)}">`:'';
+     return `<div class="iso-opt">${box}<span>${escHtml(opt)}</span></div>`;
+   }).join('')}
+  </div>`).join('')}</div>`;
+}
+function isoOptionTable(opts){
+ const rows=opts||[];
+ if(!rows.length)return `<div class="perm-board-empty">${t('noDataIso')}</div>`;
+ return `<div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Option</th></tr></thead><tbody>
+  ${rows.map(x=>`<tr><td class="strong">${escHtml(x.dim)}</td><td>${escHtml(x.opt)}</td></tr>`).join('')}
+ </tbody></table></div>`;
+}
+function cloneIsoDims(modKey){
+ return (isoDims(modKey)||[]).map(d=>({id:d.id,name:d.name,options:[...(d.options||[])]}));
+}
+function isoDimSlug(name,taken){
+ const base=String(name||'dim').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'dim';
+ let id=base,n=1;
+ while((taken||[]).includes(id)){id=`${base}-${++n}`;}
+ return id;
+}
+let isoEdit={idx:0,draft:[]};
+function isoRmBtn(title,fn){
+ return iconBtn('<span aria-hidden="true">×</span>',title,fn,'iso-rm');
+}
+function isoEditDimHtml(d,di){
+ const opts=(d.options&&d.options.length)?d.options:[''];
+ const filled=opts.filter(o=>String(o).trim()).length;
+ return `<div class="iso-dim" data-di="${di}" data-id="${escAttr(d.id||'')}">
+  <div class="iso-dim-head">
+   <input type="text" class="iso-dim-name" placeholder="${escAttr(t('isoDimLabel'))}" value="${escAttr(d.name)}" data-di="${di}">
+   ${isoRmBtn(t('removeDim'),`isoEditRemoveDim(${di})`)}
+   <span class="count">${filled||opts.length}</span>
+  </div>
+  ${opts.map((o,oi)=>`<div class="iso-opt">
+   <input type="text" class="iso-opt-name" placeholder="${escAttr(t('isoOptions'))}" value="${escAttr(o)}" data-di="${di}" data-oi="${oi}">
+   ${isoRmBtn(t('removeOpt'),`isoEditRemoveOpt(${di},${oi})`)}
+  </div>`).join('')}
+  <div class="iso-dim-foot">${btn(t('addIsoOpt'),'btn-tertiary',SVG.plus,`isoEditAddOpt(${di})`)}</div>
+ </div>`;
+}
+function isoEditWrapHtml(){
+ const body=isoEdit.draft.length?isoEdit.draft.map((d,di)=>isoEditDimHtml(d,di)).join('')
+  :`<div class="perm-board-empty">${t('noDataIso')}</div>`;
+ return `<div class="iso-edit" id="iso-edit-wrap">${body}<div class="iso-edit-actions">${btn(t('addDim'),'btn-secondary',SVG.plus,'isoEditAddDim()')}</div></div>`;
+}
+function isoEditSyncFromDom(){
+ const wrap=$('#iso-edit-wrap');if(!wrap)return;
+ const dims=[];
+ wrap.querySelectorAll('.iso-dim').forEach(dimEl=>{
+  const name=dimEl.querySelector('.iso-dim-name')?.value?.trim()||'';
+  const options=[];
+  dimEl.querySelectorAll('.iso-opt-name').forEach(inp=>{
+   options.push(inp.value);
+  });
+  dims.push({id:dimEl.dataset.id||'',name,options:options.length?options:['']});
+ });
+ isoEdit.draft=dims;
+}
+function isoEditRefresh(){
+ const el=$('#iso-edit-wrap');
+ if(!el)return;
+ const parent=el.parentElement;
+ if(parent){
+  const tmp=document.createElement('div');
+  tmp.innerHTML=isoEditWrapHtml();
+  el.replaceWith(tmp.firstElementChild);
+ }
+}
+function isoEditAddDim(){
+ isoEditSyncFromDom();
+ isoEdit.draft.push({id:'',name:'',options:['']});
+ isoEditRefresh();
+ const inp=$('#iso-edit-wrap .iso-dim:last-child .iso-dim-name');
+ if(inp)inp.focus();
+}
+function isoEditRemoveDim(di){
+ isoEditSyncFromDom();
+ isoEdit.draft.splice(di,1);
+ isoEditRefresh();
+}
+function isoEditAddOpt(di){
+ isoEditSyncFromDom();
+ if(!isoEdit.draft[di])return;
+ isoEdit.draft[di].options.push('');
+ isoEditRefresh();
+ const dim=$('#iso-edit-wrap .iso-dim[data-di="'+di+'"]');
+ const inp=dim&&dim.querySelector('.iso-opt:last-child .iso-opt-name');
+ if(inp)inp.focus();
+}
+function isoEditRemoveOpt(di,oi){
+ isoEditSyncFromDom();
+ if(!isoEdit.draft[di])return;
+ isoEdit.draft[di].options.splice(oi,1);
+ if(!isoEdit.draft[di].options.length)isoEdit.draft[di].options.push('');
+ isoEditRefresh();
+}
+function applyIsoConfig(){
+ isoEditSyncFromDom();
+ const mod=DATA.module[isoEdit.idx];
+ if(!mod)return;
+ const taken=[];
+ const draft=isoEdit.draft.map(d=>{
+  const name=(d.name||'').trim();
+  if(!name)return null;
+  const options=[...new Set((d.options||[]).map(o=>o.trim()).filter(Boolean))];
+  const id=d.id||isoDimSlug(name,taken);
+  taken.push(id);
+  return {id,name,options};
+ }).filter(Boolean);
+ const names=draft.map(d=>d.name.toLowerCase());
+ if(new Set(names).size!==names.length){toast(t('isoDupDim'));return;}
+ for(const d of draft){
+  if(!d.options.length){toast(t('isoOptRequired',{dim:d.name}));return;}
+  const opts=d.options.map(o=>o.toLowerCase());
+  if(new Set(opts).size!==opts.length){toast(t('isoDupOpt',{dim:d.name}));return;}
+ }
+ const validKeys=new Set();
+ draft.forEach(d=>d.options.forEach(o=>validKeys.add(`${d.name}::${o}`)));
+ DATA.role.forEach(r=>{
+  if(r.module!==mod.name)return;
+  r.dataOpts=(r.dataOpts||[]).filter(x=>validKeys.has(`${x.dim}::${x.opt}`));
+ });
+ ISO[mod.name]=draft;
+ DATA.history.unshift({time:stampNow(),actor:'it@qima.com',type:'module',action:'Updated data isolation options',object:mod.name,sourceId:mod.id});
+ const idx=isoEdit.idx;
+ closeModal();
+ renderDetail('module',idx);
+ toast(t('saved',{what:t('m.isoConfig')}),'ok');
+}
+function roleModuleOf(name){
+ const r=DATA.role.find(x=>x.name===name);
+ return r?r.module:'—';
+}
+function roleIdOf(name){
+ const r=DATA.role.find(x=>x.name===name);
+ return r?r.id:'—';
+}
+function userRolesTable(names){
+ if(!names||!names.length)return '';
+ return `<div class="table-wrap"><table><thead><tr><th>${t('col.module')}</th><th>${t('col.roleKey')}</th><th>${t('col.roleId')}</th></tr></thead><tbody>
+  ${names.map(n=>`<tr class="clickable" tabindex="0" onclick="jumpToRole('${escAttr(n)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${escAttr(n)}')}"><td>${escHtml(roleModuleOf(n))}</td><td><span class="cell-link">${escHtml(n)}</span></td><td><code class="res-code">${escHtml(roleIdOf(n))}</code></td></tr>`).join('')}
+ </tbody></table></div>`;
+}
+function filterResTable(q){
+ q=(q||'').toLowerCase().trim();
+ document.querySelectorAll('#perm-board-wrap tbody tr').forEach(row=>{
   row.hidden=!!q&&!row.textContent.toLowerCase().includes(q);
  });
 }
@@ -691,30 +942,30 @@ const SVG={
  sync:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 0113.7-5.6M20 12a8 8 0 01-13.7 5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>',
  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="8" width="11" height="11" rx="1.5"/><path d="M5 15.5V5.5A1.5 1.5 0 016.5 4H16"/></svg>',
  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3.5l7 2.5v5.5c0 4.3-2.9 7.5-7 9-4.1-1.5-7-4.7-7-9V6l7-2.5z"/></svg>',
- log:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3.5h9l4 4v13H6z"/><path d="M9 11h7M9 15h5"/></svg>'
+ log:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3.5h9l4 4v13H6z"/><path d="M9 11h7M9 15h5"/></svg>',
+ eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>',
+ eyeOff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l16 16"/><path d="M9.5 6c.8-.3 1.6-.5 2.5-.5 6 0 9.5 6.5 9.5 6.5a17 17 0 01-2.6 3.3"/><path d="M6.4 8.2A17 17 0 002.5 12S6 18.5 12 18.5c1 0 1.9-.2 2.7-.5"/></svg>'
 };
 
 const $=s=>document.querySelector(s);
 const pagebar=$('#pagebar'), content=$('#content');
-let currentView='module', showFilters=true;
+let currentView='module';
 
-/* ================= i18n ================= */
-let LANG = localStorage.getItem('it-perm-lang') || 'en';
+/* ================= i18n (English only) ================= */
 const I18N = {
- en:{
   docTitle:'IT Access Control · Prototype',
   'nav.module':'Modules','nav.role':'Roles & Resources','nav.user':'Internal Users',
   'nav.customer':'Customer Access','nav.platform':'Platform Access','nav.history':'Audit Log',
   search:'Search (/)',resetFilters:'Reset filters',columns:'Column settings',export:'Export current results',filter:'Filters',
-  newDomain:'New feature domain',newRole:'New role',createCustAk:'Create customer AccessKey',createPlatAk:'Create platform AccessKey',
+  newDomain:'New module',newRole:'New role',createCustAk:'Create customer AccessKey',createPlatAk:'Create AccessKey',
   back:'Back',copyFrom:'Copy from user',editUserRoles:'Edit user roles',manageResources:'Manage resources',
   bindResources:'Bind resources',editAk:'Edit AccessKey',
-  'col.domainId':'Domain ID','col.name':'Name','col.desc':'Description','col.roles':'Roles','col.resources':'Resources','col.isolation':'Data isolation',
-  'col.roleKey':'Role key','col.domain':'Feature domain','col.userId':'User ID','col.fullName':'Name','col.email':'Email','col.dept':'Department','col.roleCount':'Roles',
+  'col.domainId':'Module ID','col.name':'Name','col.desc':'Description','col.roles':'Roles','col.resources':'Resources','col.isolation':'Data isolation','col.updateTime':'Updated',
+  'col.roleKey':'Role key','col.roleId':'Role ID','col.domain':'Module','col.module':'Service','col.userId':'User ID','col.firstName':'First name','col.lastName':'Last name','col.fullName':'Name','col.email':'Email','col.dept':'Department','col.office':'QIMA Office','col.roleCount':'Roles',
   'col.akId':'AccessKey ID','col.customer':'Customer','col.platform':'Platform','col.login':'Login','col.mode':'Mode','col.status':'Status','col.created':'Created',
   'col.time':'Time','col.actor':'Actor','col.action':'Action','col.object':'Object',
   all:'All',keyword:'Keyword',searchPh:'Type to search...',
-  'f.isoDim':'Isolation dimensions','f.domain':'Feature domain','f.dataIso':'Data isolation','f.dept':'Department','f.roleCount':'Role count',
+  'f.isoDim':'Isolation dimensions','f.domain':'Module','f.dataIso':'Data isolation','f.dept':'Department','f.roleCount':'Role count',
   'f.status':'Status','f.mode':'Mode','f.from':'From','f.to':'To','f.actor':'Actor','f.objType':'Object type',
   configured:'Configured',notConfigured:'Not configured',hasRoles:'Has roles',noRoles:'No roles',
   'type.module':'Module','type.role':'Role','type.userRole':'User role','type.ak':'AccessKey',
@@ -732,10 +983,11 @@ const I18N = {
   noApiCodes:'(no dedicated API codes)',noDataIso:'This role has no data isolation',
   isoDim:'Dimensions: Site · labCode · Department',isoVal:'Values: LAB001 · Softlines',
   noRolesInModule:'No roles in this module yet',noAuthUsers:'No authorized users',user:'User',email:'Email',dept:'Department',
-  roleKey:'Role key',domain:'Feature domain',desc:'Description',auth2Module:'auth2 Module',
-  userId:'User ID',fullName:'Name',dataSource:'Data source',dataSourceVal:'User Service · read-only',
+  roleKey:'Role key',domain:'Service',desc:'Description',auth2Module:'auth2 Module',
+  userId:'User ID',firstName:'First name',lastName:'Last name',fullName:'Name',office:'QIMA Office',dataSource:'Data source',dataSourceVal:'User Service · read-only',
   noUserRoles:'This user has no roles yet',copyPerms:'Copy permissions from user',editRoles:'Edit roles',
   akId:'AccessKey ID',customer:'Customer',platform:'Platform',login:'Login',key:'Key',mode:'Mode',status:'Status',created:'Created',lastUsed:'Last used',
+  revealKey:'Show full key',hideKey:'Hide key',
   modeInherit:'inherit (from role)',modeDirect:'direct (bound resources)',
   rateCap:'Request cap',rateCapVal:(p)=>`${p.n} / minute`,rateHow:'Counting',rateHowVal:'Redis sliding window · per AccessKey',
   rateResp:'Over-limit response',ratePeak:'24h peak',ratePeakVal:(p)=>`${p.n} / minute`,capped:'Capped',
@@ -743,22 +995,20 @@ const I18N = {
   effectiveRes:'Effective resources',effectiveResVal:(p)=>`${p.web} Web · ${p.api} API`,
   inheritNote:'In inherit mode, resources follow the role. Switch to direct to bind resources on this key.',
   noWebRes:'No Web resources',
-  'm.moduleCreate':'New feature domain','m.moduleEdit':'Edit feature domain','m.isoConfig':'Configure data isolation',
+  'm.moduleCreate':'New module','m.moduleEdit':'Edit module','m.isoConfig':'Configure data isolation',
   'm.roleCreate':'New role','m.roleEdit':'Edit role','m.userRole':'Edit user roles','m.copyRoles':'Copy permissions from user',
   'm.akCreateCust':'Create customer AccessKey','m.akCreatePlat':'Create platform AccessKey','m.akCreated':'AccessKey created',
   'm.akEdit':'Edit AccessKey','m.rateEdit':'Edit rate limit','m.akLog':'AccessKey access log',
   'm.bindWeb':'Bind Web resources','m.bindApi':'Bind API resources','m.bindData':'Configure data isolation','m.akBind':'Bind resources',
-  'm.resourceManage':'Manage domain resources','m.roleManage':'Manage roles in domain','m.columns':'Column settings',
+  'm.resourceManage':'Manage module resources','m.roleManage':'Manage roles in module','m.columns':'Column settings',
   'm.addApi':'Add API endpoint',apiMethod:'HTTP method',apiPath:'API path',apiPathPh:'/lab-service-cloud/v1.0/…',
-  apiAddNote:'Adds an API resource to this feature domain catalog. Roles and AccessKeys still need to bind it separately.',
-  domainId:'Domain ID',name:'Name',purposePh:'Purpose… (resources still belong to auth2 module lab-service-cloud)',
+  domainId:'Module ID',name:'Name',purposePh:'Purpose… (resources still belong to auth2 module lab-service-cloud)',
   isoDimension:'Isolation dimension',rolePurposePh:'Role purpose…',
   roleCreateNote:'Permission CSV uses hyphenated role names (e.g. First-Page-Approver); the FE only checks resource codes. auth2 export may write lab-service-cloud:First-Page-Viewer.',
   user:'User',assignedRoles:'Assigned roles',noneYet:'None yet',addRole:'Add role',pickRole:'Select a role…',
   targetUser:'Target user',pickSource:'Select source user',copySearchPh:'Search by name / email / department…',
   copyMode:'Copy mode',overwrite:'Overwrite',merge:'Merge',
   copyModeHint:'Overwrite: replace with source roles entirely; Merge: keep existing roles and append source roles',
-  copyNote:'Only role bindings are copied, not personal preferences beyond data isolation. The action is written to the audit log.',
   confirmCopy:'Confirm copy',pickSourceFirst:'Select a source user first — the preview will appear here.',
   sourceNoRoles:(p)=>`${p.name} currently has no roles to copy.`,
   rolesToApply:'Roles that will apply',added:'Added',willRemove:'Will remove',keepExisting:'Keep existing',
@@ -782,167 +1032,29 @@ const I18N = {
   histCopy:(p)=>`Copied permissions from ${p.from} to ${p.to}`,
   histCopyMeta:(p)=>`${p.mode} · ${p.before} → ${p.after} roles`,
   noIsolation:'None',
-  addApi:'Add API',pageButtonNote:'(mostly PAGE/BUTTON resources in this domain)',
-  isoExplain:'Limits order and report visibility by Site / labCode / Department (business fields include labCodes)',
+  addApi:'Add API',
   isoDimLabel:'Isolation dimension',
   commonPages:'Common Pages',
   'verb.bind':'Bind','verb.add':'Add','verb.create':'Create','verb.update':'Update','verb.remove':'Remove','verb.copy':'Copy','verb.change':'Change',
   histActor:'By',histObject:'Object',histDetail:'Detail',objTypeQuick:'Object type',
- },
- zh:{
-  docTitle:'IT 权限管理平台 · 原型',
-  'nav.module':'模块','nav.role':'角色 & 资源','nav.user':'内部用户',
-  'nav.customer':'客户权限','nav.platform':'平台权限','nav.history':'历史记录',
-  search:'搜索（/）',resetFilters:'重置筛选',columns:'列设置',export:'导出当前结果',filter:'筛选',
-  newDomain:'新建功能域',newRole:'新建角色',createCustAk:'创建客户 AccessKey',createPlatAk:'创建平台 AccessKey',
-  back:'返回',copyFrom:'从他人复制',editUserRoles:'编辑用户角色',manageResources:'管理资源',
-  bindResources:'绑定资源',editAk:'编辑 AccessKey',
-  'col.domainId':'功能域 ID','col.name':'名称','col.desc':'描述','col.roles':'角色','col.resources':'资源','col.isolation':'数据隔离',
-  'col.roleKey':'角色 Key','col.domain':'功能域','col.userId':'用户 ID','col.fullName':'姓名','col.email':'邮箱','col.dept':'部门','col.roleCount':'角色',
-  'col.akId':'AccessKey ID','col.customer':'客户名称','col.platform':'平台名称','col.login':'登录账号','col.mode':'模式','col.status':'状态','col.created':'创建日期',
-  'col.time':'时间','col.actor':'操作人','col.action':'操作','col.object':'对象',
-  all:'全部',keyword:'关键字',searchPh:'输入关键字搜索…',
-  'f.isoDim':'数据隔离维度','f.domain':'功能域','f.dataIso':'数据隔离','f.dept':'部门','f.roleCount':'角色数',
-  'f.status':'状态','f.mode':'模式','f.from':'起始日期','f.to':'结束日期','f.actor':'操作人','f.objType':'对象类型',
-  configured:'已配置',notConfigured:'未配置',hasRoles:'有角色',noRoles:'无角色',
-  'type.module':'模块','type.role':'角色','type.userRole':'用户角色','type.ak':'AccessKey',
-  none:'无',noMatch:'未找到匹配记录',clearFilters:'清除筛选条件',
-  pagerTotal:(p)=>`共 ${p.n} 条${p.n?` · 显示 ${p.from}-${p.to}`:''}`,
-  perPage:(p)=>`每页 ${p.n} 条`,
-  'iso.none':'无','iso.configured':'已配置',
-  noFilter:'当前没有筛选条件',filtersReset:'已重置筛选与排序',exported:(p)=>`已导出当前筛选结果 ${p.n} 条 · CSV`,
-  copied:'已复制',copiedClip:'已复制到剪贴板',saved:(p)=>`${p.what} · 已保存`,close:'关闭',cancel:'取消',save:'保存',done:'完成',
-  'card.moduleInfo':'模块信息','card.moduleResources':'关联资源','card.moduleRoles':'模块内角色','card.roleInfo':'角色信息',
-  'card.linkedResources':'关联资源','card.authUsers':'已授权用户','card.userInfo':'用户信息','card.userRoles':'用户角色',
-  'card.akInfo':'AccessKey 信息','card.rateLimit':'限流配置','card.accessLog':'访问日志',
-  edit:'编辑',bindWeb:'绑定 Web',bindApi:'绑定 API',dataIso:'数据隔离',manageRoles:'管理角色',configIso:'配置数据隔离',
-  addResource:'添加资源',bind:'绑定',bindApiShort:'绑定 API',configIsoChip:'配置隔离',
-  noApiCodes:'（无独立 API 资源码）',noDataIso:'该角色无数据隔离',
-  isoDim:'维度：Site · labCode · Department',isoVal:'值：LAB001 · Softlines',
-  noRolesInModule:'该模块暂无角色',noAuthUsers:'暂无授权用户',user:'用户',email:'邮箱',dept:'部门',
-  roleKey:'角色 Key',domain:'功能域',desc:'描述',auth2Module:'auth2 Module',
-  userId:'用户 ID',fullName:'姓名',dataSource:'数据来源',dataSourceVal:'User Service · 只读',
-  noUserRoles:'该用户暂无权限角色',copyPerms:'从他人复制权限',editRoles:'编辑角色',
-  akId:'AccessKey ID',customer:'客户',platform:'平台',login:'登录账号',key:'Key',mode:'模式',status:'状态',created:'创建日期',lastUsed:'最近调用',
-  modeInherit:'inherit（继承角色）',modeDirect:'direct（直接绑资源）',
-  rateCap:'请求上限',rateCapVal:(p)=>`${p.n} 次 / 分钟`,rateHow:'计数方式',rateHowVal:'Redis 滑动窗口 · 按 AccessKey 计数',
-  rateResp:'超限响应',ratePeak:'近 24h 峰值',ratePeakVal:(p)=>`${p.n} 次 / 分钟`,capped:'已触顶',
-  viewAll:'查看全部',switchDirect:'切换为 direct',permSource:'权限来源',inheritRole:(p)=>`继承客户角色 `,
-  effectiveRes:'生效资源',effectiveResVal:(p)=>`${p.web} Web · ${p.api} API`,
-  inheritNote:'inherit 模式下资源随角色变动，需单独授权请先切换为 direct 模式。',
-  noWebRes:'无 Web 资源',
-  'm.moduleCreate':'新建功能域','m.moduleEdit':'编辑功能域','m.isoConfig':'配置数据隔离',
-  'm.roleCreate':'新建角色','m.roleEdit':'编辑角色','m.userRole':'编辑用户角色','m.copyRoles':'从他人复制权限',
-  'm.akCreateCust':'创建客户 AccessKey','m.akCreatePlat':'创建平台 AccessKey','m.akCreated':'AccessKey 已生成',
-  'm.akEdit':'编辑 AccessKey','m.rateEdit':'编辑限流配置','m.akLog':'AccessKey 访问日志',
-  'm.bindWeb':'绑定 Web 资源','m.bindApi':'绑定 API 资源','m.bindData':'配置数据隔离','m.akBind':'绑定资源',
-  'm.resourceManage':'管理功能域资源','m.roleManage':'管理功能域内角色','m.columns':'列设置',
-  'm.addApi':'添加 API 接口',apiMethod:'HTTP 方法',apiPath:'API 路径',apiPathPh:'/lab-service-cloud/v1.0/…',
-  apiAddNote:'将 API 资源加入本功能域资源目录。角色与 AccessKey 仍需另行绑定后才会生效。',
-  domainId:'功能域 ID',name:'名称',purposePh:'用途…（资源仍归属 auth2 module lab-service-cloud）',
-  isoDimension:'隔离维度',rolePurposePh:'角色用途…',
-  roleCreateNote:'Permission CSV 使用连字符角色名（如 First-Page-Approver）；FE 只校验资源码。auth2 导出有时写作 lab-service-cloud:First-Page-Viewer。',
-  user:'用户',assignedRoles:'已分配角色',noneYet:'暂无',addRole:'添加角色',pickRole:'选择角色…',
-  targetUser:'目标用户',pickSource:'选择来源用户',copySearchPh:'按姓名 / 邮箱 / 部门搜索…',
-  copyMode:'复制方式',overwrite:'覆盖',merge:'合并',
-  copyModeHint:'覆盖：以来源用户角色完全替换；合并：保留现有角色并追加来源角色',
-  copyNote:'仅复制角色绑定，不复制数据隔离值以外的个人偏好。操作会写入历史记录。',
-  confirmCopy:'确认复制',pickSourceFirst:'先从来源列表中选择一位用户，预览将显示在此。',
-  sourceNoRoles:(p)=>`${p.name} 当前没有任何角色，无法复制。`,
-  rolesToApply:'将生效的角色',added:'新增',willRemove:'将移除',keepExisting:'保留现有',
-  pickSourceToast:'请先选择来源用户',sourceEmptyToast:'来源用户没有可复制的角色',
-  copiedToast:(p)=>`已${p.mode}复制 ${p.name} 的 ${p.n} 个角色`,overwriteWord:'覆盖',mergeWord:'合并',
-  nRoles:(p)=>p.n?`${p.n} 个角色`:'无角色',
-  noCopyUser:'未找到可复制的用户',
-  custName:'客户名称',platName:'平台名称',pickFirst:(p)=>`先选择${p.who}`,
-  remark:'备注',remarkPh:'用途说明…',
-  akCreateNotePlat:'平台名称与登录账号为本平台维护。',
-  akCreateNoteCust:'客户主数据来自 Customer Service，此处仅搜索选择，不新增客户。原流程需客户自行登录生成，此入口为 IT 代客户创建（待新增接口）。',
-  genAk:'生成 AccessKey',savedCopied:'我已保存并复制',copy:'复制',
-  secretNote:(p)=>`Secret 仅在此显示一次，关闭后无法再次查看，需重新生成。请立即复制并交付${p.who}。`,
-  partner:'对接方',client:'客户',
-  rateCapLabel:'请求上限（次 / 分钟）',overResp:'超限响应',
-  rateNote:'阈值由 Gateway 读取并在 Redis 按 AccessKey 计数，保存后即时生效。',
-  searchRes:'搜索资源',selected:'已选',searchApi:'搜索接口',isoValue:'隔离值',isoValuePh:'如 LAB001 · Softlines',
-  resType:'资源类型',searchLabel:'搜索',resTree:'资源树 · lab-service-cloud',roleList:'角色列表',showCols:'显示列',
-  noMatchWho:(p)=>`未找到匹配${p.who}`,
-  missRes:'资源未授权',missEdit:'缺 REPORTGENERATION:FIRSTPAGE:EDIT',
-  histCopy:(p)=>`从 ${p.from} 复制权限到 ${p.to}`,
-  histCopyMeta:(p)=>`${p.mode} · ${p.before} → ${p.after} 个角色`,
-  noIsolation:'无',
-  addApi:'添加 API',pageButtonNote:'（本域主要为 PAGE/BUTTON 资源）',
-  isoExplain:'按 Site / labCode / Department 限制订单与报告可见范围（业务字段含 labCodes）',
-  isoDimLabel:'隔离维度',
-  commonPages:'公共页面',
-  'verb.bind':'绑定','verb.add':'增加','verb.create':'创建','verb.update':'更新','verb.remove':'移除','verb.copy':'复制','verb.change':'变更',
-  histActor:'操作人',histObject:'对象',histDetail:'详情',objTypeQuick:'对象类型',
- }
+  'col.module':'Module','col.keys':'Access keys','col.sourceId':'Source ID','f.sourceId':'Source ID',
+  'card.platUser':'Platform user','card.platKeys':'Access keys','card.encryption':'Encryption keys',
+  newPlatUser:'New platform user',createPlatAk:'Create AccessKey',copyRole:'Copy role',
+  'm.platUserCreate':'New platform user','m.platUserEdit':'Edit platform user','m.roleCopy':'Copy role',
+  platUserName:'Platform user',platDesc:'Description',keyCount:'Access keys',
+  encryption:'Encryption',encOn:'Enabled',encOff:'Not enabled',publicKey:'Public key',privateKey:'Private key',
+  exportKeyFile:'Export key file',genKeyPair:'Generate key pair',encHint:'Optional. Highest-privilege admins can generate and export the key pair for the integration partner.',
+  selectedRoles:'Selected roles',searchRoles:'Search module or role',noRoleMatch:'No matching roles',
+  applyRoles:'Save roles',isoOptions:'Isolation option',parentPage:'Parent',
+  'm.bindData':'Bind isolation options',
+  addDim:'Add dimension',addIsoOpt:'Add option',removeDim:'Remove dimension',removeOpt:'Remove option',
+  isoDupDim:'Duplicate dimension name',isoDupOpt:'Duplicate option in {dim}',isoOptRequired:'{dim} needs at least one option'
 };
 function t(k,p){
- const v=(I18N[LANG]&&I18N[LANG][k])??(I18N.en[k])??k;
- return typeof v==='function'?v(p||{}):v;
-}
-function setLang(lang){
- if(lang!=='en'&&lang!=='zh')return;
- LANG=lang;
- localStorage.setItem('it-perm-lang',lang);
- document.documentElement.lang=lang==='zh'?'zh-CN':'en';
- document.title=t('docTitle');
- document.querySelectorAll('#lang-fab button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
- document.querySelectorAll('.nav-label').forEach(el=>{el.textContent=t('nav.'+el.dataset.nav);});
- const open=$('#overlay')?.classList.contains('show');
- if(open)closeModal();
- // re-render current route without changing hash
- const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
- const v=VIEWS[parts[0]]?parts[0]:currentView;
- currentView=v;syncNav(v);
- if(parts[1]){
-  const i=DATA[v].findIndex(r=>r.id===parts[1]);
-  if(i>=0){renderDetail(v,i);return;}
- }
- render();
+ const v=I18N[k];
+ return typeof v==='function'?v(p||{}): (v??k);
 }
 function viewTitle(view){return t('nav.'+view);}
-function histText(r,field){const v=r[field];return v&&typeof v==='object'?(v[LANG]||v.en||''): (v||'');}
-function histVerb(r){
- if(r.verb)return r.verb;
- const a=histText(r,'act').toLowerCase();
- if(/bound|绑定/.test(a))return 'bind';
- if(/added|增加/.test(a))return 'add';
- if(/created|创建/.test(a))return 'create';
- if(/updated|更新/.test(a))return 'update';
- if(/removed|移除/.test(a))return 'remove';
- if(/copied|复制/.test(a))return 'copy';
- return 'change';
-}
-function histTypeLabel(type){return t('type.'+(type==='userRole'?'userRole':type==='ak'?'ak':type==='role'?'role':'module'));}
-function histFeedItem(r){
- const verb=histVerb(r);
- const title=histText(r,'title')||histText(r,'act');
- const object=histText(r,'object');
- const detail=histText(r,'meta');
- const showDetail=detail&&detail!==object&&!(object&&detail.includes(object));
- const code=r.code?`<code class="audit-code">${r.code}</code>`:'';
- return `<article class="audit-item">
-  <div class="audit-rail"><span class="audit-dot v-${verb}"></span></div>
-  <div class="audit-card">
-   <div class="audit-top">
-    <span class="badge badge-verb v-${verb}">${t('verb.'+verb)}</span>
-    <span class="badge badge-grey">${histTypeLabel(r.type)}</span>
-    <span class="audit-time">${r.time}</span>
-   </div>
-   <div class="audit-title">${title}${object?` · <b>${object}</b>`:''}</div>
-   ${code}
-   <div class="audit-foot">
-    <span>${t('histActor')} <b>${r.actor}</b></span>
-    ${showDetail?`<span>${t('histDetail')} <b>${detail}</b></span>`:(!object&&detail?`<span>${t('histObject')} <b>${detail}</b></span>`:'')}
-   </div>
-  </div>
- </article>`;
-}
-
-
-
 /* ================= helpers ================= */
 function btn(label,cls,svg,fn){
  return `<button class="btn ${cls||''}"${fn?` onclick="${fn}"`:''}>${svg||''}${label?`<span>${label}</span>`:''}</button>`;
@@ -951,6 +1063,27 @@ function iconBtn(svg,title,fn,cls){
  return `<button class="iconbtn ${cls||''}" title="${title}" aria-label="${title}"${fn?` onclick="${fn}"`:''}>${svg}</button>`;
 }
 function kv(k,v){return `<div class="kv-item"><div class="k">${k}</div><div class="v">${v}</div></div>`;}
+/* AccessKey id is public but long — mask the random tail, keep reveal + copy at hand */
+function maskKey(s){
+ const cut=s.lastIndexOf('_')+1, head=s.slice(0,cut), tail=s.slice(cut);
+ if(tail.length<=8)return s;
+ return head+'••••'+tail.slice(-4);
+}
+function keyField(v){
+ return `<div class="keyfield" onclick="event.stopPropagation()">
+  <code class="masked" data-full="${escAttr(v)}" data-mask="${escAttr(maskKey(v))}">${escHtml(maskKey(v))}</code>
+  ${iconBtn(SVG.eye,t('revealKey'),'toggleKey(this)','kbtn')}
+  ${iconBtn(SVG.copy,t('copy'),`copyText(this,'${escAttr(v)}')`,'kbtn')}
+ </div>`;
+}
+function toggleKey(btn){
+ const code=btn.parentNode.querySelector('code'), on=code.classList.contains('masked');
+ code.classList.toggle('masked',!on);
+ code.textContent=on?code.dataset.full:code.dataset.mask;
+ btn.innerHTML=on?SVG.eyeOff:SVG.eye;
+ const label=on?t('hideKey'):t('revealKey');
+ btn.title=label;btn.setAttribute('aria-label',label);
+}
 function field(label,control,hint){return `<div class="field"><label>${label}</label>${control}${hint?`<div class="hint">${hint}</div>`:''}</div>`;}
 function idxOf(view,r){return DATA[view].indexOf(r);}
 
@@ -968,7 +1101,6 @@ function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&qu
 
 /* ================= page bar ================= */
 function listPagebar(view){
- const n=activeFilterCount(view);
  return `<div class="pagebar">
   <div class="pagebar-row">
     <h1>${viewTitle(view)}</h1>
@@ -977,9 +1109,6 @@ function listPagebar(view){
     <div class="tools">
       ${iconBtn(SVG.search,t('search'),`focusSearch()`)}
       ${iconBtn(SVG.erase,t('resetFilters'),`resetFilters()`)}
-      ${view==='history'?'':iconBtn(SVG.columns,t('columns'),`openModal('columns')`)}
-      ${iconBtn(SVG.download,t('export'),`exportList()`)}
-      <span class="counter" id="filter-counter"${n?` data-n="${n}"`:''}>${iconBtn(SVG.filter,t('filter'),`toggleFilters()`,showFilters?'on':'')}</span>
       ${listAction(view)}
     </div>
   </div>
@@ -990,7 +1119,7 @@ function listAction(view){
  if(view==='module')return btn(t('newDomain'),'btn-primary',SVG.plus,`openModal('moduleCreate')`);
  if(view==='role')return btn(t('newRole'),'btn-primary',SVG.plus,`openModal('roleCreate')`);
  if(view==='customer')return btn(t('createCustAk'),'btn-primary',SVG.plus,`openModal('akCreate','customer')`);
- if(view==='platform')return btn(t('createPlatAk'),'btn-primary',SVG.plus,`openModal('akCreate','platform')`);
+ if(view==='platform')return btn(t('newPlatUser'),'btn-primary',SVG.plus,`openModal('platUserCreate')`);
  return '';
 }
 
@@ -999,7 +1128,7 @@ function detailPagebar(view,r){
   <div class="pagebar-row">
     ${btn(t('back'),'btn-tertiary',SVG.back,`backToList()`)}
     <div class="crumbs">
-      <span class="sep">/</span><a onclick="backToList()">${viewTitle(view)}</a>
+      <span class="sep">/</span><a onclick="goList('${view}')">${viewTitle(view)}</a>
       <span class="sep">/</span><span class="cur">${detailTitle(view,r)}</span>
     </div>
     <div class="grow"></div>
@@ -1007,15 +1136,16 @@ function detailPagebar(view,r){
   </div>
  </div>`;
 }
-function detailTitle(view,r){return view==='customer'||view==='platform'?r.id:r.name;}
-function detailStatus(view,r){return (view==='customer'||view==='platform')?statusBadge(r.status):'';}
+function detailTitle(view,r){return view==='customer'?r.id:view==='user'?userName(r):r.name;}
+function detailStatus(view,r){return view==='customer'?statusBadge(r.status):'';}
 function detailPrimary(view,r){
- if(view==='user')return btn(t('copyFrom'),'btn-secondary',SVG.copy,`openModal('copyRoles',${idxOf(view,r)})`)+btn(t('editUserRoles'),'btn-primary',SVG.edit,`openModal('userRole',${idxOf(view,r)})`);
+ if(view==='user')return '';
  if(view==='module')return btn(t('manageResources'),'btn-primary',SVG.link,`openModal('resourceManage','module')`);
- if(view==='role')return btn(t('bindResources'),'btn-primary',SVG.link,`openModal('bindWeb',${idxOf(view,r)})`);
- if(view==='customer'||view==='platform')return r.mode==='inherit'
-   ?btn(t('editAk'),'btn-primary',SVG.edit,`openModal('akEdit',${idxOf(view,r)})`)
-   :btn(t('bindResources'),'btn-primary',SVG.link,`openModal('akBind',${idxOf(view,r)})`);
+ if(view==='role')return btn(t('copyRole'),'btn-secondary',SVG.copy,`openModal('roleCopy',${idxOf(view,r)})`)+btn(t('bindResources'),'btn-primary',SVG.link,`openModal('bindWeb',${idxOf(view,r)})`);
+ if(view==='platform')return btn(t('createPlatAk'),'btn-primary',SVG.plus,`openModal('akCreate','platform')`);
+ if(view==='customer')return r.mode==='inherit'
+  ?btn(t('editAk'),'btn-primary',SVG.edit,`openModal('akEdit',${idxOf(view,r)})`)
+  :btn(t('bindResources'),'btn-primary',SVG.link,`openModal('akBind',${idxOf(view,r)})`);
  return '';
 }
 
@@ -1027,7 +1157,12 @@ const MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10
 /* '23-Jul-2026 14:32' / '12-May-2026' → sortable + comparable number */
 function dnum(s){
  if(!s)return 0;
- const [d,t]=String(s).split(' ');
+ const str=String(s);
+ if(/^\d{4}-\d{2}-\d{2}/.test(str)){
+  const t=Date.parse(str.replace(' ','T'));
+  return isNaN(t)?0:t;
+ }
+ const [d,t]=str.split(' ');
  const [dd,mm,yy]=d.split('-');
  const [hh,mi]=(t||'0:0').split(':');
  return new Date(+yy,MONTHS[mm]||0,+dd,+hh||0,+mi||0).getTime();
@@ -1035,12 +1170,12 @@ function dnum(s){
 
 /* column order must match listRow() cell order */
 const COL_DEFS={
- module:[{k:'id',lk:'col.domainId'},{k:'name',lk:'col.name'},{k:'desc',lk:'col.desc',sort:false},{k:'roles',lk:'col.roles'},{k:'resources',lk:'col.resources'},{k:'isolation',lk:'col.isolation'}],
- role:[{k:'name',lk:'col.roleKey'},{k:'module',lk:'col.domain'},{k:'desc',lk:'col.desc',sort:false},{k:'web',lk:'col.web',label:'Web'},{k:'api',lk:'col.api',label:'API'},{k:'data',lk:'col.isolation'}],
- user:[{k:'id',lk:'col.userId'},{k:'name',lk:'col.fullName'},{k:'email',lk:'col.email'},{k:'dept',lk:'col.dept'},{k:'roles',lk:'col.roleCount',get:r=>r.roles.length}],
+ module:[{k:'id',lk:'col.domainId'},{k:'name',lk:'col.name'},{k:'desc',lk:'col.desc',sort:false},{k:'updateTime',lk:'col.updateTime',get:r=>dnum(r.updateTime)}],
+ role:[{k:'id',lk:'col.roleId'},{k:'name',lk:'col.roleKey'},{k:'module',lk:'col.module'},{k:'desc',lk:'col.desc',sort:false}],
+ user:[{k:'id',lk:'col.userId'},{k:'login',lk:'col.login'},{k:'firstName',lk:'col.firstName'},{k:'lastName',lk:'col.lastName'},{k:'email',lk:'col.email'},{k:'dept',lk:'col.dept'},{k:'office',lk:'col.office',sort:false},{k:'roles',lk:'col.roleCount',get:r=>r.roles.length}],
  customer:[{k:'id',lk:'col.akId'},{k:'client',lk:'col.customer'},{k:'login',lk:'col.login'},{k:'mode',lk:'col.mode'},{k:'status',lk:'col.status'},{k:'created',lk:'col.created',get:r=>dnum(r.created)}],
- platform:[{k:'id',lk:'col.akId'},{k:'client',lk:'col.platform'},{k:'login',lk:'col.login'},{k:'mode',lk:'col.mode'},{k:'status',lk:'col.status'},{k:'created',lk:'col.created',get:r=>dnum(r.created)}],
- history:[{k:'time',lk:'col.time',get:r=>dnum(r.time)},{k:'actor',lk:'col.actor'},{k:'act',lk:'col.action',sort:false,get:r=>histText(r,'act')},{k:'meta',lk:'col.object',sort:false,get:r=>histText(r,'meta')}]
+ platform:[{k:'name',lk:'platUserName'},{k:'desc',lk:'col.desc',sort:false},{k:'keys',lk:'col.keys',get:r=>(r.keys||[]).length},{k:'created',lk:'col.created',get:r=>dnum(r.created)}],
+ history:[{k:'time',lk:'col.time',get:r=>dnum(r.time)},{k:'actor',lk:'col.actor'},{k:'object',lk:'col.object',sort:false},{k:'sourceId',lk:'col.sourceId'},{k:'action',lk:'col.action',sort:false}],
 };
 function COLS(view){return (COL_DEFS[view]||[]).map(c=>({...c,label:c.label||t(c.lk)}));}
 
@@ -1049,16 +1184,16 @@ const AK_FILTERS=[
  {k:'mode',lk:'f.mode',opts:[{v:'inherit',l:'inherit'},{v:'direct',l:'direct'}],test:(r,v)=>r.mode===v}
 ];
 const FILTERS={
- module:[{k:'isolation',lk:'f.isoDim',opts:['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,l:v})),test:(r,v)=>r.isolation===v}],
- role:[{k:'module',lk:'f.domain',opts:()=>DATA.module.map(m=>({v:m.name,l:m.name})),test:(r,v)=>r.module===v},
-  {k:'data',lk:'f.dataIso',opts:[{v:'yes',lk:'configured'},{v:'no',lk:'notConfigured'}],test:(r,v)=>v==='yes'?!!r.data:!r.data}],
+ module:[],
+ role:[{k:'module',lk:'f.domain',opts:()=>DATA.module.map(m=>({v:m.name,l:m.name})),test:(r,v)=>r.module===v}],
  user:[{k:'dept',lk:'f.dept',opts:[{v:'Lab',l:'Lab'}],test:(r,v)=>r.dept===v},
   {k:'hasRole',lk:'f.roleCount',opts:[{v:'yes',lk:'hasRoles'},{v:'no',lk:'noRoles'}],test:(r,v)=>v==='yes'?r.roles.length>0:r.roles.length===0}],
  customer:AK_FILTERS,
- platform:AK_FILTERS,
+ platform:[],
  history:[{k:'from',lk:'f.from',type:'date',test:(r,v)=>dnum(r.time)>=new Date(v+'T00:00:00').getTime()},
   {k:'to',lk:'f.to',type:'date',test:(r,v)=>dnum(r.time)<=new Date(v+'T23:59:59').getTime()},
   {k:'actor',lk:'f.actor',opts:()=>[...new Set(DATA.history.map(h=>h.actor))].map(v=>({v,l:v})),test:(r,v)=>r.actor===v},
+  {k:'sourceId',lk:'f.sourceId',type:'text',test:(r,v)=>String(r.sourceId||'').toLowerCase().includes(String(v).toLowerCase())},
   {k:'type',lk:'f.objType',opts:[{v:'module',lk:'type.module'},{v:'role',lk:'type.role'},{v:'userRole',lk:'type.userRole'},{v:'ak',lk:'type.ak'}],test:(r,v)=>r.type===v}]
 };
 function filterOpts(d){const o=typeof d.opts==='function'?d.opts():(d.opts||[]);return o.map(x=>typeof x==='string'?{v:x,l:x}:{v:x.v,l:x.lk?t(x.lk):(x.l||x.v)});}
@@ -1099,8 +1234,6 @@ function refreshList(){
  if(!el)return render();
  el.innerHTML=listBody(currentView);
  const c=$('#list-count');if(c)c.textContent=visibleRows(currentView).length;
- const fc=$('#filter-counter');
- if(fc){const n=activeFilterCount(currentView);n?fc.dataset.n=n:delete fc.dataset.n;}
  const cs=$('#col-style');if(cs)cs.outerHTML=colStyle(currentView);
  /* show/hide clear button without rebuilding inputs */
  const clear=$('.filters .field-clear');
@@ -1134,10 +1267,10 @@ function colStyle(view){
 }
 
 function filterCard(view){
- if(!showFilters)return '';
  const s=st(view), defs=FILTERS[view]||[], n=activeFilterCount(view);
  const ctrl=d=>{
   if(d.type==='date')return `<input type="date" value="${s.filters[d.k]||''}" onchange="setFilter('${d.k}',this.value)">`;
+  if(d.type==='text')return `<input value="${escAttr(s.filters[d.k]||'')}" placeholder="${t('searchPh')}" oninput="setFilter('${d.k}',this.value)">`;
   const opts=[{v:'',l:t('all')},...filterOpts(d)];
   const cur=s.filters[d.k]||'';
   return `<select onchange="setFilter('${d.k}',this.value)">${opts.map(o=>`<option value="${escAttr(o.v)}"${cur===o.v?' selected':''}>${o.l}</option>`).join('')}</select>`;
@@ -1154,12 +1287,6 @@ function listBody(view){
  const pages=Math.max(1,Math.ceil(rows.length/s.size));
  if(s.page>pages)s.page=pages;
  const slice=rows.slice((s.page-1)*s.size,s.page*s.size);
- if(view==='history'){
-  const feed=slice.length
-   ?`<div class="audit-feed">${slice.map(r=>histFeedItem(r)).join('')}</div>`
-   :`<div class="audit-empty">${t('noMatch')}${activeFilterCount(view)?`<div style="margin-top:16px">${btn(t('clearFilters'),'btn-secondary',SVG.erase,'resetFilters()')}</div>`:''}</div>`;
-  return `<div class="table-block">${feed}${listPager(view,rows.length,pages)}</div>`;
- }
  return `<div class="table-block"><div class="table-wrap">${listTable(view,slice)}</div>${listPager(view,rows.length,pages)}</div>`;
 }
 
@@ -1168,7 +1295,7 @@ function listTable(view,rows){
  const body=rows.length
   ?rows.map(r=>listRow(view,r,DATA[view].indexOf(r))).join('')
   :`<tr><td colspan="${cols.length}"><div class="empty">${t('noMatch')}${activeFilterCount(view)?`<div style="margin-top:16px">${btn(t('clearFilters'),'btn-secondary',SVG.erase,'resetFilters()')}</div>`:''}</div></td></tr>`;
- return `<table><thead>${listHead(view)}</thead><tbody id="tbody">${body}</tbody></table>`;
+ return `<table class="tbl-${view}"><thead>${listHead(view)}</thead><tbody id="tbody">${body}</tbody></table>`;
 }
 
 function listHead(view){
@@ -1210,11 +1337,12 @@ function pageWindow(cur,pages){
 
 function listRow(view,r,i){
  const cl=`class="clickable" tabindex="0" data-idx="${i}" onclick="goDetail('${view}',${i})" onkeydown="rowKey(event,'${view}',${i})"`;
- if(view==='module')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.desc}</td><td><span class="count">${r.roles}</span></td><td><span class="count">${r.resources}</span></td><td>${isoBadge(r.isolation)}</td></tr>`;
- if(view==='role')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td class="strong">${r.module}</td><td>${r.desc}</td><td><span class="count">${r.web}</span></td><td><span class="count">${r.api}</span></td><td>${r.data?`<span class="badge badge-mango"><span class="dot"></span>${t('iso.configured')}</span>`:`<span class="badge badge-grey">${t('iso.none')}</span>`}</td></tr>`;
- if(view==='user')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.name}</td><td>${r.email}</td><td>${r.dept}</td><td>${rolesCell(r.roles)}</td></tr>`;
- if(view==='customer'||view==='platform')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.client}</td><td>${r.login}</td><td>${modeBadge(r.mode)}</td><td>${statusBadge(r.status)}</td><td>${r.created}</td></tr>`;
- if(view==='history')return `<tr><td>${r.time}</td><td>${r.actor}</td><td class="strong">${histText(r,'act')}</td><td>${histText(r,'meta')}</td></tr>`;
+ if(view==='module')return `<tr ${cl}><td><code class="res-code" title="${escAttr(r.id)}"><span class="cell-link">${escHtml(r.id)}</span></code></td><td class="strong">${escHtml(r.name)}</td><td>${r.desc?escHtml(r.desc):'<span class="muted">—</span>'}</td><td>${r.updateTime||'—'}</td></tr>`;
+ if(view==='role')return `<tr ${cl}><td><code class="res-code" title="${escAttr(r.id)}"><span class="cell-link">${escHtml(r.id)}</span></code></td><td><span class="cell-link">${escHtml(r.name)}</span></td><td class="strong">${escHtml(r.module)}</td><td>${escHtml(r.desc)}</td></tr>`;
+ if(view==='user')return `<tr ${cl}><td><code class="res-code" title="${escAttr(r.id)}"><span class="cell-link">${escHtml(r.id)}</span></code></td><td>${escHtml(r.login)}</td><td class="strong">${escHtml(r.firstName)}</td><td class="strong">${escHtml(r.lastName)}</td><td>${escHtml(r.email)}</td><td>${escHtml(r.dept)}</td><td>${escHtml(r.office||'—')}</td><td>${rolesCell(r.roles)}</td></tr>`;
+ if(view==='customer')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.client}</td><td>${r.login}</td><td>${modeBadge(r.mode)}</td><td>${statusBadge(r.status)}</td><td>${r.created}</td></tr>`;
+ if(view==='platform')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td>${r.desc}</td><td><span class="count">${(r.keys||[]).length}</span></td><td>${r.created}</td></tr>`;
+ if(view==='history')return `<tr><td>${r.time}</td><td>${r.actor}</td><td>${escHtml(r.object||'')}</td><td><code class="res-code">${escHtml(r.sourceId||'')}</code></td><td class="strong col-action">${escHtml(r.action)}</td></tr>`;
  return '';
 }
 
@@ -1250,11 +1378,37 @@ function goDetail(view,i){
  setHash(`#/${view}/${r.id}`);
  renderDetail(view,i);
 }
+function goPlatAk(ui,ki){
+ platCtx={ui,ki};
+ const u=DATA.platform[ui], k=u&&u.keys&&u.keys[ki];
+ if(!k)return;
+ setHash(`#/platform/${u.id}/${k.id}`);
+ pagebar.innerHTML=`<div class="pagebar"><div class="pagebar-row">
+  ${btn(t('back'),'btn-tertiary',SVG.back,`goDetail('platform',${ui})`)}
+  <div class="crumbs">
+    <span class="sep">/</span><a onclick="goList('platform')">${viewTitle('platform')}</a>
+    <span class="sep">/</span><a onclick="goDetail('platform',${ui})">${escHtml(u.name)}</a>
+    <span class="sep">/</span><span class="cur">${k.id}</span>
+  </div>
+  <div class="grow"></div>
+  <div class="tools">${statusBadge(k.status)}${btn(t('bindApi'),'btn-primary',SVG.link,`openModal('akBindPlat')`)}</div>
+ </div></div>`;
+ content.className='content';
+ content.innerHTML=platAkDetail(u,k,ui,ki);
+ syncSticky();
+ window.scrollTo(0,0);
+}
 /* prefer real history so Back and the browser button behave the same, but never
    step outside the prototype when the detail page was opened by a deep link */
 function backToList(){
  if(navDepth>0){navDepth--;history.back();return;}
- setHash(`#/${currentView}`);navDepth=0;
+ goList(currentView);
+}
+function goList(view){
+ currentView=view||currentView;
+ syncNav(currentView);
+ setHash(`#/${currentView}`);
+ navDepth=0;
  render();window.scrollTo(0,0);
 }
 function rowKey(e,view,i){
@@ -1285,29 +1439,48 @@ function detailBody(view,r){
  if(view==='module')return moduleDetail(r);
  if(view==='role')return roleDetail(r);
  if(view==='user')return userDetail(r);
+ if(view==='platform')return platformUserDetail(r);
  return akDetail(view,r);
+}
+
+function platformUserDetail(r){
+ const i=idxOf('platform',r);
+ const keys=r.keys||[];
+ const rows=keys.map((k,ki)=>`<tr class="clickable" tabindex="0" onclick="goPlatAk(${i},${ki})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goPlatAk(${i},${ki})}"><td><span class="cell-link">${k.id}</span></td><td>${keyField(k.key)}</td><td>${statusBadge(k.status)}</td><td>${k.encryption?`<span class="badge badge-kiwi">${t('encOn')}</span>`:`<span class="badge badge-grey">${t('encOff')}</span>`}</td><td>${k.created}</td></tr>`).join('')
+  ||`<tr><td colspan="5" class="empty">No AccessKeys yet</td></tr>`;
+ return card(t('card.platUser'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('platUserEdit',${i})`),
+   `<div class="kv">${kv(t('platUserName'),r.name)}${kv(t('platDesc'),r.desc)}${kv(t('created'),r.created)}${kv(t('keyCount'),String(keys.length))}</div>`)
+ + card(t('card.platKeys'),btn(t('createPlatAk'),'btn-secondary',SVG.plus,`openModal('akCreate','platform')`),
+   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>AccessKey ID</th><th>Key</th><th>Status</th><th>${t('encryption')}</th><th>${t('created')}</th></tr></thead><tbody>${rows}</tbody></table></div>`});
+}
+
+function platAkDetail(u,k,ui,ki){
+ return card(t('card.akInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('akEditPlat')`),
+   `<div class="kv">${kv(t('akId'),k.id)}${kv(t('platUserName'),u.name)}${kv(t('key'),keyField(k.key))}${kv(t('status'),statusBadge(k.status))}${kv(t('created'),k.created)}${kv(t('lastUsed'),k.lastUsed)}${kv(t('encryption'),k.encryption?`<span class="badge badge-kiwi">${t('encOn')}</span>`:`<span class="badge badge-grey">${t('encOff')}</span>`)}</div>`)
+ + (k.encryption?card(t('card.encryption'),btn(t('exportKeyFile'),'btn-secondary',SVG.download,`toast(t('exported',{n:1}),'ok')`),
+   `<div class="kv">${kv(t('publicKey'),keyField('MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7n…'))}${kv(t('privateKey'),keyField('sk_plt_9d2f6c30ab74e158_priv'))}</div>`):'')
+ + card(t('card.linkedResources'),btn(t('bindApi'),'btn-secondary',SVG.link,`openModal('akBindPlat')`),
+   {html:apiTableHtml(k.apis||[])})
+ + card(t('card.rateLimit'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('rateEditPlat')`),
+   `<div class="kv">${kv(t('rateCap'),t('rateCapVal',{n:k.rate}))}${kv(t('rateHow'),t('rateHowVal'))}${kv(t('rateResp'),'429 Too Many Requests')}${kv(t('ratePeak'),`${t('ratePeakVal',{n:k.peak})}${k.peak>=k.rate?` <span class="badge badge-cherry">${t('capped')}</span>`:''}`)}</div>`);
 }
 
 function moduleDetail(r){
  const i=idxOf('module',r);
- const roleRows=DATA.role.filter(x=>x.module===r.name);
- const res=LAB_RESOURCES[r.id]||{web:[],api:[]};
+ const res=moduleResources(r);
+ const dims=isoDims(r);
  return card(t('card.moduleInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('moduleEdit',${i})`),
-   `<div class="kv">${kv(t('domainId'),r.id)}${kv(t('name'),r.name)}${kv(t('auth2Module'),'lab-service-cloud')}${kv(t('desc'),r.desc)}${kv(t('f.isoDim'),isoBadge(r.isolation))}</div>`)
+   `<div class="kv">${kv(t('domainId'),`<code class="res-code">${escHtml(r.id)}</code>`)}${kv(t('name'),r.name)}${kv(t('desc'),r.desc||'—')}${kv(t('col.updateTime'),r.updateTime||'—')}</div>`)
  + card(t('card.moduleResources'),
    btn(t('manageResources'),'btn-secondary',SVG.link,`openModal('resourceManage','module')`),
    {html:`
-     <div class="subpane active" data-p="web">${permBoardHtml(res.web,{selected:res.web})}<div style="margin-top:12px">${btn(t('addResource'),'btn-tertiary',SVG.plus,`openModal('resourceManage','module')`)}</div></div>
-     <div class="subpane" data-p="api">${apiListHtml(res.api)}<div style="margin-top:12px">${btn(t('addApi'),'btn-tertiary',SVG.plus,`openModal('addApi',${i})`)}</div></div>
+     <div class="subpane active" data-p="web"><div class="subpane-toolbar">${btn(t('addResource'),'btn-secondary',SVG.plus,`openModal('resourceManage','module')`)}</div>${resourceTableHtml(res.web)}</div>
+     <div class="subpane" data-p="api"><div class="subpane-toolbar">${btn(t('addApi'),'btn-secondary',SVG.plus,`openModal('addApi',${i})`)}</div>${apiTableHtml(res.api)}</div>
      <div class="subpane" data-p="data">
-       <div class="kv">${kv(t('isoDimLabel'),isoBadge(r.isolation))}${kv(t('desc'),t('isoExplain'))}</div>
-       <div style="margin-top:16px">${btn(t('configIso'),'btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
+       <div class="subpane-toolbar">${btn(t('configIso'),'btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
+       ${isoTreeHtml(dims)}
      </div>`},
-   subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:'Data'}]))
- + card(t('card.moduleRoles'),btn(t('manageRoles'),'btn-secondary',SVG.edit,`openModal('roleManage')`),
-   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>${t('roleKey')}</th><th>${t('desc')}</th><th>Web</th><th>API</th><th>${t('col.isolation')}</th></tr></thead><tbody>
-     ${roleRows.map(x=>`<tr class="clickable" tabindex="0" onclick="jumpToRole('${x.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${x.id}')}"><td><span class="cell-link">${x.name}</span></td><td>${x.desc}</td><td><span class="count">${x.web}</span></td><td><span class="count">${x.api}</span></td><td>${x.data?`<span class="badge badge-mango">${t('iso.configured')}</span>`:`<span class="badge badge-grey">${t('iso.none')}</span>`}</td></tr>`).join('')||`<tr><td colspan="5" class="empty">${t('noRolesInModule')}</td></tr>`}
-   </tbody></table></div>`},'',{lazy:true});
+   subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:`Data (${dims.reduce((n,d)=>n+d.options.length,0)})`}]));
 }
 
 const ROLE_USERS_PS=5;
@@ -1321,7 +1494,7 @@ function roleUsersCardHtml(r,page){
  page=Math.min(Math.max(1,page||1),pages);
  roleUsersPageState={idx:i,page};
  const slice=users.slice((page-1)*ps,page*ps);
- const rows=slice.map(u=>`<tr class="clickable" tabindex="0" onclick="jumpToUser('${u.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUser('${u.id}')}"><td><span class="cell-link">${u.name}</span></td><td>${u.email}</td><td>${u.dept}</td></tr>`).join('')
+ const rows=slice.map(u=>`<tr class="clickable" tabindex="0" onclick="jumpToUser('${u.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToUser('${u.id}')}"><td><span class="cell-link">${escHtml(userName(u))}</span></td><td>${u.email}</td><td>${u.dept}</td></tr>`).join('')
   ||`<tr><td colspan="3" class="empty">${t('noAuthUsers')}</td></tr>`;
  return card(t('card.authUsers'),'',
   {flush:true,html:`<div class="table-wrap"><table><thead><tr><th>${t('user')}</th><th>${t('email')}</th><th>${t('dept')}</th></tr></thead><tbody>${rows}</tbody></table></div>${inlinePager(users.length,page,ps,`setRoleUsersPage`)}`},'',{id:'role-users'});
@@ -1341,18 +1514,19 @@ function setRoleUsersPage(page){
 function roleDetail(r){
  const i=idxOf('role',r);
  const mod=DATA.module.find(m=>m.name===r.module);
- const res=LAB_RESOURCES[mod?mod.id:'report-generation']||{web:[],api:[]};
+ const res=moduleResources(mod||DATA.module.find(m=>m.name==='lab-service-cloud'));
  const bound=roleBoundCodes(r,res.web);
  const apiShow=res.api.slice(0,4);
+ const dataOpts=r.dataOpts||[];
  return card(t('card.roleInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('roleEdit',${i})`),
-   `<div class="kv">${kv(t('roleKey'),r.name)}${kv(t('domain'),r.module)}${kv(t('auth2Module'),'lab-service-cloud')}${kv(t('desc'),r.desc)}</div>`)
+   `<div class="kv">${kv(t('roleKey'),r.name)}${kv(t('domain'),r.module)}${kv(t('desc'),r.desc)}</div>`)
  + card(t('card.linkedResources'),
    btn(t('bindWeb'),'btn-secondary',SVG.link,`openModal('bindWeb',${i})`)+btn(t('bindApi'),'btn-tertiary',SVG.link,`openModal('bindApi',${i})`)+btn(t('dataIso'),'btn-tertiary',SVG.shield,`openModal('bindData',${i})`),
    {html:`
-     <div class="subpane active" data-p="web">${permBoardHtml(bound,{selected:bound})}<div style="margin-top:12px">${btn(t('bindWeb'),'btn-tertiary',SVG.link,`openModal('bindWeb',${i})`)}</div></div>
-     <div class="subpane" data-p="api">${apiListHtml(apiShow.length?apiShow:[], {empty:t('noApiCodes')})}<div style="margin-top:12px">${btn(t('bindApi'),'btn-tertiary',SVG.link,`openModal('bindApi',${i})`)}</div></div>
-     <div class="subpane" data-p="data"><div class="chips">${r.data?`<span class="chip">${t('isoDim')}</span><span class="chip">${t('isoVal')}</span>`:`<span class="muted">${t('noDataIso')}</span>`}<span class="chip chip-add" onclick="openModal('bindData',${i})">${t('configIsoChip')}</span></div></div>`},
-   subtabs([{p:'web',label:`Web (${bound.length||r.web})`},{p:'api',label:`API (${r.api})`},{p:'data',label:`Data (${r.data})`}]))
+     <div class="subpane active" data-p="web">${resourceTableHtml(bound,{selected:bound})}</div>
+     <div class="subpane" data-p="api">${apiTableHtml(apiShow,{empty:t('noApiCodes')})}</div>
+     <div class="subpane" data-p="data">${isoOptionTable(dataOpts)}</div>`},
+   subtabs([{p:'web',label:`Web (${bound.length})`},{p:'api',label:`API (${apiShow.length})`},{p:'data',label:`Data (${dataOpts.length})`}]))
  + roleUsersCardHtml(r,1);
 }
 
@@ -1360,16 +1534,16 @@ function userDetail(r){
  const i=idxOf('user',r);
  const empty=`<div class="empty">${t('noUserRoles')}<div style="margin-top:16px">${btn(t('copyPerms'),'btn-secondary',SVG.copy,"openModal('copyRoles',"+i+")")}</div></div>`;
  return card(t('card.userInfo'),'',
-   `<div class="kv">${kv(t('userId'),r.id)}${kv(t('fullName'),r.name)}${kv(t('email'),r.email)}${kv(t('dept'),r.dept)}${kv(t('dataSource'),t('dataSourceVal'))}</div>`)
+   `<div class="kv">${kv(t('userId'),`<code class="res-code">${escHtml(r.id)}</code>`)}${kv(t('login'),r.login)}${kv(t('firstName'),r.firstName)}${kv(t('lastName'),r.lastName)}${kv(t('email'),r.email)}${kv(t('dept'),r.dept)}${kv(t('office'),r.office||'—')}${kv(t('dataSource'),t('dataSourceVal'))}</div>`)
  + card(t('card.userRoles'),
    btn(t('copyFrom'),'btn-secondary',SVG.copy,`openModal('copyRoles',${i})`)+btn(t('editRoles'),'btn-tertiary',SVG.edit,`openModal('userRole',${i})`),
-   r.roles.length?`<div class="chips">${r.roles.map(rl=>`<span class="chip chip-link" role="button" tabindex="0" onclick="jumpToRole('${rl}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();jumpToRole('${rl}')}">${rl}</span>`).join('')}</div>`:empty);
+   r.roles.length?{flush:true,html:userRolesTable(r.roles)}:empty);
 }
 
 function akDetail(view,r){
- const i=idxOf(view,r), isPlat=view==='platform', inherit=r.mode==='inherit';
+ const i=idxOf(view,r), inherit=r.mode==='inherit';
  return card(t('card.akInfo'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('akEdit',${i})`),
-   `<div class="kv">${kv(t('akId'),r.id)}${kv(isPlat?t('platform'):t('customer'),r.client)}${kv(t('login'),r.login)}${kv(t('key'),r.key)}${kv(t('mode'),r.mode==='inherit'?t('modeInherit'):t('modeDirect'))}${kv(t('status'),statusBadge(r.status))}${kv(t('created'),r.created)}${kv(t('lastUsed'),r.lastUsed)}</div>`)
+   `<div class="kv">${kv(t('akId'),r.id)}${kv(t('customer'),r.client)}${kv(t('login'),r.login)}${kv(t('key'),keyField(r.key))}${kv(t('mode'),r.mode==='inherit'?t('modeInherit'):t('modeDirect'))}${kv(t('status'),statusBadge(r.status))}${kv(t('created'),r.created)}${kv(t('lastUsed'),r.lastUsed)}</div>`)
  + akResourceCard(view,r,i,inherit)
  + card(t('card.rateLimit'),btn(t('edit'),'btn-secondary',SVG.edit,`openModal('rateEdit',${i})`),
    `<div class="kv">${kv(t('rateCap'),t('rateCapVal',{n:r.rate}))}${kv(t('rateHow'),t('rateHowVal'))}${kv(t('rateResp'),'429 Too Many Requests')}${kv(t('ratePeak'),`${t('ratePeakVal',{n:r.peak})}${r.peak>=r.rate?` <span class="badge badge-cherry">${t('capped')}</span>`:''}`)}</div>`)
@@ -1389,10 +1563,7 @@ function akResourceCard(view,r,i,inherit){
     <div class="note" style="margin-top:16px">${t('inheritNote')}</div>`);
  return card(t('card.linkedResources'),
    btn(t('bindResources'),'btn-secondary',SVG.link,`openModal('akBind',${i})`),
-   {html:`
-     <div class="subpane active" data-p="web"><div class="chips">${r.web?'<span class="chip">REPORTGENERATION:VIEW</span><span class="chip">INFO:PAGE:VIEW</span>':`<span class="muted">${t('noWebRes')}</span>`}<span class="chip chip-add" onclick="openModal('akBind',${i})">${t('bind')}</span></div></div>
-     <div class="subpane" data-p="api">${apiListHtml(['GET /lab-service-cloud/v1.0/lab/list','GET /lab-service-cloud/v1.0/report/{id}'])}<div style="margin-top:12px">${btn(t('bindApiShort'),'btn-tertiary',SVG.link,`openModal('akBind',${i})`)}</div></div>`},
-   subtabs([{p:'web',label:`Web (${r.web})`},{p:'api',label:`API (${r.api})`}]));
+   {html:apiTableHtml(['GET /lab-service-cloud/v1.0/lab/list','GET /lab-service-cloud/v1.0/report/{id}'])});
 }
 
 /* ================= interactions ================= */
@@ -1415,6 +1586,16 @@ function route(){
  const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
  const v=VIEWS[parts[0]]?parts[0]:'module';
  currentView=v;syncNav(v);
+ if(v==='platform'&&parts[1]){
+  const ui=DATA.platform.findIndex(r=>r.id===parts[1]);
+  if(ui>=0){
+   if(parts[2]){
+    const ki=(DATA.platform[ui].keys||[]).findIndex(k=>k.id===parts[2]);
+    if(ki>=0){goPlatAk(ui,ki);return;}
+   }
+   if(renderDetail('platform',ui))return;
+  }
+ }
  if(parts[1]){
   const i=DATA[v].findIndex(r=>r.id===parts[1]);
   if(i>=0&&renderDetail(v,i))return;
@@ -1454,7 +1635,6 @@ function toggleCard(head){
  const b=c.querySelector('.card-body'), t=b.querySelector('template');
  setTimeout(()=>{b.innerHTML=t.innerHTML;},380);
 }
-function toggleFilters(){showFilters=!showFilters;render();}
 function resetFilters(){
  const s=st(currentView);
  if(!activeFilterCount(currentView)&&!s.sort){toast(t('noFilter'));return;}
@@ -1462,7 +1642,6 @@ function resetFilters(){
  render();toast(t('filtersReset'),'ok');
 }
 function focusSearch(){
- if(!showFilters){showFilters=true;render();}
  const q=$('#q');if(q){q.focus();q.select();}
 }
 
@@ -1479,37 +1658,106 @@ function jumpToUser(id){
  goDetail('user',i);
 }
 
+let platCtx={ui:0,ki:0};
+let rolePick={idx:0,selected:new Set(),q:''};
+function rolePickListHtml(){
+ const q=(rolePick.q||'').toLowerCase().trim();
+ const groups=new Map();
+ DATA.role.forEach(r=>{
+  const hay=`${r.module} ${r.name} ${r.desc}`.toLowerCase();
+  if(q&&!hay.includes(q))return;
+  if(!groups.has(r.module))groups.set(r.module,[]);
+  groups.get(r.module).push(r);
+ });
+ return [...groups.entries()].map(([mod,roles])=>`
+  <div class="role-mod">
+   <div class="role-mod-head">${escHtml(mod)}<span class="count">${roles.length}</span></div>
+   ${roles.map(r=>`<label class="role-opt"><input type="checkbox"${rolePick.selected.has(r.name)?' checked':''} onchange="toggleRolePick('${escAttr(r.name)}',this.checked)"><span class="meta"><b>${escHtml(r.name)}</b><em>${escHtml(r.desc)}</em></span></label>`).join('')}
+  </div>`).join('')||`<div class="picker-empty">${t('noRoleMatch')}</div>`;
+}
+function roleSelBarHtml(){
+ const sel=[...rolePick.selected];
+ return `<div class="sel-bar" id="role-sel-bar"><div class="k">${t('selectedRoles')} · ${sel.length}</div>
+   <div class="chips">${sel.length?sel.map(n=>`<span class="chip">${escHtml(n)}<span class="x" onclick="toggleRolePick('${escAttr(n)}',false)">×</span></span>`).join(''):`<span class="muted">${t('noneYet')}</span>`}</div>
+  </div>`;
+}
+function rolePickHtml(){
+ return `<div class="role-pick">
+  ${field(t('searchRoles'),`<input id="role-pick-q" value="${escAttr(rolePick.q)}" placeholder="${t('searchPh')}" oninput="rolePickSearch(this.value)">`)}
+  ${roleSelBarHtml()}
+  <div id="role-pick-list">${rolePickListHtml()}</div>
+ </div>`;
+}
+function rolePickSearch(q){
+ rolePick.q=q;
+ const list=$('#role-pick-list');
+ if(list)list.innerHTML=rolePickListHtml();
+}
+function toggleRolePick(name,on){
+ if(on)rolePick.selected.add(name);else rolePick.selected.delete(name);
+ const list=$('#role-pick-list');
+ const bar=$('#role-sel-bar');
+ if(list)list.innerHTML=rolePickListHtml();
+ if(bar)bar.outerHTML=roleSelBarHtml();
+}
+function applyUserRoles(){
+ const u=DATA.user[rolePick.idx];if(!u)return;
+ u.roles=[...rolePick.selected];
+ DATA.history.unshift({time:stampNow(),actor:'it@qima.com',type:'userRole',action:'Updated user roles',object:userName(u),sourceId:u.id});
+ closeModal();renderDetail('user',rolePick.idx);toast(t('saved',{what:t('m.userRole')}),'ok');
+}
+function stampNow(){
+ const now=new Date(),pad=n=>String(n).padStart(2,'0');
+ const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ return `${pad(now.getDate())}-${months[now.getMonth()]}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+}
+
 /* ================= modals ================= */
 const inp=(ph,val,dis)=>`<input placeholder="${ph||''}"${val!==undefined?` value="${val}"`:''}${dis?' disabled':''}>`;
 const sel=opts=>`<select>${opts.map(o=>`<option${o.sel?' selected':''}>${o.v!==undefined?o.v:o}</option>`).join('')}</select>`;
 
 function MODALS(){return {
  moduleCreate:{title:()=>t('m.moduleCreate'),body:()=>`
-  <div class="grid-2">${field(t('domainId'),inp('e.g. report-generation'))}${field(t('name'),inp('Report Generation'))}</div>
-  ${field(t('desc'),`<textarea placeholder="${t('purposePh')}"></textarea>`)}
-  ${field(t('f.isoDim'),sel(['Site','Site · labCode','Site · Department','Site · labCode · Department']))}`},
+  <div class="grid-2">${field(t('domainId'),inp('UUID · permission_master.module.id'))}${field(t('name'),inp('e.g. lab-service-cloud'))}</div>
+  ${field(t('desc'),`<textarea placeholder="${t('purposePh')}"></textarea>`)}`},
  moduleEdit:{title:()=>t('m.moduleEdit'),body:i=>{const r=DATA.module[i];return `
   <div class="grid-2">${field(t('domainId'),inp('',r.id,true))}${field(t('name'),inp('',r.name))}</div>
-  ${field(t('auth2Module'),inp('','lab-service-cloud',true))}
+  ${field(t('col.updateTime'),inp('',r.updateTime||'',true))}
   ${field(t('desc'),`<textarea>${r.desc}</textarea>`)}`;}},
- isoConfig:{title:()=>t('m.isoConfig'),body:i=>{const r=DATA.module[i];return field(t('isoDimLabel'),sel(['Site','Site · labCode','Site · Department','Site · labCode · Department'].map(v=>({v,sel:v===r.isolation}))));}},
+ isoConfig:{title:()=>t('m.isoConfig'),body:i=>{
+  const r=DATA.module[i];
+  isoEdit={idx:i,draft:cloneIsoDims(r.name)};
+  return isoEditWrapHtml();},
+  foot:()=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('save'),'btn-primary','','applyIsoConfig()')},
  roleCreate:{title:()=>t('m.roleCreate'),body:()=>`
   <div class="grid-2">${field(t('roleKey'),inp('First-Page-Approver'))}${field(t('domain'),sel(DATA.module.map(m=>m.name)))}</div>
   ${field(t('desc'),inp(t('rolePurposePh')))}`},
  roleEdit:{title:()=>t('m.roleEdit'),body:i=>{const r=DATA.role[i];return `
   <div class="grid-2">${field(t('roleKey'),inp('',r.name))}${field(t('domain'),inp('',r.module,true))}</div>
   ${field(t('desc'),inp('',r.desc))}`;}},
- userRole:{title:()=>t('m.userRole'),body:i=>{const r=DATA.user[i];return `
-  ${field(t('user'),inp('',`${r.name} · ${r.email}`,true))}
-  ${field(t('assignedRoles'),`<div class="chips">${r.roles.map(rl=>`<span class="chip">${rl}<span class="x" onclick="this.parentElement.remove()">×</span></span>`).join('')||`<span class="muted">${t('noneYet')}</span>`}</div>`)}
-  ${field(t('addRole'),sel([t('pickRole'),...DATA.role.map(x=>x.name)]))}`;}},
+ userRole:{title:()=>t('m.userRole'),
+  foot:()=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('applyRoles'),'btn-primary','','applyUserRoles()'),
+  body:i=>{
+   rolePick={idx:i,selected:new Set(DATA.user[i].roles||[]),q:''};
+   return `${field(t('user'),inp('',`${userName(DATA.user[i])} · ${DATA.user[i].email}`,true))}${rolePickHtml()}`;
+  }},
+ roleCopy:{title:()=>t('m.roleCopy'),body:i=>{const r=DATA.role[i];return `
+  ${field('Copy from',inp('',r.name,true))}
+  <div class="grid-2">${field(t('roleKey'),inp(r.name+'-Copy'))}${field(t('domain'),sel(DATA.module.map(m=>({v:m.name,sel:m.name===r.module}))))}</div>
+  ${field(t('desc'),inp('',r.desc))}`;}},
+ platUserCreate:{title:()=>t('m.platUserCreate'),body:()=>`
+  ${field(t('platUserName'),inp('NetSuite'))}
+  ${field(t('platDesc'),`<textarea placeholder="Integration purpose…"></textarea>`)}`},
+ platUserEdit:{title:()=>t('m.platUserEdit'),body:i=>{const r=DATA.platform[i];return `
+  ${field(t('platUserName'),inp('',r.name))}
+  ${field(t('platDesc'),`<textarea>${r.desc}</textarea>`)}`;}},
  copyRoles:{title:()=>t('m.copyRoles'),
   foot:()=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('confirmCopy'),'btn-primary','','applyCopyRoles()'),
   body:i=>{
    copyState={target:i,source:null,mode:'replace'};
    const u=DATA.user[i];
    return `
-  ${field(t('targetUser'),inp('',`${u.name} · ${u.email}`,true))}
+  ${field(t('targetUser'),inp('',`${userName(u)} · ${u.email}`,true))}
   ${field(t('pickSource'),`<div class="picker">
     <input id="cp-q" placeholder="${t('copySearchPh')}" oninput="copyUserSearch(this.value)">
     <div class="picker-list" id="cp-list">${copyUserRows('')}</div>
@@ -1518,18 +1766,26 @@ function MODALS(){return {
     <input type="radio" name="cp-mode" id="cpr" checked onchange="setCopyMode('replace')"><label for="cpr">${t('overwrite')}</label>
     <input type="radio" name="cp-mode" id="cpm" onchange="setCopyMode('merge')"><label for="cpm">${t('merge')}</label>
   </div>`,t('copyModeHint'))}
-  <div id="cp-preview">${copyPreviewHtml()}</div>
-  <div class="note">${t('copyNote')}</div>`;}},
+  <div id="cp-preview">${copyPreviewHtml()}</div>`;}},
  akCreate:{title:kind=>t(kind==='platform'?'m.akCreatePlat':'m.akCreateCust'),
   foot:kind=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('genAk'),'btn-primary','',`openModal('akCreated','${kind||'customer'}')`),
-  body:kind=>{const src=kind==='platform'?PLATFORMS:CUSTOMERS;const who=kind==='platform'?t('platform'):t('customer');return `
-  ${field(kind==='platform'?t('platName'):t('custName'),`<div class="picker">
-    <input id="pk-q" placeholder="${t('searchPh')}" oninput="pickSearch('${kind||'customer'}',this.value)">
+  body:kind=>{
+   if(kind==='platform'){
+    const users=DATA.platform;
+    return `
+  ${field(t('platUserName'),`<select>${users.map(u=>`<option>${u.name}</option>`).join('')}</select>`)}
+  ${field(t('encryption'),`<div class="seg"><input type="radio" name="enc" id="e0" checked><label for="e0">${t('encOff')}</label><input type="radio" name="enc" id="e1"><label for="e1">${t('encOn')}</label></div>`,t('encHint'))}
+  ${field(t('remark'),inp(t('remarkPh')))}`;
+   }
+   const src=CUSTOMERS;const who=t('customer');
+   return `
+  ${field(t('custName'),`<div class="picker">
+    <input id="pk-q" placeholder="${t('searchPh')}" oninput="pickSearch('customer',this.value)">
     <div class="picker-list" id="pk-list">${src.slice(0,4).map(c=>`<button onclick="pickPick('${c.name}')">${c.name}<span>${c.code}</span></button>`).join('')}</div>
   </div>`)}
-  <div class="grid-2">${field(t('login'),`<select id="pk-login" disabled><option>${t('pickFirst',{who})}</option></select>`)}${field(t('mode'),`<div class="seg"><input type="radio" name="m" id="m1"${kind==='platform'?'':' checked'}><label for="m1">inherit</label><input type="radio" name="m" id="m2"${kind==='platform'?' checked':''}><label for="m2">direct</label></div>`)}</div>
+  <div class="grid-2">${field(t('login'),`<select id="pk-login" disabled><option>${t('pickFirst',{who})}</option></select>`)}${field(t('mode'),`<div class="seg"><input type="radio" name="m" id="m1" checked><label for="m1">inherit</label><input type="radio" name="m" id="m2"><label for="m2">direct</label></div>`)}</div>
   ${field(t('remark'),inp(t('remarkPh')))}
-  <div class="note">${kind==='platform'?t('akCreateNotePlat'):t('akCreateNoteCust')}</div>`;}},
+  <div class="note">${t('akCreateNoteCust')}</div>`;}},
  akCreated:{title:()=>t('m.akCreated'),
   foot:()=>btn(t('savedCopied'),'btn-primary','','closeModal()'),
   body:kind=>`
@@ -1539,7 +1795,8 @@ function MODALS(){return {
   <div class="note">${t('secretNote',{who:kind==='platform'?t('partner'):t('client')})}</div>`},
  akEdit:{title:()=>t('m.akEdit'),body:i=>{const r=DATA[currentView][i];return `
   ${field(t('akId'),inp('',r.id,true))}
-  <div class="grid-2">${field(t('login'),inp('',r.login))}${field(t('status'),sel(['Active','Suspended'].map(v=>({v,sel:v===r.status}))))}</div>`;}},
+  <div class="grid-2">${field(t('login'),inp('',r.login))}${field(t('status'),sel(['Active','Suspended'].map(v=>({v,sel:v===r.status}))))}</div>
+  ${field(t('mode'),`<div class="seg"><input type="radio" name="ak-mode" id="akm1"${r.mode!=='direct'?' checked':''}><label for="akm1">inherit</label><input type="radio" name="ak-mode" id="akm2"${r.mode==='direct'?' checked':''}><label for="akm2">direct</label></div>`)}`;}},
  rateEdit:{title:()=>t('m.rateEdit'),body:i=>{const r=DATA[currentView][i];return `
   <div class="grid-2">${field(t('rateCapLabel'),inp('',r.rate))}${field(t('overResp'),sel(['429 Too Many Requests','503 Service Unavailable']))}</div>
   <div class="note">${t('rateNote')}</div>`;}},
@@ -1551,53 +1808,61 @@ function MODALS(){return {
  bindWeb:{title:()=>t('m.bindWeb'),wide:true,body:i=>{
    const role=DATA.role[i]||DATA.role[0];
    const mod=DATA.module.find(m=>m.name===role.module);
-   const all=(LAB_RESOURCES[mod?mod.id:'report-generation']||{web:[]}).web;
+   const all=moduleResources(mod||DATA.module.find(m=>m.name==='lab-service-cloud')).web;
    const bound=roleBoundCodes(role,all);
    return `
-  ${field(t('searchRes'),`<input id="perm-q" placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
-  <div id="perm-board-wrap">${permBoardHtml(all,{selected:bound,interactive:true})}</div>`;}},
+  ${field(t('searchRes'),`<input id="perm-q" placeholder="${t('searchPh')}" oninput="filterResTable(this.value)">`)}
+  <div id="perm-board-wrap">${resourceTableHtml(all,{selected:bound,interactive:true})}</div>`;}},
  bindApi:{title:()=>t('m.bindApi'),body:i=>{
    const role=DATA.role[i]||DATA.role[0];
    const mod=DATA.module.find(m=>m.name===role.module);
-   const apis=(LAB_RESOURCES[mod?mod.id:'report-generation']||{api:[]}).api;
+   const apis=moduleResources(mod||DATA.module.find(m=>m.name==='lab-service-cloud')).api;
    return `
   ${field(t('searchApi'),`<input placeholder="/lab-service-cloud/v1.0/…" oninput="filterApiList(this.value)">`)}
-  <div id="api-list-wrap">${apiListHtml(apis,{interactive:true})}</div>`;}},
- bindData:{title:()=>t('m.bindData'),body:()=>`
-  ${field(t('isoDimLabel'),sel(['Site','labCode','Department']))}
-  ${field(t('isoValue'),inp(t('isoValuePh')))}`},
+  ${apiTableHtml(apis,{interactive:true})}`;}},
+ bindData:{title:()=>t('m.bindData'),body:i=>{
+   const role=DATA.role[i]||DATA.role[0];
+   const mod=DATA.module.find(m=>m.name===role.module);
+   return isoTreeHtml(isoDims(mod||'lab-service-cloud'),{selected:role.dataOpts||[],interactive:true});}},
  akBind:{title:()=>t('m.akBind'),wide:true,body:()=>{
-   const all=(LAB_RESOURCES['report-generation']||{web:[]}).web;
+   const apis=moduleResources(DATA.module.find(m=>m.name==='lab-service-cloud')).api;
    return `
-  ${field(t('resType'),`<div class="seg"><input type="radio" name="t" id="t1" checked><label for="t1">Web</label><input type="radio" name="t" id="t2"><label for="t2">API</label></div>`)}
-  ${field(t('searchLabel'),`<input placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
-  <div id="perm-board-wrap">${permBoardHtml(all,{selected:all.slice(0,3),interactive:true})}</div>`;}},
+  ${field(t('searchApi'),`<input placeholder="${t('searchPh')}" oninput="filterApiList(this.value)">`)}
+  ${apiTableHtml(apis,{interactive:true,selected:apis.slice(0,2)})}`;}},
+ akBindPlat:{title:()=>t('m.bindApi'),wide:true,body:()=>{
+   const apis=moduleResources(DATA.module.find(m=>m.name==='lab-service-cloud')).api;
+   const cur=(DATA.platform[platCtx.ui]&&DATA.platform[platCtx.ui].keys[platCtx.ki]||{}).apis||[];
+   return `
+  ${field(t('searchApi'),`<input placeholder="${t('searchPh')}" oninput="filterApiList(this.value)">`)}
+  ${apiTableHtml(apis,{interactive:true,selected:cur})}`;}},
+ akEditPlat:{title:()=>t('m.akEdit'),body:()=>{
+   const k=DATA.platform[platCtx.ui]&&DATA.platform[platCtx.ui].keys[platCtx.ki];if(!k)return '';
+   return `${field(t('akId'),inp('',k.id,true))}
+  <div class="grid-2">${field(t('status'),sel(['Active','Suspended'].map(v=>({v,sel:v===k.status}))))}${field(t('encryption'),sel([{v:t('encOff'),sel:!k.encryption},{v:t('encOn'),sel:!!k.encryption}]))}</div>`;}},
+ rateEditPlat:{title:()=>t('m.rateEdit'),body:()=>{
+   const k=DATA.platform[platCtx.ui]&&DATA.platform[platCtx.ui].keys[platCtx.ki];if(!k)return '';
+   return `<div class="grid-2">${field(t('rateCapLabel'),inp('',k.rate))}${field(t('overResp'),sel(['429 Too Many Requests','503 Service Unavailable']))}</div>
+  <div class="note">${t('rateNote')}</div>`;}},
  addApi:{title:()=>t('m.addApi'),body:i=>{
    const r=DATA.module[i]||DATA.module[0];
-   const apis=(LAB_RESOURCES[r.id]||{api:[]}).api;
+   const apis=moduleResources(r).api;
    const methodSel=sel(['ANY','GET','POST','PUT','PATCH','DELETE'].map(v=>({v:v,sel:v==='GET'})));
    const pathInp=inp(t('apiPathPh'));
    const existing=apis.length
     ?`<div style="margin-top:12px"><div class="field"><label>${escHtml(r.name)} · API</label></div>${apiListHtml(apis)}</div>`
     :'';
-   return `<div class="grid-2">${field(t('apiMethod'),methodSel)}${field(t('apiPath'),pathInp)}</div>
-  <div class="note">${t('apiAddNote')}</div>${existing}`;}},
+   return `<div class="grid-2">${field(t('apiMethod'),methodSel)}${field(t('apiPath'),pathInp)}</div>${existing}`;}},
  resourceManage:{title:()=>t('m.resourceManage'),wide:true,body:()=>{
    const parts=(location.hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
-   const mid=parts[0]==='module'&&parts[1]?parts[1]:'report-generation';
-   const web=(LAB_RESOURCES[mid]||LAB_RESOURCES['report-generation']).web;
+   const mod=parts[0]==='module'&&parts[1]?DATA.module.find(m=>m.id===parts[1]):DATA.module.find(m=>m.name==='lab-service-cloud');
+   const web=moduleResources(mod).web;
    return `
   ${field(t('resType'),`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label></div>`)}
-  ${field(t('searchRes'),`<input placeholder="${t('searchPh')}" oninput="filterPermBoard(this.value)">`)}
-  <div id="perm-board-wrap">${permBoardHtml(web,{selected:web,interactive:true})}</div>
-  <div class="note">${t('pageButtonNote')}</div>`;}},
+  ${field(t('searchRes'),`<input placeholder="${t('searchPh')}" oninput="filterResTable(this.value)">`)}
+  <div id="perm-board-wrap">${resourceTableHtml(web,{selected:web,interactive:true})}</div>`;}},
  roleManage:{title:()=>t('m.roleManage'),body:()=>`
   ${field(t('roleList'),`<div class="chips">${DATA.role.map(r=>`<span class="chip">${r.name}</span>`).join('')}</div>`)}
-  ${field(t('newRole'),inp('First-Page-Approver'))}`},
- columns:{title:()=>t('m.columns'),
-  foot:()=>btn(t('done'),'btn-primary','','closeModal()'),
-  body:()=>{const s=st(currentView);return field(t('showCols'),`<div class="checks">${COLS(currentView).map(c=>`
-   <label><input type="checkbox"${s.hidden.includes(c.k)?'':' checked'} onchange="toggleColumn('${c.k}',this.checked)">${c.label}</label>`).join('')}</div>`);}}
+  ${field(t('newRole'),inp('First-Page-Approver'))}`}
 };}
 
 let lastFocus=null;
@@ -1679,7 +1944,7 @@ function copyCandidates(q){
  return DATA.user.filter(u=>{
   if(u.id===tid)return false;
   if(!q)return true;
-  const hay=[u.name,u.email,u.dept,u.id,...u.roles].join(' ').toLowerCase();
+  const hay=[userName(u),u.firstName,u.lastName,u.email,u.dept,u.office,u.id,u.login,...u.roles].join(' ').toLowerCase();
   return q.split(' ').every(tok=>!tok||hay.includes(tok));
  }).slice(0,8);
 }
@@ -1689,9 +1954,9 @@ function copyUserRows(q){
  return hits.map(u=>{
   const on=copyState.source===u.id?' on':'';
   const roles=t('nRoles',{n:u.roles.length});
-  const tip=u.roles.length?` · ${u.roles.slice(0,2).join(LANG==='zh'?'、':', ')}${u.roles.length>2?'…':''}`:'';
+  const tip=u.roles.length?` · ${u.roles.slice(0,2).join(', ')}${u.roles.length>2?'…':''}`:'';
   return `<button type="button" class="${on.trim()}" onclick="pickCopyUser('${u.id}')">
-   <div class="meta"><b>${u.name}</b><em>${u.email} · ${u.dept}</em><em class="roles">${roles}${tip}</em></div>
+   <div class="meta"><b>${escHtml(userName(u))}</b><em>${u.email} · ${u.dept}</em><em class="roles">${roles}${tip}</em></div>
    <span>${u.id}</span>
   </button>`;
  }).join('');
@@ -1700,7 +1965,7 @@ function copyUserSearch(q){const list=$('#cp-list');if(list)list.innerHTML=copyU
 function pickCopyUser(id){
  copyState.source=id;
  const u=DATA.user.find(x=>x.id===id);
- if(u&&$('#cp-q'))$('#cp-q').value=`${u.name} · ${u.email}`;
+ if(u&&$('#cp-q'))$('#cp-q').value=`${userName(u)} · ${u.email}`;
  const list=$('#cp-list');if(list)list.innerHTML=copyUserRows('');
  const p=$('#cp-preview');if(p)p.innerHTML=copyPreviewHtml();
 }
@@ -1709,7 +1974,7 @@ function copyPreviewHtml(){
  const target=DATA.user[copyState.target];
  const source=DATA.user.find(x=>x.id===copyState.source);
  if(!source)return `<div class="note" style="background:var(--mist);color:var(--seal)">${t('pickSourceFirst')}</div>`;
- if(!source.roles.length)return `<div class="note" style="background:var(--cherry-050);color:var(--cherry-900)">${t('sourceNoRoles',{name:source.name})}</div>`;
+ if(!source.roles.length)return `<div class="note" style="background:var(--cherry-050);color:var(--cherry-900)">${t('sourceNoRoles',{name:userName(source)})}</div>`;
  const keep=copyState.mode==='merge'?target.roles:[];
  const next=[...new Set([...keep,...source.roles])];
  const added=next.filter(r=>!target.roles.includes(r));
@@ -1737,15 +2002,14 @@ function applyCopyRoles(){
  const stamp=`${pad(now.getDate())}-${months[now.getMonth()]}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
  const modeWord=copyState.mode==='replace'?t('overwriteWord'):t('mergeWord');
  DATA.history.unshift({
-  time:stamp,actor:'it@qima.com',type:'userRole',verb:'copy',
-  title:{en:'Copied permissions between users',zh:'在用户间复制权限'},
-  object:{en:`${source.name} → ${target.name}`,zh:`${source.name} → ${target.name}`},
-  act:{en:`Copied permissions from ${source.name} to ${target.name}`,zh:`从 ${source.name} 复制权限到 ${target.name}`},
-  meta:{en:`${copyState.mode==='replace'?'Overwrite':'Merge'} · ${before.length} → ${target.roles.length} roles`,zh:`${modeWord} · ${before.length} → ${target.roles.length} 个角色`}
+  time:stamp,actor:'it@qima.com',type:'userRole',
+  action:`Copied permissions from ${userName(source)} to ${userName(target)}`,
+  object:`${userName(source)} → ${userName(target)}`,
+  sourceId:target.id
  });
  closeModal();
  renderDetail('user',copyState.target);
- toast(t('copiedToast',{mode:modeWord,name:source.name,n:source.roles.length}),'ok');
+ toast(t('copiedToast',{mode:modeWord,name:userName(source),n:source.roles.length}),'ok');
 }
 
 /* sub tabs inside cards */
@@ -1760,11 +2024,8 @@ document.addEventListener('click',e=>{
 });
 
 document.querySelectorAll('#nav button').forEach(b=>{b.onclick=()=>switchView(b.dataset.view);});
-/* apply saved language (default EN) then route */
-document.querySelectorAll('#lang-fab button').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
-document.documentElement.lang=LANG==='zh'?'zh-CN':'en';
+document.documentElement.lang='en';
 document.title=t('docTitle');
-document.querySelectorAll('.nav-label').forEach(el=>{el.textContent=t('nav.'+el.dataset.nav);});
 route();
 </script>
 </body>
