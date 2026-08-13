@@ -354,6 +354,9 @@ code.res-code{font:400 12px/16px ui-monospace,SFMono-Regular,Menlo,monospace;col
 .iso-edit{display:flex;flex-direction:column;gap:12px}
 .iso-dim-head input.iso-dim-name{flex:1;min-width:0;height:32px;padding:0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:600 13px/18px var(--font);color:var(--carbon)}
 .iso-opt input.iso-opt-name{flex:1;min-width:0;height:32px;padding:0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:400 14px/20px var(--font);color:var(--carbon)}
+.iso-opt input.iso-opt-desc,.iso-opt .iso-opt-desc{flex:1.2;min-width:0;color:var(--seal)}
+.iso-opt input.iso-opt-desc{height:32px;padding:0 8px;border:1px solid var(--pearl);border-radius:var(--r-ctl);background:var(--white);font:400 13px/20px var(--font);color:var(--seal)}
+.iso-opt .iso-opt-desc:not(input){margin-left:auto;text-align:right}
 .iso-dim-foot{padding:8px 12px;box-shadow:inset 0 1px 0 var(--pearl)}
 .iso-edit-actions{padding-top:4px}
 .iconbtn.iso-rm{width:28px;height:28px;flex:none;color:var(--seal);font-size:18px;line-height:1}
@@ -445,12 +448,21 @@ body.modal-open{overflow:hidden}
  * - Resource codes: REPORTGENERATION:… / TA:… / TESTSETUP:…
  */
 const ISO={
- 'test-assignment':[{id:'bu',name:'Business Unit',options:['QIMA','QIMA One']},{id:'dept',name:'Department',options:['Chemical','Physical','Softlines']}],
- 'report-generation':[{id:'site',name:'Site',options:['HKG','SHA']},{id:'dept',name:'Department',options:['Chemical','Physical']}],
- 'test-setup':[{id:'site',name:'Site',options:['HKG','SHA']},{id:'labCode',name:'labCode',options:['LAB001','LAB002']}],
- template:[{id:'site',name:'Site',options:['HKG']}],
- dashboard:[{id:'site',name:'Site',options:['HKG']}],
- 'todo-list':[{id:'site',name:'Site',options:['HKG']}]
+ 'test-assignment':[
+  {id:'bu',name:'Business Unit',options:[{value:'QIMA',desc:'QIMA group business unit'},{value:'QIMA One',desc:'QIMA One platform BU'}]},
+  {id:'dept',name:'Department',options:[{value:'Chemical',desc:'Chemical testing department'},{value:'Physical',desc:'Physical testing department'},{value:'Softlines',desc:'Softlines product line'}]}
+ ],
+ 'report-generation':[
+  {id:'site',name:'Site',options:[{value:'HKG',desc:'Hong Kong lab site'},{value:'SHA',desc:'Shanghai lab site'}]},
+  {id:'dept',name:'Department',options:[{value:'Chemical',desc:'Chemical testing department'},{value:'Physical',desc:'Physical testing department'}]}
+ ],
+ 'test-setup':[
+  {id:'site',name:'Site',options:[{value:'HKG',desc:'Hong Kong lab site'},{value:'SHA',desc:'Shanghai lab site'}]},
+  {id:'labCode',name:'labCode',options:[{value:'LAB001',desc:'Primary testing lab'},{value:'LAB002',desc:'Secondary testing lab'}]}
+ ],
+ template:[{id:'site',name:'Site',options:[{value:'HKG',desc:'Hong Kong lab site'}]}],
+ dashboard:[{id:'site',name:'Site',options:[{value:'HKG',desc:'Hong Kong lab site'}]}],
+ 'todo-list':[{id:'site',name:'Site',options:[{value:'HKG',desc:'Hong Kong lab site'}]}]
 };
 const DATA={
  module:[
@@ -755,29 +767,56 @@ function isoLabel(mod){
  const dims=isoDims(mod);
  return dims.length?dims.map(d=>d.name).join(' · '):t('iso.none');
 }
+function normIsoOpt(o){
+ if(o&&typeof o==='object')return {value:String(o.value||'').trim(),desc:String(o.desc||'').trim()};
+ const s=String(o||'').trim();
+ return {value:s,desc:''};
+}
+function isoOptValue(o){return normIsoOpt(o).value;}
+function isoOptDesc(o){return normIsoOpt(o).desc;}
+function normIsoDim(d){
+ return {id:d.id,name:d.name,options:(d.options||[]).map(normIsoOpt).filter(o=>o.value)};
+}
+function normIsoDims(dims){return (dims||[]).map(normIsoDim);}
+function isoDimsToRows(dims){
+ const rows=[];
+ normIsoDims(dims).forEach(d=>d.options.forEach(o=>rows.push({dim:d.name,opt:o.value,desc:o.desc})));
+ return rows;
+}
+function isoOptsWithDesc(flatOpts,modOrKey){
+ const map=new Map();
+ normIsoDims(isoDims(modOrKey)).forEach(d=>d.options.forEach(o=>map.set(`${d.name}::${o.value}`,o.desc)));
+ return (flatOpts||[]).map(x=>({...x,desc:map.get(`${x.dim}::${x.opt}`)||''}));
+}
+function isoDimTable(dims,opts){
+ return isoOptionTable(isoDimsToRows(dims),opts);
+}
 function isoTreeHtml(dims,opts){
  opts=opts||{};
- if(!dims||!dims.length)return `<div class="perm-board-empty">${opts.empty||t('noDataIso')}</div>`;
+ const norm=normIsoDims(dims);
+ if(!norm.length)return `<div class="perm-board-empty">${opts.empty||t('noDataIso')}</div>`;
  const selected=new Set((opts.selected||[]).map(x=>`${x.dim}::${x.opt}`));
- return `<div class="iso-tree">${dims.map(d=>`
+ return `<div class="iso-tree">${norm.map(d=>`
   <div class="iso-dim">
    <div class="iso-dim-head">${escHtml(d.name)}<span class="count">${d.options.length}</span></div>
-   ${(d.options||[]).map(opt=>{
-     const key=`${d.name}::${opt}`;
-     const box=opts.interactive?`<input type="checkbox"${selected.has(key)?' checked':''} data-dim="${escAttr(d.name)}" data-opt="${escAttr(opt)}">`:'';
-     return `<div class="iso-opt">${box}<span>${escHtml(opt)}</span></div>`;
+   ${d.options.map(o=>{
+     const key=`${d.name}::${o.value}`;
+     const box=opts.interactive?`<input type="checkbox"${selected.has(key)?' checked':''} data-dim="${escAttr(d.name)}" data-opt="${escAttr(o.value)}">`:'';
+     const desc=o.desc?`<span class="iso-opt-desc">${escHtml(o.desc)}</span>`:'';
+     return `<div class="iso-opt">${box}<span>${escHtml(o.value)}</span>${desc}</div>`;
    }).join('')}
   </div>`).join('')}</div>`;
 }
-function isoOptionTable(opts){
+function isoOptionTable(opts,meta){
+ meta=meta||{};
  const rows=opts||[];
- if(!rows.length)return `<div class="perm-board-empty">${t('noDataIso')}</div>`;
- return `<div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Option</th></tr></thead><tbody>
-  ${rows.map(x=>`<tr><td class="strong">${escHtml(x.dim)}</td><td>${escHtml(x.opt)}</td></tr>`).join('')}
+ if(!rows.length)return `<div class="perm-board-empty">${meta.empty||t('noDataIso')}</div>`;
+ return `<div class="table-wrap"><table><thead><tr><th>${t('isoDimension')}</th><th>${t('isoOptions')}</th><th>${t('desc')}</th></tr></thead><tbody>
+  ${rows.map(x=>`<tr><td class="strong">${escHtml(x.dim)}</td><td>${escHtml(x.opt)}</td><td>${x.desc?escHtml(x.desc):'<span class="muted">—</span>'}</td></tr>`).join('')}
  </tbody></table></div>`;
 }
 function cloneIsoDims(modKey){
- return (isoDims(modKey)||[]).map(d=>({id:d.id,name:d.name,options:[...(d.options||[])]}));
+ return normIsoDims(isoDims(modKey)).map(d=>({id:d.id,name:d.name,options:d.options.map(o=>({...o}))}));
 }
 function isoDimSlug(name,taken){
  const base=String(name||'dim').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'dim';
@@ -790,8 +829,8 @@ function isoRmBtn(title,fn){
  return iconBtn('<span aria-hidden="true">×</span>',title,fn,'iso-rm');
 }
 function isoEditDimHtml(d,di){
- const opts=(d.options&&d.options.length)?d.options:[''];
- const filled=opts.filter(o=>String(o).trim()).length;
+ const opts=(d.options&&d.options.length)?d.options.map(normIsoOpt):[{value:'',desc:''}];
+ const filled=opts.filter(o=>o.value).length;
  return `<div class="iso-dim" data-di="${di}" data-id="${escAttr(d.id||'')}">
   <div class="iso-dim-head">
    <input type="text" class="iso-dim-name" placeholder="${escAttr(t('isoDimLabel'))}" value="${escAttr(d.name)}" data-di="${di}">
@@ -799,7 +838,8 @@ function isoEditDimHtml(d,di){
    <span class="count">${filled||opts.length}</span>
   </div>
   ${opts.map((o,oi)=>`<div class="iso-opt">
-   <input type="text" class="iso-opt-name" placeholder="${escAttr(t('isoOptions'))}" value="${escAttr(o)}" data-di="${di}" data-oi="${oi}">
+   <input type="text" class="iso-opt-name" placeholder="${escAttr(t('isoOptions'))}" value="${escAttr(o.value)}" data-di="${di}" data-oi="${oi}">
+   <input type="text" class="iso-opt-desc" placeholder="${escAttr(t('desc'))}" value="${escAttr(o.desc)}" data-di="${di}" data-oi="${oi}">
    ${isoRmBtn(t('removeOpt'),`isoEditRemoveOpt(${di},${oi})`)}
   </div>`).join('')}
   <div class="iso-dim-foot">${btn(t('addIsoOpt'),'btn-tertiary',SVG.plus,`isoEditAddOpt(${di})`)}</div>
@@ -816,10 +856,12 @@ function isoEditSyncFromDom(){
  wrap.querySelectorAll('.iso-dim').forEach(dimEl=>{
   const name=dimEl.querySelector('.iso-dim-name')?.value?.trim()||'';
   const options=[];
-  dimEl.querySelectorAll('.iso-opt-name').forEach(inp=>{
-   options.push(inp.value);
+  dimEl.querySelectorAll('.iso-opt').forEach(row=>{
+   const value=row.querySelector('.iso-opt-name')?.value?.trim()||'';
+   const desc=row.querySelector('.iso-opt-desc')?.value?.trim()||'';
+   options.push({value,desc});
   });
-  dims.push({id:dimEl.dataset.id||'',name,options:options.length?options:['']});
+  dims.push({id:dimEl.dataset.id||'',name,options:options.length?options:[{value:'',desc:''}]});
  });
  isoEdit.draft=dims;
 }
@@ -835,7 +877,7 @@ function isoEditRefresh(){
 }
 function isoEditAddDim(){
  isoEditSyncFromDom();
- isoEdit.draft.push({id:'',name:'',options:['']});
+ isoEdit.draft.push({id:'',name:'',options:[{value:'',desc:''}]});
  isoEditRefresh();
  const inp=$('#iso-edit-wrap .iso-dim:last-child .iso-dim-name');
  if(inp)inp.focus();
@@ -848,7 +890,7 @@ function isoEditRemoveDim(di){
 function isoEditAddOpt(di){
  isoEditSyncFromDom();
  if(!isoEdit.draft[di])return;
- isoEdit.draft[di].options.push('');
+ isoEdit.draft[di].options.push({value:'',desc:''});
  isoEditRefresh();
  const dim=$('#iso-edit-wrap .iso-dim[data-di="'+di+'"]');
  const inp=dim&&dim.querySelector('.iso-opt:last-child .iso-opt-name');
@@ -858,7 +900,7 @@ function isoEditRemoveOpt(di,oi){
  isoEditSyncFromDom();
  if(!isoEdit.draft[di])return;
  isoEdit.draft[di].options.splice(oi,1);
- if(!isoEdit.draft[di].options.length)isoEdit.draft[di].options.push('');
+ if(!isoEdit.draft[di].options.length)isoEdit.draft[di].options.push({value:'',desc:''});
  isoEditRefresh();
 }
 function applyIsoConfig(){
@@ -869,7 +911,12 @@ function applyIsoConfig(){
  const draft=isoEdit.draft.map(d=>{
   const name=(d.name||'').trim();
   if(!name)return null;
-  const options=[...new Set((d.options||[]).map(o=>o.trim()).filter(Boolean))];
+  const seen=new Map();
+  (d.options||[]).map(normIsoOpt).forEach(o=>{
+   if(!o.value)return;
+   seen.set(o.value.toLowerCase(),o);
+  });
+  const options=[...seen.values()];
   const id=d.id||isoDimSlug(name,taken);
   taken.push(id);
   return {id,name,options};
@@ -878,11 +925,11 @@ function applyIsoConfig(){
  if(new Set(names).size!==names.length){toast(t('isoDupDim'));return;}
  for(const d of draft){
   if(!d.options.length){toast(t('isoOptRequired',{dim:d.name}));return;}
-  const opts=d.options.map(o=>o.toLowerCase());
+  const opts=d.options.map(o=>isoOptValue(o).toLowerCase());
   if(new Set(opts).size!==opts.length){toast(t('isoDupOpt',{dim:d.name}));return;}
  }
  const validKeys=new Set();
- draft.forEach(d=>d.options.forEach(o=>validKeys.add(`${d.name}::${o}`)));
+ draft.forEach(d=>d.options.forEach(o=>validKeys.add(`${d.name}::${isoOptValue(o)}`)));
  DATA.role.forEach(r=>{
   if(r.module!==mod.name)return;
   r.dataOpts=(r.dataOpts||[]).filter(x=>validKeys.has(`${x.dim}::${x.opt}`));
@@ -1478,9 +1525,9 @@ function moduleDetail(r){
      <div class="subpane" data-p="api"><div class="subpane-toolbar">${btn(t('addApi'),'btn-secondary',SVG.plus,`openModal('addApi',${i})`)}</div>${apiTableHtml(res.api)}</div>
      <div class="subpane" data-p="data">
        <div class="subpane-toolbar">${btn(t('configIso'),'btn-secondary',SVG.shield,`openModal('isoConfig',${i})`)}</div>
-       ${isoTreeHtml(dims)}
+       ${isoDimTable(dims)}
      </div>`},
-   subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:`Data (${dims.reduce((n,d)=>n+d.options.length,0)})`}]));
+   subtabs([{p:'web',label:`Web (${res.web.length})`},{p:'api',label:`API (${res.api.length})`},{p:'data',label:`${t('dataIso')} (${dims.reduce((n,d)=>n+d.options.length,0)})`}]));
 }
 
 const ROLE_USERS_PS=5;
@@ -1525,8 +1572,8 @@ function roleDetail(r){
    {html:`
      <div class="subpane active" data-p="web">${resourceTableHtml(bound,{selected:bound})}</div>
      <div class="subpane" data-p="api">${apiTableHtml(apiShow,{empty:t('noApiCodes')})}</div>
-     <div class="subpane" data-p="data">${isoOptionTable(dataOpts)}</div>`},
-   subtabs([{p:'web',label:`Web (${bound.length})`},{p:'api',label:`API (${apiShow.length})`},{p:'data',label:`Data (${dataOpts.length})`}]))
+     <div class="subpane" data-p="data">${isoOptionTable(isoOptsWithDesc(dataOpts,mod?.name||'lab-service-cloud'))}</div>`},
+   subtabs([{p:'web',label:`Web (${bound.length})`},{p:'api',label:`API (${apiShow.length})`},{p:'data',label:`${t('dataIso')} (${dataOpts.length})`}]))
  + roleUsersCardHtml(r,1);
 }
 
