@@ -313,7 +313,6 @@ tbody tr:last-child td{border-bottom:0}
 .picker-list button .meta em{font:400 12px/16px var(--font);color:var(--seal);font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .picker-list button .meta .roles{color:var(--pool-500)}
 .picker-empty{padding:16px;text-align:center;color:var(--seal);font:400 13px/18px var(--font)}
-#cp-preview{min-height:28px}
 .secret{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--smoke);border-radius:var(--r-ctl);background:var(--cloud);font:400 13px/20px var(--mono,var(--font));color:var(--carbon);word-break:break-all}
 .secret button{margin-left:auto;flex:none}
 
@@ -480,23 +479,23 @@ const DATA={
   {id:'d0e1f2a3-4b5c-6d7e-8f9a-0b1c2d3e4f5a',name:'report-service-cloud',desc:'',updateTime:'2026-02-28 07:40:12.883'}
  ],
  role:[
-  {id:'ta-viewer',name:'Test-Assignment-Viewer',module:'lab-service-cloud',desc:'View Test Assignment',dataOpts:[{dim:'Business Unit',opt:'QIMA'}]},
-  {id:'ta-editor',name:'Test-Assignment-Editor',module:'lab-service-cloud',desc:'Edit parameters / specimen / breakdown',dataOpts:[{dim:'Business Unit',opt:'QIMA'},{dim:'Department',opt:'Chemical'}]},
-  {id:'ta-admin',name:'Test-Assignment-Admin',module:'lab-service-cloud',desc:'Unlock + admin on Test Assignment',dataOpts:[{dim:'Business Unit',opt:'QIMA'},{dim:'Business Unit',opt:'QIMA One'},{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'},{dim:'Department',opt:'Softlines'}]},
-  {id:'fp-viewer',name:'First-Page-Viewer',module:'lab-service-cloud',desc:'View First Page',dataOpts:[{dim:'Site',opt:'HKG'}]},
-  {id:'fp-editor',name:'First-Page-Editor',module:'lab-service-cloud',desc:'Edit First Page',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Chemical'}]},
-  {id:'fp-approver',name:'First-Page-Approver',module:'lab-service-cloud',desc:'Approve First Page',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Chemical'}]},
-  {id:'rt-viewer',name:'ResultTable-Viewer',module:'lab-service-cloud',desc:'View Result Table',dataOpts:[{dim:'Site',opt:'HKG'}]},
-  {id:'rt-editor',name:'ResultTable-Editor',module:'lab-service-cloud',desc:'Edit Result Table',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Physical'}]},
-  {id:'rt-approver',name:'ResultTable-Approver',module:'lab-service-cloud',desc:'Approve / unlock Result Table',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Physical'}]},
-  {id:'dept-approver',name:'Department-Approver',module:'lab-service-cloud',desc:'Department-level approval',dataOpts:[{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'}]},
-  {id:'rg-admin',name:'Report-Generation-Admin',module:'lab-service-cloud',desc:'Report Generation admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'}]},
-  {id:'tpl-viewer',name:'Template-Viewer',module:'lab-service-cloud',desc:'View templates',dataOpts:[]},
-  {id:'rt-tpl-editor',name:'ResultTable-Template-Editor',module:'lab-service-cloud',desc:'Edit result-table templates',dataOpts:[]},
-  {id:'ts-viewer',name:'Test-Setup-Viewer',module:'lab-service-cloud',desc:'View Test Setup',dataOpts:[{dim:'Site',opt:'HKG'}]},
-  {id:'ts-editor',name:'Test-Setup-Editor',module:'lab-service-cloud',desc:'Edit tests / master data / parameters',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'labCode',opt:'LAB001'}]},
-  {id:'ts-admin',name:'Test-Setup-Admin',module:'lab-service-cloud',desc:'Test Setup admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'labCode',opt:'LAB001'},{dim:'labCode',opt:'LAB002'}]},
-  {id:'ql-admin',name:'Qimalabs-Admin',module:'lab-service-cloud',desc:'Cross-area QIMAlabs admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'labCode',opt:'LAB001'},{dim:'labCode',opt:'LAB002'}]}
+  {id:'5f262fc4556e48ee8cba013e621a00b0',name:'Test-Assignment-Viewer',module:'lab-service-cloud',desc:'View Test Assignment',dataOpts:[{dim:'Business Unit',opt:'QIMA'}]},
+  {id:'35cf6d993e1e4a08a731f29ad88b7981',name:'Test-Assignment-Editor',module:'lab-service-cloud',desc:'Edit parameters / specimen / breakdown',dataOpts:[{dim:'Business Unit',opt:'QIMA'},{dim:'Department',opt:'Chemical'}]},
+  {id:'d9fd7a4df1c94dd4a2d0f9c52658831e',name:'Test-Assignment-Admin',module:'lab-service-cloud',desc:'Unlock + admin on Test Assignment',dataOpts:[{dim:'Business Unit',opt:'QIMA'},{dim:'Business Unit',opt:'QIMA One'},{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'},{dim:'Department',opt:'Softlines'}]},
+  {id:'9ad8c3f7054a48f69bd06d11f5a98f4b',name:'First-Page-Viewer',module:'lab-service-cloud',desc:'View First Page',dataOpts:[{dim:'Site',opt:'HKG'}]},
+  {id:'44e41319e164403b8bdc5cbfec24390d',name:'First-Page-Editor',module:'lab-service-cloud',desc:'Edit First Page',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Chemical'}]},
+  {id:'6b82049058324a32a003d392dcec1417',name:'First-Page-Approver',module:'lab-service-cloud',desc:'Approve First Page',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Chemical'}]},
+  {id:'ef613b4ef6844e9b906bbccdca4264b0',name:'ResultTable-Viewer',module:'lab-service-cloud',desc:'View Result Table',dataOpts:[{dim:'Site',opt:'HKG'}]},
+  {id:'56be602accb440d1bd82fe59e5575e32',name:'ResultTable-Editor',module:'lab-service-cloud',desc:'Edit Result Table',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Physical'}]},
+  {id:'cb7109b68d6a43778749ec36146ba0de',name:'ResultTable-Approver',module:'lab-service-cloud',desc:'Approve / unlock Result Table',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Department',opt:'Physical'}]},
+  {id:'8a70bbb98cdc44159a844b7a7d76c6d7',name:'Department-Approver',module:'lab-service-cloud',desc:'Department-level approval',dataOpts:[{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'}]},
+  {id:'c1b6f288e8074aecac4edea5bbe23f5e',name:'Report-Generation-Admin',module:'lab-service-cloud',desc:'Report Generation admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'Department',opt:'Chemical'},{dim:'Department',opt:'Physical'}]},
+  {id:'36f788a6204d4d17b979f7bced6cb1bf',name:'Template-Viewer',module:'lab-service-cloud',desc:'View templates',dataOpts:[]},
+  {id:'30e56a01d24c41eca3bf5c151e7259f',name:'ResultTable-Template-Editor',module:'lab-service-cloud',desc:'Edit result-table templates',dataOpts:[]},
+  {id:'7f3a9c2e1b564d8f9e0a1c3b5d7e9f21',name:'Test-Setup-Viewer',module:'lab-service-cloud',desc:'View Test Setup',dataOpts:[{dim:'Site',opt:'HKG'}]},
+  {id:'2e8b4d6a9c1f43e5b7d902468ace1357',name:'Test-Setup-Editor',module:'lab-service-cloud',desc:'Edit tests / master data / parameters',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'labCode',opt:'LAB001'}]},
+  {id:'9c1e5a7b3d2f48e6901b4c7d8e0f2a36',name:'Test-Setup-Admin',module:'lab-service-cloud',desc:'Test Setup admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'labCode',opt:'LAB001'},{dim:'labCode',opt:'LAB002'}]},
+  {id:'4d6f8a0b2e3c4516978ab0d1e2f3c4b58',name:'Qimalabs-Admin',module:'lab-service-cloud',desc:'Cross-area QIMAlabs admin',dataOpts:[{dim:'Site',opt:'HKG'},{dim:'Site',opt:'SHA'},{dim:'labCode',opt:'LAB001'},{dim:'labCode',opt:'LAB002'}]}
  ],
  user:[
   {id:'a1f2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c',login:'kyle.yao',firstName:'Kyle',lastName:'Yao',email:'kyle.yao@qima.com',dept:'Lab',office:'Hong Kong',roles:['First-Page-Approver','Department-Approver']},
@@ -526,7 +525,7 @@ const DATA={
   ]}
  ],
  history:[
-  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',type:'role',action:'Bound resource to role',object:'First-Page-Approver',sourceId:'fp-approver'},
+  {time:'23-Jul-2026 14:32',actor:'joyce.liu@qima.com',type:'role',action:'Bound resource to role',object:'First-Page-Approver',sourceId:'6b82049058324a32a003d392dcec1417'},
   {time:'23-Jul-2026 11:08',actor:'joyce.liu@qima.com',type:'userRole',action:'Added role to user',object:'Kyle Yao',sourceId:'a1f2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c'},
   {time:'22-Jul-2026 16:45',actor:'joyce.liu@qima.com',type:'ak',action:'Created customer AccessKey',object:'Brand LIMS Integrator',sourceId:'ak-c-lab-01'},
   {time:'22-Jul-2026 09:20',actor:'sandy.yu@qima.com',type:'module',action:'Updated data isolation options',object:'lab-service-cloud',sourceId:'7c8d9e0f-1a2b-3c4d-5e6f-7890abcdef12'},
@@ -706,20 +705,12 @@ function filterApiList(q){
   row.hidden=!!q&&!row.textContent.toLowerCase().includes(q);
  });
 }
-function webDesc(p){
- if(p.moduleLevel)return `Module-level ${p.action||'access'} for ${p.root}`;
- if(p.page)return `${p.action} permission for ${p.page}`;
- return '';
-}
 function webRow(code){
  const p=parseWebCode(code);
- const isPage=/:VIEW$/.test(code)||p.moduleLevel||p.action==='access';
- const desc=webDesc(p);
  return {
   name:p.moduleLevel?p.root:(p.page?`${p.page} · ${p.action}`:prettySeg(code)),
-  type:isPage?'Page':'Button',
-  parent:p.moduleLevel?'—':(p.root||'—'),
-  desc,
+  parent:'—',
+  desc:'',
   code
  };
 }
@@ -728,11 +719,11 @@ function resourceTableHtml(codes,opts){
  const rows=(codes||[]).map(webRow);
  if(!rows.length)return `<div class="perm-board-empty">${opts.empty||t('noWebRes')}</div>`;
  const selected=new Set(opts.selected||codes||[]);
- const head=`<tr>${opts.interactive?'<th></th>':''}<th>Resource</th><th>Type</th><th>Parent</th><th>${t('desc')}</th><th>Code</th></tr>`;
+ const head=`<tr>${opts.interactive?'<th></th>':''}<th>Resource</th><th>Code</th><th>${t('desc')}</th><th>Parent</th></tr>`;
  const body=rows.map(r=>{
   const on=selected.has(r.code);
   const box=opts.interactive?`<td><input type="checkbox"${on?' checked':''} data-code="${escAttr(r.code)}"></td>`:'';
-  return `<tr${opts.interactive?' class="clickable"':''}>${box}<td class="strong">${escHtml(r.name)}</td><td><span class="badge">${r.type}</span></td><td>${escHtml(r.parent)}</td><td>${r.desc?escHtml(r.desc):'<span class="muted">—</span>'}</td><td><code class="res-code">${escHtml(r.code)}</code></td></tr>`;
+  return `<tr${opts.interactive?' class="clickable"':''}>${box}<td class="strong">${escHtml(r.name)}</td><td><code class="res-code">${escHtml(r.code)}</code></td><td>${r.desc?escHtml(r.desc):'<span class="muted">—</span>'}</td><td>${escHtml(r.parent)}</td></tr>`;
  }).join('');
  return `<div class="table-wrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
@@ -1008,7 +999,7 @@ const I18N = {
   back:'Back',copyFrom:'Copy from user',editUserRoles:'Edit user roles',manageResources:'Manage resources',
   bindResources:'Bind resources',editAk:'Edit AccessKey',
   'col.domainId':'Module ID','col.name':'Name','col.desc':'Description','col.roles':'Roles','col.resources':'Resources','col.isolation':'Data isolation','col.updateTime':'Updated',
-  'col.roleKey':'Role key','col.roleId':'Role ID','col.domain':'Module','col.module':'Service','col.userId':'User ID','col.firstName':'First name','col.lastName':'Last name','col.fullName':'Name','col.email':'Email','col.dept':'Department','col.office':'QIMA Office','col.roleCount':'Roles',
+  'col.roleKey':'Role name','col.roleId':'Role ID','col.domain':'Module','col.module':'Module','col.userId':'User ID','col.firstName':'First name','col.lastName':'Last name','col.fullName':'Name','col.email':'Email','col.dept':'Department','col.office':'QIMA Office','col.roleCount':'Roles',
   'col.akId':'AccessKey ID','col.customer':'Customer','col.platform':'Platform','col.login':'Login','col.mode':'Mode','col.status':'Status','col.created':'Created',
   'col.time':'Time','col.actor':'Actor','col.action':'Action','col.object':'Object',
   all:'All',keyword:'Keyword',searchPh:'Type to search...',
@@ -1030,8 +1021,8 @@ const I18N = {
   noApiCodes:'(no dedicated API codes)',noDataIso:'This role has no data isolation',
   isoDim:'Dimensions: Site · labCode · Department',isoVal:'Values: LAB001 · Softlines',
   noRolesInModule:'No roles in this module yet',noAuthUsers:'No authorized users',user:'User',email:'Email',dept:'Department',
-  roleKey:'Role key',domain:'Service',desc:'Description',auth2Module:'auth2 Module',
-  userId:'User ID',firstName:'First name',lastName:'Last name',fullName:'Name',office:'QIMA Office',dataSource:'Data source',dataSourceVal:'User Service · read-only',
+  roleKey:'Role name',domain:'Module',desc:'Description',auth2Module:'auth2 Module',
+  userId:'User ID',firstName:'First name',lastName:'Last name',fullName:'Name',office:'QIMA Office',
   noUserRoles:'This user has no roles yet',copyPerms:'Copy permissions from user',editRoles:'Edit roles',
   akId:'AccessKey ID',customer:'Customer',platform:'Platform',login:'Login',key:'Key',mode:'Mode',status:'Status',created:'Created',lastUsed:'Last used',
   revealKey:'Show full key',hideKey:'Hide key',
@@ -1054,13 +1045,10 @@ const I18N = {
   roleCreateNote:'Permission CSV uses hyphenated role names (e.g. First-Page-Approver); the FE only checks resource codes. auth2 export may write lab-service-cloud:First-Page-Viewer.',
   user:'User',assignedRoles:'Assigned roles',noneYet:'None yet',addRole:'Add role',pickRole:'Select a role…',
   targetUser:'Target user',pickSource:'Select source user',copySearchPh:'Search by name / email / department…',
-  copyMode:'Copy mode',overwrite:'Overwrite',merge:'Merge',
-  copyModeHint:'Overwrite: replace with source roles entirely; Merge: keep existing roles and append source roles',
-  confirmCopy:'Confirm copy',pickSourceFirst:'Select a source user first — the preview will appear here.',
+  confirmCopy:'Confirm copy',
   sourceNoRoles:(p)=>`${p.name} currently has no roles to copy.`,
-  rolesToApply:'Roles that will apply',added:'Added',willRemove:'Will remove',keepExisting:'Keep existing',
   pickSourceToast:'Please select a source user',sourceEmptyToast:'Source user has no roles to copy',
-  copiedToast:(p)=>`${p.mode} copied ${p.n} roles from ${p.name}`,overwriteWord:'Overwrite',mergeWord:'Merge',
+  copiedToast:(p)=>`Copied ${p.n} roles from ${p.name}`,
   nRoles:(p)=>p.n?`${p.n} roles`:'No roles',
   noCopyUser:'No copyable users found',
   custName:'Customer name',platName:'Platform name',pickFirst:(p)=>`Select a ${p.who} first`,
@@ -1218,7 +1206,7 @@ function dnum(s){
 /* column order must match listRow() cell order */
 const COL_DEFS={
  module:[{k:'id',lk:'col.domainId'},{k:'name',lk:'col.name'},{k:'desc',lk:'col.desc',sort:false},{k:'updateTime',lk:'col.updateTime',get:r=>dnum(r.updateTime)}],
- role:[{k:'id',lk:'col.roleId'},{k:'name',lk:'col.roleKey'},{k:'module',lk:'col.module'},{k:'desc',lk:'col.desc',sort:false}],
+ role:[{k:'id',lk:'col.roleId'},{k:'name',lk:'col.roleKey'},{k:'desc',lk:'col.desc',sort:false},{k:'module',lk:'col.module'}],
  user:[{k:'id',lk:'col.userId'},{k:'login',lk:'col.login'},{k:'firstName',lk:'col.firstName'},{k:'lastName',lk:'col.lastName'},{k:'email',lk:'col.email'},{k:'dept',lk:'col.dept'},{k:'office',lk:'col.office',sort:false},{k:'roles',lk:'col.roleCount',get:r=>r.roles.length}],
  customer:[{k:'id',lk:'col.akId'},{k:'client',lk:'col.customer'},{k:'login',lk:'col.login'},{k:'mode',lk:'col.mode'},{k:'status',lk:'col.status'},{k:'created',lk:'col.created',get:r=>dnum(r.created)}],
  platform:[{k:'name',lk:'platUserName'},{k:'desc',lk:'col.desc',sort:false},{k:'keys',lk:'col.keys',get:r=>(r.keys||[]).length},{k:'created',lk:'col.created',get:r=>dnum(r.created)}],
@@ -1385,7 +1373,7 @@ function pageWindow(cur,pages){
 function listRow(view,r,i){
  const cl=`class="clickable" tabindex="0" data-idx="${i}" onclick="goDetail('${view}',${i})" onkeydown="rowKey(event,'${view}',${i})"`;
  if(view==='module')return `<tr ${cl}><td><code class="res-code" title="${escAttr(r.id)}"><span class="cell-link">${escHtml(r.id)}</span></code></td><td class="strong">${escHtml(r.name)}</td><td>${r.desc?escHtml(r.desc):'<span class="muted">—</span>'}</td><td>${r.updateTime||'—'}</td></tr>`;
- if(view==='role')return `<tr ${cl}><td><code class="res-code" title="${escAttr(r.id)}"><span class="cell-link">${escHtml(r.id)}</span></code></td><td><span class="cell-link">${escHtml(r.name)}</span></td><td class="strong">${escHtml(r.module)}</td><td>${escHtml(r.desc)}</td></tr>`;
+ if(view==='role')return `<tr ${cl}><td><code class="res-code" title="${escAttr(r.id)}"><span class="cell-link">${escHtml(r.id)}</span></code></td><td><span class="cell-link">${escHtml(r.name)}</span></td><td>${escHtml(r.desc)}</td><td class="strong">${escHtml(r.module)}</td></tr>`;
  if(view==='user')return `<tr ${cl}><td><code class="res-code" title="${escAttr(r.id)}"><span class="cell-link">${escHtml(r.id)}</span></code></td><td>${escHtml(r.login)}</td><td class="strong">${escHtml(r.firstName)}</td><td class="strong">${escHtml(r.lastName)}</td><td>${escHtml(r.email)}</td><td>${escHtml(r.dept)}</td><td>${escHtml(r.office||'—')}</td><td>${rolesCell(r.roles)}</td></tr>`;
  if(view==='customer')return `<tr ${cl}><td><span class="cell-link">${r.id}</span></td><td class="strong">${r.client}</td><td>${r.login}</td><td>${modeBadge(r.mode)}</td><td>${statusBadge(r.status)}</td><td>${r.created}</td></tr>`;
  if(view==='platform')return `<tr ${cl}><td><span class="cell-link">${r.name}</span></td><td>${r.desc}</td><td><span class="count">${(r.keys||[]).length}</span></td><td>${r.created}</td></tr>`;
@@ -1581,7 +1569,7 @@ function userDetail(r){
  const i=idxOf('user',r);
  const empty=`<div class="empty">${t('noUserRoles')}<div style="margin-top:16px">${btn(t('copyPerms'),'btn-secondary',SVG.copy,"openModal('copyRoles',"+i+")")}</div></div>`;
  return card(t('card.userInfo'),'',
-   `<div class="kv">${kv(t('userId'),`<code class="res-code">${escHtml(r.id)}</code>`)}${kv(t('login'),r.login)}${kv(t('firstName'),r.firstName)}${kv(t('lastName'),r.lastName)}${kv(t('email'),r.email)}${kv(t('dept'),r.dept)}${kv(t('office'),r.office||'—')}${kv(t('dataSource'),t('dataSourceVal'))}</div>`)
+   `<div class="kv">${kv(t('userId'),`<code class="res-code">${escHtml(r.id)}</code>`)}${kv(t('login'),r.login)}${kv(t('firstName'),r.firstName)}${kv(t('lastName'),r.lastName)}${kv(t('email'),r.email)}${kv(t('dept'),r.dept)}${kv(t('office'),r.office||'—')}</div>`)
  + card(t('card.userRoles'),
    btn(t('copyFrom'),'btn-secondary',SVG.copy,`openModal('copyRoles',${i})`)+btn(t('editRoles'),'btn-tertiary',SVG.edit,`openModal('userRole',${i})`),
    r.roles.length?{flush:true,html:userRolesTable(r.roles)}:empty);
@@ -1801,19 +1789,14 @@ function MODALS(){return {
  copyRoles:{title:()=>t('m.copyRoles'),
   foot:()=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('confirmCopy'),'btn-primary','','applyCopyRoles()'),
   body:i=>{
-   copyState={target:i,source:null,mode:'replace'};
+   copyState={target:i,source:null};
    const u=DATA.user[i];
    return `
   ${field(t('targetUser'),inp('',`${userName(u)} · ${u.email}`,true))}
   ${field(t('pickSource'),`<div class="picker">
     <input id="cp-q" placeholder="${t('copySearchPh')}" oninput="copyUserSearch(this.value)">
     <div class="picker-list" id="cp-list">${copyUserRows('')}</div>
-  </div>`)}
-  ${field(t('copyMode'),`<div class="seg">
-    <input type="radio" name="cp-mode" id="cpr" checked onchange="setCopyMode('replace')"><label for="cpr">${t('overwrite')}</label>
-    <input type="radio" name="cp-mode" id="cpm" onchange="setCopyMode('merge')"><label for="cpm">${t('merge')}</label>
-  </div>`,t('copyModeHint'))}
-  <div id="cp-preview">${copyPreviewHtml()}</div>`;}},
+  </div>`)}`;}},
  akCreate:{title:kind=>t(kind==='platform'?'m.akCreatePlat':'m.akCreateCust'),
   foot:kind=>btn(t('cancel'),'btn-tertiary','','closeModal()')+btn(t('genAk'),'btn-primary','',`openModal('akCreated','${kind||'customer'}')`),
   body:kind=>{
@@ -1904,7 +1887,6 @@ function MODALS(){return {
    const mod=parts[0]==='module'&&parts[1]?DATA.module.find(m=>m.id===parts[1]):DATA.module.find(m=>m.name==='lab-service-cloud');
    const web=moduleResources(mod).web;
    return `
-  ${field(t('resType'),`<div class="seg"><input type="radio" name="rt" id="rt1" checked><label for="rt1">PAGE</label><input type="radio" name="rt" id="rt2"><label for="rt2">BUTTON</label></div>`)}
   ${field(t('searchRes'),`<input placeholder="${t('searchPh')}" oninput="filterResTable(this.value)">`)}
   <div id="perm-board-wrap">${resourceTableHtml(web,{selected:web,interactive:true})}</div>`;}},
  roleManage:{title:()=>t('m.roleManage'),body:()=>`
@@ -1984,7 +1966,7 @@ function filterPermBoard(q){
 }
 
 /* ---- copy roles from another user ---- */
-let copyState={target:0,source:null,mode:'replace'};
+let copyState={target:0,source:null};
 function copyCandidates(q){
  const tid=DATA.user[copyState.target]?.id;
  q=(q||'').toLowerCase().replace(/[·•]/g,' ').replace(/\s+/g,' ').trim();
@@ -2014,40 +1996,17 @@ function pickCopyUser(id){
  const u=DATA.user.find(x=>x.id===id);
  if(u&&$('#cp-q'))$('#cp-q').value=`${userName(u)} · ${u.email}`;
  const list=$('#cp-list');if(list)list.innerHTML=copyUserRows('');
- const p=$('#cp-preview');if(p)p.innerHTML=copyPreviewHtml();
-}
-function setCopyMode(m){copyState.mode=m;const p=$('#cp-preview');if(p)p.innerHTML=copyPreviewHtml();}
-function copyPreviewHtml(){
- const target=DATA.user[copyState.target];
- const source=DATA.user.find(x=>x.id===copyState.source);
- if(!source)return `<div class="note" style="background:var(--mist);color:var(--seal)">${t('pickSourceFirst')}</div>`;
- if(!source.roles.length)return `<div class="note" style="background:var(--cherry-050);color:var(--cherry-900)">${t('sourceNoRoles',{name:userName(source)})}</div>`;
- const keep=copyState.mode==='merge'?target.roles:[];
- const next=[...new Set([...keep,...source.roles])];
- const added=next.filter(r=>!target.roles.includes(r));
- const removed=copyState.mode==='replace'?target.roles.filter(r=>!source.roles.includes(r)):[];
- const none=t('none');
- return `
-  ${field(t('rolesToApply'),`<div class="chips">${next.map(r=>`<span class="chip">${r}</span>`).join('')}</div>`)}
-  <div class="kv" style="margin-top:12px">
-   ${kv(t('added'),added.length?added.map(r=>`<span class="badge badge-kiwi">${r}</span>`).join(' '):none)}
-   ${kv(copyState.mode==='replace'?t('willRemove'):t('keepExisting'),removed.length?removed.map(r=>`<span class="badge badge-cherry">${r}</span>`).join(' '):(copyState.mode==='merge'?(target.roles.length?target.roles.map(r=>`<span class="badge">${r}</span>`).join(' '):none):none))}
-  </div>`;
 }
 function applyCopyRoles(){
  const target=DATA.user[copyState.target];
  const source=DATA.user.find(x=>x.id===copyState.source);
  if(!target||!source){toast(t('pickSourceToast'));return;}
  if(!source.roles.length){toast(t('sourceEmptyToast'));return;}
- const before=target.roles.slice();
- target.roles=copyState.mode==='merge'
-  ?[...new Set([...target.roles,...source.roles])]
-  :source.roles.slice();
+ target.roles=[...new Set([...target.roles,...source.roles])];
  const now=new Date();
  const pad=n=>String(n).padStart(2,'0');
  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
  const stamp=`${pad(now.getDate())}-${months[now.getMonth()]}-${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
- const modeWord=copyState.mode==='replace'?t('overwriteWord'):t('mergeWord');
  DATA.history.unshift({
   time:stamp,actor:'it@qima.com',type:'userRole',
   action:`Copied permissions from ${userName(source)} to ${userName(target)}`,
@@ -2056,7 +2015,7 @@ function applyCopyRoles(){
  });
  closeModal();
  renderDetail('user',copyState.target);
- toast(t('copiedToast',{mode:modeWord,name:userName(source),n:source.roles.length}),'ok');
+ toast(t('copiedToast',{name:userName(source),n:source.roles.length}),'ok');
 }
 
 /* sub tabs inside cards */
